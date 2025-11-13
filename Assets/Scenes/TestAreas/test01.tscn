@@ -51,7 +51,6 @@ sky_material = SubResource("ProceduralSkyMaterial_ehkex")
 
 [sub_resource type="Environment" id="Environment_00tp4"]
 background_mode = 1
-background_color = Color(0.1728327, 0.17283267, 0.17283267, 1)
 sky = SubResource("Sky_xersf")
 sdfgi_cascades = 8
 glow_intensity = 1.0
@@ -195,7 +194,7 @@ size = Vector2i(2560, 1440)
 script = ExtResource("4_awrem")
 
 [node name="noFilterTexture" type="Camera3D" parent="Camera/noFilter" node_paths=PackedStringArray("camera")]
-transform = Transform3D(0.57928103, 0.0014226653, 0.8151264, 0, 0.9999982, -0.0017453281, -0.8151277, 0.0010110356, 0.57928014, -18.64337, 56.651848, -20.030869)
+transform = Transform3D(0.57928103, 0.0014226652, 0.8151264, 0, 0.99999815, -0.0017453281, -0.8151277, 0.0010110355, 0.57928014, -18.64337, 56.651848, -20.030869)
 cull_mask = 1048573
 script = ExtResource("5_wedcn")
 camera = NodePath("../..")
@@ -205,7 +204,7 @@ size = Vector2i(2560, 1440)
 script = ExtResource("4_awrem")
 
 [node name="ScreenTexture" type="Camera3D" parent="Camera/screenTexture" node_paths=PackedStringArray("camera")]
-transform = Transform3D(0.57928103, 0.0014226644, 0.81512535, 0, 0.99999756, -0.001745326, -0.8151277, 0.0010110349, 0.5792794, -18.64337, 56.651848, -20.030869)
+transform = Transform3D(0.57928103, 0.0014226643, 0.81512535, 0, 0.9999975, -0.0017453259, -0.8151277, 0.0010110349, 0.5792794, -18.64337, 56.651848, -20.030869)
 cull_mask = 1048569
 script = ExtResource("5_wedcn")
 camera = NodePath("../..")
@@ -215,7 +214,7 @@ size = Vector2i(2560, 1440)
 script = ExtResource("4_awrem")
 
 [node name="windowTexture" type="Camera3D" parent="Camera/windowTexture" node_paths=PackedStringArray("camera")]
-transform = Transform3D(0.57928103, 0.0014226646, 0.8151261, 0, 0.99999774, -0.0017453275, -0.8151277, 0.0010110352, 0.57927996, -18.64337, 56.651848, -20.030869)
+transform = Transform3D(0.57928103, 0.0014226646, 0.8151261, 0, 0.9999977, -0.0017453275, -0.8151277, 0.001011035, 0.57927996, -18.64337, 56.651848, -20.030869)
 cull_mask = 1048563
 script = ExtResource("5_wedcn")
 camera = NodePath("../..")
