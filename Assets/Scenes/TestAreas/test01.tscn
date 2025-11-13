@@ -1,0 +1,321 @@
+[gd_scene load_steps=36 format=3 uid="uid://cchwj0yom8s8u"]
+
+[ext_resource type="Script" uid="uid://1gwxs31o4gd2" path="res://Assets/Scripts/Misc/cameraMovement.gd" id="1_yw7n4"]
+[ext_resource type="Shader" uid="uid://broa4g8qx82sc" path="res://Assets/Shaders/Water shaders/underwaterEffect.gdshader" id="2_onqnd"]
+[ext_resource type="Script" uid="uid://cu613t26cej83" path="res://Assets/Scripts/Misc/fitQuadToCamera.gd" id="3_ag3g0"]
+[ext_resource type="Script" uid="uid://rod5bnxd463i" path="res://Assets/Scripts/Misc/setResolution.gd" id="4_awrem"]
+[ext_resource type="Script" uid="uid://8gfmmr0xf1an" path="res://Assets/Scripts/Misc/followCamera.gd" id="5_wedcn"]
+[ext_resource type="Shader" uid="uid://dyuelsvo5pqla" path="res://Assets/Shaders/Water shaders/belowWater.gdshader" id="6_kccnf"]
+[ext_resource type="Shader" uid="uid://ck0amug4virtw" path="res://Assets/Shaders/Water shaders/aboveWater.gdshader" id="7_jm03j"]
+[ext_resource type="Script" uid="uid://blff073421vio" path="res://Assets/Scripts/Misc/fpsCounter.gd" id="8_50q2m"]
+[ext_resource type="PackedScene" uid="uid://b58a83nv6u4tm" path="res://Assets/Scenes/Submarines/testSubV1_0.tscn" id="9_fwsdw"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5tkv4"]
+albedo_color = Color(0, 1, 0, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_0m0f1"]
+material = SubResource("StandardMaterial3D_5tkv4")
+size = Vector3(0.5, 0.5, 0.5)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_b0q6j"]
+albedo_color = Color(0.8720924, 0.41788074, 1.3091564e-05, 1)
+
+[sub_resource type="QuadMesh" id="QuadMesh_mhym6"]
+material = SubResource("StandardMaterial3D_b0q6j")
+size = Vector2(100, 100)
+orientation = 1
+
+[sub_resource type="QuadMesh" id="QuadMesh_a3se8"]
+size = Vector2(0.076732695, 0.032227732)
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_xersf"]
+viewport_path = NodePath("Camera/noFilter")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ykrsh"]
+resource_local_to_scene = true
+render_priority = 1
+shader = ExtResource("2_onqnd")
+shader_parameter/albedo = Color(0.18, 0.3, 0.45, 1)
+shader_parameter/absorptionCoefficient = 0.05
+shader_parameter/screenTexture = SubResource("ViewportTexture_xersf")
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_ehkex"]
+margin = 0.0
+radius = 0.001
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_ehkex"]
+energy_multiplier = 2.0
+
+[sub_resource type="Sky" id="Sky_xersf"]
+sky_material = SubResource("ProceduralSkyMaterial_ehkex")
+
+[sub_resource type="Environment" id="Environment_00tp4"]
+background_mode = 1
+background_color = Color(0.1728327, 0.17283267, 0.17283267, 1)
+sky = SubResource("Sky_xersf")
+sdfgi_cascades = 8
+glow_intensity = 1.0
+glow_strength = 1.5
+fog_light_color = Color(1, 1, 1, 1)
+volumetric_fog_albedo = Color(0.18, 0.3, 0.45, 1)
+volumetric_fog_gi_inject = 16.0
+volumetric_fog_ambient_inject = 0.1
+adjustment_enabled = true
+
+[sub_resource type="SphereMesh" id="SphereMesh_vbegm"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vbegm"]
+albedo_color = Color(0.11764706, 0.49019608, 0.8235294, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_xersf"]
+size = Vector3(100, 102, 0.5)
+
+[sub_resource type="QuadMesh" id="QuadMesh_ppyta"]
+flip_faces = true
+size = Vector2(100, 100)
+subdivide_width = 400
+subdivide_depth = 400
+orientation = 1
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_ykrsh"]
+noise_type = 3
+fractal_type = 2
+fractal_octaves = 10
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_g14j6"]
+width = 1024
+height = 1024
+noise = SubResource("FastNoiseLite_ykrsh")
+seamless = true
+as_normal_map = true
+bump_strength = 3.0
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_vbegm"]
+viewport_path = NodePath("Camera/screenTexture")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_xersf"]
+fractal_octaves = 10
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_00tp4"]
+width = 1024
+height = 1024
+noise = SubResource("FastNoiseLite_xersf")
+seamless = true
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ehkex"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("6_kccnf")
+shader_parameter/albedo = Color(0.18, 0.3, 0.45, 1)
+shader_parameter/absorptionCoefficient = 0.05
+shader_parameter/metallic = 0.0
+shader_parameter/roughness = 0.1
+shader_parameter/specular = 0.3
+shader_parameter/waveDirection = Vector2(1, 0)
+shader_parameter/waveDirection2 = Vector2(0, 1)
+shader_parameter/time_scale = 0.01
+shader_parameter/waveHeight = 0.5
+shader_parameter/waveNoiseScale = 50.0
+shader_parameter/screenTexture = SubResource("ViewportTexture_vbegm")
+shader_parameter/noiseMap = SubResource("NoiseTexture2D_g14j6")
+shader_parameter/noiseMap2 = SubResource("NoiseTexture2D_g14j6")
+shader_parameter/waveNoiseMap = SubResource("NoiseTexture2D_00tp4")
+
+[sub_resource type="QuadMesh" id="QuadMesh_ykrsh"]
+size = Vector2(100, 100)
+subdivide_width = 400
+subdivide_depth = 400
+orientation = 1
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_ehkex"]
+viewport_path = NodePath("Camera/screenTexture")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_77dp3"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("7_jm03j")
+shader_parameter/albedo = Color(0.18, 0.3, 0.45, 1)
+shader_parameter/absorptionCoefficient = 0.05
+shader_parameter/metallic = 0.0
+shader_parameter/roughness = 0.10000000149012
+shader_parameter/specular = 0.3
+shader_parameter/waveDirection = Vector2(1, 0)
+shader_parameter/waveDirection2 = Vector2(0, 1)
+shader_parameter/time_scale = 0.01
+shader_parameter/waveHeight = 0.5
+shader_parameter/waveNoiseScale = 50.0
+shader_parameter/screenTexture = SubResource("ViewportTexture_ehkex")
+shader_parameter/noiseMap = SubResource("NoiseTexture2D_g14j6")
+shader_parameter/noiseMap2 = SubResource("NoiseTexture2D_g14j6")
+shader_parameter/waveNoiseMap = SubResource("NoiseTexture2D_00tp4")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xersf"]
+emission_enabled = true
+emission = Color(1, 1, 1, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_00tp4"]
+material = SubResource("StandardMaterial3D_xersf")
+
+[node name="World" type="Node3D"]
+
+[node name="Box" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -39.876083, 29.917671, -10.133652)
+mesh = SubResource("BoxMesh_0m0f1")
+
+[node name="Ground" type="MeshInstance3D" parent="."]
+mesh = SubResource("QuadMesh_mhym6")
+
+[node name="Camera" type="Camera3D" parent="."]
+transform = Transform3D(0.5792812, 0.0014226657, 0.8151266, 0, 0.9999985, -0.0017453284, -0.81512785, 0.001011036, 0.5792803, -18.64337, 56.651848, -20.030869)
+near = 0.01
+script = ExtResource("1_yw7n4")
+speed = 0.03
+
+[node name="Filter" type="MeshInstance3D" parent="Camera" node_paths=PackedStringArray("camera", "water")]
+transform = Transform3D(1, 0, 0, 0, 0.9999857, 0, 0, -2.9802322e-08, 0.9999858, 0, 0, -0.02)
+visible = false
+layers = 2
+cast_shadow = 0
+mesh = SubResource("QuadMesh_a3se8")
+skeleton = NodePath("")
+surface_material_override/0 = SubResource("ShaderMaterial_ykrsh")
+script = ExtResource("3_ag3g0")
+camera = NodePath("..")
+water = NodePath("../../Water")
+
+[node name="CamCollision" type="Area3D" parent="Camera"]
+metadata/isPlayer = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Camera/CamCollision"]
+transform = Transform3D(1, 0, 0, 0, 0.99999994, 0, 0, 0, 0.99999994, 0, 0, 0)
+shape = SubResource("SphereShape3D_ehkex")
+
+[node name="noFilter" type="SubViewport" parent="Camera"]
+size = Vector2i(2560, 1440)
+script = ExtResource("4_awrem")
+
+[node name="noFilterTexture" type="Camera3D" parent="Camera/noFilter" node_paths=PackedStringArray("camera")]
+transform = Transform3D(0.57928103, 0.0014226653, 0.8151264, 0, 0.9999982, -0.0017453281, -0.8151277, 0.0010110356, 0.57928014, -18.64337, 56.651848, -20.030869)
+cull_mask = 1048573
+script = ExtResource("5_wedcn")
+camera = NodePath("../..")
+
+[node name="screenTexture" type="SubViewport" parent="Camera"]
+size = Vector2i(2560, 1440)
+script = ExtResource("4_awrem")
+
+[node name="ScreenTexture" type="Camera3D" parent="Camera/screenTexture" node_paths=PackedStringArray("camera")]
+transform = Transform3D(0.57928103, 0.0014226644, 0.81512535, 0, 0.99999756, -0.001745326, -0.8151277, 0.0010110349, 0.5792794, -18.64337, 56.651848, -20.030869)
+cull_mask = 1048569
+script = ExtResource("5_wedcn")
+camera = NodePath("../..")
+
+[node name="windowTexture" type="SubViewport" parent="Camera"]
+size = Vector2i(2560, 1440)
+script = ExtResource("4_awrem")
+
+[node name="windowTexture" type="Camera3D" parent="Camera/windowTexture" node_paths=PackedStringArray("camera")]
+transform = Transform3D(0.57928103, 0.0014226646, 0.8151261, 0, 0.99999774, -0.0017453275, -0.8151277, 0.0010110352, 0.57927996, -18.64337, 56.651848, -20.030869)
+cull_mask = 1048563
+script = ExtResource("5_wedcn")
+camera = NodePath("../..")
+
+[node name="LargeCone" type="SpotLight3D" parent="Camera"]
+transform = Transform3D(1, 1.7763568e-15, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+visible = false
+light_energy = 4.0
+light_bake_mode = 0
+shadow_bias = 0.1
+spot_range = 4096.0
+spot_angle = 30.0
+
+[node name="SmallCone" type="SpotLight3D" parent="Camera"]
+process_priority = 1
+transform = Transform3D(1, 1.7763568e-15, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+visible = false
+light_energy = 4.0
+light_bake_mode = 0
+shadow_bias = 0.1
+spot_range = 4096.0
+spot_angle = 20.0
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_00tp4")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8.825984, -1.3663249)
+mesh = SubResource("SphereMesh_vbegm")
+surface_material_override/0 = SubResource("StandardMaterial3D_vbegm")
+
+[node name="Box2" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.82572436, 0, 0.5640738, 0, 1, 0, -0.5640738, 0, 0.82572436, -2.1475735, 0.23603356, -2.7662656)
+mesh = SubResource("BoxMesh_0m0f1")
+
+[node name="Walls" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 51, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 50.25)
+mesh = SubResource("BoxMesh_xersf")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -50.25)
+mesh = SubResource("BoxMesh_xersf")
+
+[node name="MeshInstance3D3" type="MeshInstance3D" parent="Walls"]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 50.25, 0, 0)
+mesh = SubResource("BoxMesh_xersf")
+
+[node name="MeshInstance3D4" type="MeshInstance3D" parent="Walls"]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -50.25, 0, 0)
+mesh = SubResource("BoxMesh_xersf")
+
+[node name="Water" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10.540239, 0)
+
+[node name="BelowWater" type="MeshInstance3D" parent="Water"]
+visible = false
+layers = 4
+cast_shadow = 0
+mesh = SubResource("QuadMesh_ppyta")
+skeleton = NodePath("../..")
+surface_material_override/0 = SubResource("ShaderMaterial_ehkex")
+
+[node name="AboveWater" type="MeshInstance3D" parent="Water"]
+layers = 4
+cast_shadow = 0
+mesh = SubResource("QuadMesh_ykrsh")
+skeleton = NodePath("../..")
+surface_material_override/0 = SubResource("ShaderMaterial_77dp3")
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="Control"]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.24000001
+anchor_bottom = 0.11400001
+offset_right = 0.519989
+offset_bottom = 0.12799835
+script = ExtResource("8_50q2m")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -41.228348, 12.580649, -9.803646)
+shadow_enabled = true
+omni_range = 11.737
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="OmniLight3D"]
+mesh = SubResource("SphereMesh_00tp4")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.8851097, 0.465383, 0, -0.465383, 0.8851097, 0, 53.532707, 0)
+visible = false
+
+[node name="TestSubV1_0" parent="." instance=ExtResource("9_fwsdw")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -39.891373, 6.8068466, -7.7295113)
