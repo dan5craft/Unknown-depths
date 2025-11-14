@@ -42,6 +42,8 @@ void light(){
 	float dist = clamp(1.0-length(lightPos-pos), 0.0, 1.0)*6.0;
 	float angle = clamp(asin(-LIGHT.z)/(2.0*PI), 0.0, 1.0);
 	float mult = 0.05;
-	SPECULAR_LIGHT += clamp((albedo*dist*LIGHT_COLOR*angle+albedo*LIGHT_COLOR)*mult*clamp(ATTENUATION, 0.0, 1.0), vec3(0.0), albedo);
-	DIFFUSE_LIGHT = vec3(1.0);
+	vec3 light = LIGHT_COLOR/pow(length(LIGHT_POSITION), 1.5);
+	SPECULAR_LIGHT += clamp((albedo*dist*angle+albedo)*mult*light, vec3(0.0), albedo);
+	//SPECULAR_LIGHT += light;
+	DIFFUSE_LIGHT += vec3(1.0);
 }

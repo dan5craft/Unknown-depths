@@ -1,4 +1,4 @@
-[gd_scene load_steps=78 format=4 uid="uid://b58a83nv6u4tm"]
+[gd_scene load_steps=80 format=4 uid="uid://b58a83nv6u4tm"]
 
 [ext_resource type="Shader" uid="uid://bjvgbdkgjp3ga" path="res://Assets/Shaders/Submarine shaders/windowShader.gdshader" id="1_bpgo6"]
 [ext_resource type="Script" uid="uid://cf4yr67jgjx6n" path="res://Assets/Scripts/Misc/Volume.gd" id="1_mngle"]
@@ -741,290 +741,304 @@ backface_collision = true
 [sub_resource type="BoxShape3D" id="BoxShape3D_88cm8"]
 size = Vector3(3.016739, 5.3032227, 14.235502)
 
-[node name="TestSubV1_0" type="Node3D"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_lsqpx"]
+emission_enabled = true
+emission = Color(1, 1, 1, 1)
 
-[node name="floorHatchDoor_001" type="MeshInstance3D" parent="."]
+[sub_resource type="SphereMesh" id="SphereMesh_jg0q5"]
+material = SubResource("StandardMaterial3D_lsqpx")
+radius = 0.2
+height = 0.4
+
+[node name="TestSubV1_0" type="Node3D" unique_id=1438189571]
+
+[node name="floorHatchDoor_001" type="MeshInstance3D" parent="." unique_id=1278072188]
 visible = false
 mesh = SubResource("ArrayMesh_bpgo6")
-skeleton = NodePath("")
 
-[node name="subglassPane" type="MeshInstance3D" parent="."]
+[node name="subglassPane" type="MeshInstance3D" parent="." unique_id=849544767]
 transform = Transform3D(1.2668289, 0, 0, 0, -1.3440555e-07, -1.2668288, 0, 1.2668289, -1.374434e-05, 0, -1.4011455, -1.7224264)
 layers = 8
 cast_shadow = 0
 mesh = SubResource("ArrayMesh_wf7c1")
-skeleton = NodePath("")
 surface_material_override/0 = SubResource("ShaderMaterial_p6qgx")
 script = ExtResource("2_wf7c1")
 
-[node name="roomGlassCeilling_001" type="MeshInstance3D" parent="."]
+[node name="roomGlassCeilling_001" type="MeshInstance3D" parent="." unique_id=1941846513]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0.4166667, -2.1000001)
 layers = 2
 cast_shadow = 0
 mesh = SubResource("ArrayMesh_xhii0")
-skeleton = NodePath("")
 surface_material_override/0 = SubResource("ShaderMaterial_a7yfa")
 script = ExtResource("4_p6qgx")
 
-[node name="InBetweens" type="Node3D" parent="."]
+[node name="InBetweens" type="Node3D" parent="." unique_id=1483812924]
 
-[node name="cockpitWindow_001" type="MeshInstance3D" parent="InBetweens"]
+[node name="cockpitWindow_001" type="MeshInstance3D" parent="InBetweens" unique_id=737491097]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.3833336, 3.5500035)
 mesh = SubResource("ArrayMesh_5nies")
-skeleton = NodePath("")
 
-[node name="roomGate_005" type="MeshInstance3D" parent="InBetweens"]
+[node name="roomGate_005" type="MeshInstance3D" parent="InBetweens" unique_id=102396981]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.95016307, -6.010001)
 mesh = SubResource("ArrayMesh_hmga7")
-skeleton = NodePath("")
 
-[node name="roomGate_004" type="MeshInstance3D" parent="InBetweens"]
+[node name="roomGate_004" type="MeshInstance3D" parent="InBetweens" unique_id=500912110]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.9501632, -8.360002)
 mesh = SubResource("ArrayMesh_iwihy")
-skeleton = NodePath("")
 
-[node name="roomGate_001" type="MeshInstance3D" parent="InBetweens"]
+[node name="roomGate_001" type="MeshInstance3D" parent="InBetweens" unique_id=2079995076]
 mesh = SubResource("ArrayMesh_gw6hv")
-skeleton = NodePath("")
 
-[node name="floorHatch_001" type="MeshInstance3D" parent="InBetweens"]
+[node name="floorHatch_001" type="MeshInstance3D" parent="InBetweens" unique_id=1965615422]
 mesh = SubResource("ArrayMesh_tocd2")
-skeleton = NodePath("")
 
-[node name="roomGate_002" type="MeshInstance3D" parent="InBetweens"]
+[node name="roomGate_002" type="MeshInstance3D" parent="InBetweens" unique_id=1671391625]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2.3000011)
 mesh = SubResource("ArrayMesh_mhc8p")
-skeleton = NodePath("")
 
-[node name="roomGate_003" type="MeshInstance3D" parent="InBetweens"]
+[node name="roomGate_003" type="MeshInstance3D" parent="InBetweens" unique_id=1660705761]
 transform = Transform3D(-1, 0, -3.2584137e-07, 0, 1, 0, 3.2584137e-07, 0, -1, 0, 0.07771951, -3.221622)
 mesh = SubResource("ArrayMesh_fmuwm")
-skeleton = NodePath("")
 
-[node name="glassFrame" type="MeshInstance3D" parent="InBetweens"]
+[node name="glassFrame" type="MeshInstance3D" parent="InBetweens" unique_id=731214216]
 transform = Transform3D(2.4476361, 0, 0, 0, 0.24204354, 0, 0, 0, 2.4476361, 0, 0.7658825, -2.1000001)
 mesh = SubResource("ArrayMesh_dkumi")
-skeleton = NodePath("")
 
-[node name="roomGlassCeilling" type="MeshInstance3D" parent="InBetweens"]
+[node name="roomGlassCeilling" type="MeshInstance3D" parent="InBetweens" unique_id=429827633]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0.4166667, -2.1000001)
 mesh = SubResource("ArrayMesh_l5q57")
-skeleton = NodePath("")
 
-[node name="Collision" type="StaticBody3D" parent="InBetweens"]
+[node name="Collision" type="StaticBody3D" parent="InBetweens" unique_id=968473093]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="InBetweens/Collision"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="InBetweens/Collision" unique_id=1849923637]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.3833336, 3.5500035)
 shape = SubResource("ConcavePolygonShape3D_nwrs7")
 
-[node name="CollisionShape3D2" type="CollisionShape3D" parent="InBetweens/Collision"]
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="InBetweens/Collision" unique_id=1837682024]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.95016307, -6.010001)
 shape = SubResource("ConcavePolygonShape3D_f8ame")
 
-[node name="CollisionShape3D3" type="CollisionShape3D" parent="InBetweens/Collision"]
+[node name="CollisionShape3D3" type="CollisionShape3D" parent="InBetweens/Collision" unique_id=318352197]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.9501632, -8.360002)
 shape = SubResource("ConcavePolygonShape3D_mm0wq")
 
-[node name="CollisionShape3D4" type="CollisionShape3D" parent="InBetweens/Collision"]
+[node name="CollisionShape3D4" type="CollisionShape3D" parent="InBetweens/Collision" unique_id=179286128]
 shape = SubResource("ConcavePolygonShape3D_epqev")
 
-[node name="CollisionShape3D5" type="CollisionShape3D" parent="InBetweens/Collision"]
+[node name="CollisionShape3D5" type="CollisionShape3D" parent="InBetweens/Collision" unique_id=2067267776]
 shape = SubResource("ConcavePolygonShape3D_qrpgs")
 
-[node name="CollisionShape3D6" type="CollisionShape3D" parent="InBetweens/Collision"]
+[node name="CollisionShape3D6" type="CollisionShape3D" parent="InBetweens/Collision" unique_id=364641526]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2.3000011)
 shape = SubResource("ConcavePolygonShape3D_ikcsm")
 
-[node name="CollisionShape3D7" type="CollisionShape3D" parent="InBetweens/Collision"]
+[node name="CollisionShape3D7" type="CollisionShape3D" parent="InBetweens/Collision" unique_id=179566820]
 transform = Transform3D(-1, 0, -3.2584137e-07, 0, 1, 0, 3.2584137e-07, 0, -1, 0, 0.07771951, -3.221622)
 shape = SubResource("ConcavePolygonShape3D_aykfl")
 
-[node name="CollisionShape3D8" type="CollisionShape3D" parent="InBetweens/Collision"]
+[node name="CollisionShape3D8" type="CollisionShape3D" parent="InBetweens/Collision" unique_id=1811808190]
 transform = Transform3D(2.4476361, 0, 0, 0, 0.24204354, 0, 0, 0, 2.4476361, 0, 0.7658825, -2.1000001)
 shape = SubResource("ConcavePolygonShape3D_gkryd")
 
-[node name="CollisionShape3D9" type="CollisionShape3D" parent="InBetweens/Collision"]
+[node name="CollisionShape3D9" type="CollisionShape3D" parent="InBetweens/Collision" unique_id=1246308058]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0.4166667, -2.1000001)
 shape = SubResource("ConcavePolygonShape3D_2wew1")
 
-[node name="Rooms" type="Node3D" parent="."]
+[node name="Rooms" type="Node3D" parent="." unique_id=1241817192]
 
-[node name="Room01" type="Node3D" parent="Rooms"]
+[node name="Room01" type="Node3D" parent="Rooms" unique_id=666265134]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0.4166667, -2.1000001)
 
-[node name="Mesh" type="MeshInstance3D" parent="Rooms/Room01"]
+[node name="Mesh" type="MeshInstance3D" parent="Rooms/Room01" unique_id=616883677]
 mesh = SubResource("ArrayMesh_a5fdf")
-skeleton = NodePath("")
 
-[node name="Area" type="Area3D" parent="Rooms/Room01"]
+[node name="Area" type="Area3D" parent="Rooms/Room01" unique_id=1610794687]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, -0.417, 0)
 monitoring = false
 monitorable = false
 script = ExtResource("1_mngle")
 volume = 15.0
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Rooms/Room01/Area"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Rooms/Room01/Area" unique_id=2103977406]
 shape = SubResource("BoxShape3D_38bun")
 
-[node name="Collision" type="StaticBody3D" parent="Rooms/Room01"]
+[node name="Collision" type="StaticBody3D" parent="Rooms/Room01" unique_id=758736288]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, -0.417, 0)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Rooms/Room01/Collision"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Rooms/Room01/Collision" unique_id=249981765]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0.417, 0)
 shape = SubResource("ConcavePolygonShape3D_7bnqq")
 
-[node name="Light" type="OmniLight3D" parent="Rooms/Room01"]
+[node name="Light" type="OmniLight3D" parent="Rooms/Room01" unique_id=2146679205]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.525923, 0.5717433, -0.6562691)
-light_energy = 0.1
 shadow_enabled = true
-omni_range = 6.341
+shadow_blur = 3.0
+omni_range = 361.637
 
-[node name="Bulb" type="MeshInstance3D" parent="Rooms/Room01/Light"]
+[node name="Bulb" type="MeshInstance3D" parent="Rooms/Room01/Light" unique_id=886328538]
 mesh = SubResource("SphereMesh_lsqpx")
 skeleton = NodePath("../..")
 
-[node name="Shaft" type="MeshInstance3D" parent="Rooms/Room01/Light"]
+[node name="Shaft" type="MeshInstance3D" parent="Rooms/Room01/Light" unique_id=1121833081]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
 mesh = SubResource("CylinderMesh_jg0q5")
 
-[node name="Room02" type="Node3D" parent="Rooms"]
+[node name="Room02" type="Node3D" parent="Rooms" unique_id=1218076997]
 
-[node name="Mesh" type="MeshInstance3D" parent="Rooms/Room02"]
+[node name="Mesh" type="MeshInstance3D" parent="Rooms/Room02" unique_id=1095630089]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.20000064)
 mesh = SubResource("ArrayMesh_xtf44")
-skeleton = NodePath("")
 
-[node name="Area" type="Area3D" parent="Rooms/Room02"]
+[node name="Area" type="Area3D" parent="Rooms/Room02" unique_id=1143396334]
 monitoring = false
 monitorable = false
 script = ExtResource("1_mngle")
 volume = 15.0
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Rooms/Room02/Area"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Rooms/Room02/Area" unique_id=1910523488]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.2)
 shape = SubResource("BoxShape3D_odeub")
 
-[node name="Collision" type="StaticBody3D" parent="Rooms/Room02"]
+[node name="Collision" type="StaticBody3D" parent="Rooms/Room02" unique_id=1421948271]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Rooms/Room02/Collision"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Rooms/Room02/Collision" unique_id=1065502893]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.20000064)
 shape = SubResource("ConcavePolygonShape3D_a5m8p")
 
-[node name="Room03" type="Node3D" parent="Rooms"]
+[node name="Room03" type="Node3D" parent="Rooms" unique_id=699665710]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.3833336, 3.5500035)
 
-[node name="Mesh" type="MeshInstance3D" parent="Rooms/Room03"]
+[node name="Mesh" type="MeshInstance3D" parent="Rooms/Room03" unique_id=1170602568]
 mesh = SubResource("ArrayMesh_rrbmt")
-skeleton = NodePath("")
 
-[node name="Area" type="Area3D" parent="Rooms/Room03"]
+[node name="Area" type="Area3D" parent="Rooms/Room03" unique_id=1830433530]
 monitoring = false
 monitorable = false
 script = ExtResource("1_mngle")
 volume = 30.749999284744263
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Rooms/Room03/Area"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Rooms/Room03/Area" unique_id=1001069951]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.067, 0)
 shape = SubResource("BoxShape3D_8tny1")
 
-[node name="Collision" type="StaticBody3D" parent="Rooms/Room03"]
+[node name="Collision" type="StaticBody3D" parent="Rooms/Room03" unique_id=1966007817]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Rooms/Room03/Collision"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Rooms/Room03/Collision" unique_id=1790511335]
 shape = SubResource("ConcavePolygonShape3D_hn3x4")
 
-[node name="Room04" type="Node3D" parent="Rooms"]
+[node name="Room04" type="Node3D" parent="Rooms" unique_id=168571314]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.7999997, -1)
 
-[node name="Mesh" type="MeshInstance3D" parent="Rooms/Room04"]
+[node name="Mesh" type="MeshInstance3D" parent="Rooms/Room04" unique_id=2057732747]
 mesh = SubResource("ArrayMesh_sbjh3")
-skeleton = NodePath("")
 
-[node name="Area" type="Area3D" parent="Rooms/Room04"]
+[node name="Area" type="Area3D" parent="Rooms/Room04" unique_id=104760455]
 monitoring = false
 monitorable = false
 script = ExtResource("1_mngle")
 volume = 32.250001430511475
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Rooms/Room04/Area"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Rooms/Room04/Area" unique_id=1576942416]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.05)
 shape = SubResource("BoxShape3D_xnosb")
 
-[node name="Collision" type="StaticBody3D" parent="Rooms/Room04"]
+[node name="Collision" type="StaticBody3D" parent="Rooms/Room04" unique_id=30197445]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Rooms/Room04/Collision"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Rooms/Room04/Collision" unique_id=505993172]
 shape = SubResource("ConcavePolygonShape3D_7n8yv")
 
-[node name="Vat1-1" type="Node3D" parent="Rooms"]
+[node name="Vat1-1" type="Node3D" parent="Rooms" unique_id=1697007897]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.3954548, -4.5181828)
 
-[node name="Mesh" type="MeshInstance3D" parent="Rooms/Vat1-1"]
+[node name="Mesh" type="MeshInstance3D" parent="Rooms/Vat1-1" unique_id=552620361]
 transform = Transform3D(-1, 0, -1.9550482e-07, 0, 1, 0, 3.2584137e-07, 0, -0.6, 0, 0, 0)
 mesh = SubResource("ArrayMesh_ti0eh")
-skeleton = NodePath("")
 
-[node name="Area" type="Area3D" parent="Rooms/Vat1-1"]
+[node name="Area" type="Area3D" parent="Rooms/Vat1-1" unique_id=1362831309]
 monitoring = false
 monitorable = false
 script = ExtResource("1_mngle")
 volume = 18.424072
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Rooms/Vat1-1/Area"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Rooms/Vat1-1/Area" unique_id=738425347]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.054054618, -0.11253643)
 shape = SubResource("BoxShape3D_kptvf")
 
-[node name="Collision" type="StaticBody3D" parent="Rooms/Vat1-1"]
+[node name="Collision" type="StaticBody3D" parent="Rooms/Vat1-1" unique_id=1412397733]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Rooms/Vat1-1/Collision"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Rooms/Vat1-1/Collision" unique_id=1335145940]
 transform = Transform3D(-1, 0, -2.3364863e-07, 0, 1, 0, 3.8941437e-07, 0, -0.6, 0, 0, 0)
 shape = SubResource("ConcavePolygonShape3D_jp2yf")
 
-[node name="Vat1-2" type="Node3D" parent="Rooms"]
+[node name="Vat1-2" type="Node3D" parent="Rooms" unique_id=1335707026]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.4499999, -7.1850014)
 
-[node name="Mesh" type="MeshInstance3D" parent="Rooms/Vat1-2"]
+[node name="Mesh" type="MeshInstance3D" parent="Rooms/Vat1-2" unique_id=1235515535]
 transform = Transform3D(-1, 0, -1.6292068e-07, 0, 1, 0, 3.2584137e-07, 0, -0.5, 0, 0, 0)
 mesh = SubResource("ArrayMesh_aywhm")
-skeleton = NodePath("")
 
-[node name="Area" type="Area3D" parent="Rooms/Vat1-2"]
+[node name="Area" type="Area3D" parent="Rooms/Vat1-2" unique_id=1504538713]
 monitoring = false
 monitorable = false
 script = ExtResource("1_mngle")
 volume = 15.374999642372131
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Rooms/Vat1-2/Area"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Rooms/Vat1-2/Area" unique_id=817897386]
 shape = SubResource("BoxShape3D_e0y6a")
 
-[node name="Collision" type="StaticBody3D" parent="Rooms/Vat1-2"]
+[node name="Collision" type="StaticBody3D" parent="Rooms/Vat1-2" unique_id=1396213525]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Rooms/Vat1-2/Collision"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Rooms/Vat1-2/Collision" unique_id=1597792097]
 transform = Transform3D(-1, 0, -1.6292068e-07, 0, 1, 0, 3.2584137e-07, 0, -0.5, 0, 0, 0)
 shape = SubResource("ConcavePolygonShape3D_ngg7x")
 
-[node name="Hull" type="Node3D" parent="."]
+[node name="Hull" type="Node3D" parent="." unique_id=190039248]
 
-[node name="Collision" type="StaticBody3D" parent="Hull"]
+[node name="Collision" type="StaticBody3D" parent="Hull" unique_id=1524580823]
 transform = Transform3D(1.2668289, 0, 0, 0, 0, -1.2668289, 0, 1.2668289, 0, 0, -1.4011455, -1.7224262)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Hull/Collision"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Hull/Collision" unique_id=1553577299]
 shape = SubResource("ConcavePolygonShape3D_bpgo6")
 
-[node name="subBody_002" type="MeshInstance3D" parent="Hull"]
+[node name="subBody_002" type="MeshInstance3D" parent="Hull" unique_id=787823036]
 transform = Transform3D(1.2668289, 0, 0, 0, 0, -1.2668289, 0, 1.2668289, 0, 0, -1.4011455, -1.7224262)
 mesh = SubResource("ArrayMesh_88cm8")
-skeleton = NodePath("")
 
-[node name="Area" type="Area3D" parent="Hull"]
+[node name="Area" type="Area3D" parent="Hull" unique_id=1206939850]
 script = ExtResource("4_88cm8")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Hull/Area"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Hull/Area" unique_id=852762135]
 transform = Transform3D(1.2668289, 0, 0, 0, 0, -1.2668289, 0, 1.2668289, 0, 0, -1.4011455, -1.7224262)
 visible = false
 shape = SubResource("ConcavePolygonShape3D_88cm8")
 
-[node name="CollisionShape3D2" type="CollisionShape3D" parent="Hull/Area"]
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="Hull/Area" unique_id=1674807518]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.033195496, -1.3713379, -1.4042883)
 shape = SubResource("BoxShape3D_88cm8")
+
+[node name="Light1" type="OmniLight3D" parent="Hull" unique_id=502087950]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.9089505, -1.2406498, 7.600504)
+light_energy = 2.0
+shadow_enabled = true
+shadow_blur = 3.0
+omni_range = 4096.0
+omni_attenuation = 2.0
+
+[node name="Bulb" type="MeshInstance3D" parent="Hull/Light1" unique_id=1627998136]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.10831857, 0, -0.10393)
+mesh = SubResource("SphereMesh_jg0q5")
+
+[node name="Light2" type="OmniLight3D" parent="Hull" unique_id=487343767]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.909, -1.241, 7.601)
+light_energy = 2.0
+shadow_enabled = true
+shadow_blur = 3.0
+omni_range = 4096.0
+omni_attenuation = 2.0
+
+[node name="Bulb" type="MeshInstance3D" parent="Hull/Light2" unique_id=281947203]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.108, 0, -0.104)
+mesh = SubResource("SphereMesh_jg0q5")
 
 [connection signal="area_entered" from="Hull/Area" to="Hull/Area" method="_on_area_entered"]
 [connection signal="area_exited" from="Hull/Area" to="Hull/Area" method="_on_area_exited"]

@@ -1,10 +1,6 @@
-[gd_scene load_steps=36 format=3 uid="uid://cchwj0yom8s8u"]
+[gd_scene load_steps=25 format=3 uid="uid://cchwj0yom8s8u"]
 
-[ext_resource type="Script" uid="uid://1gwxs31o4gd2" path="res://Assets/Scripts/Misc/cameraMovement.gd" id="1_yw7n4"]
-[ext_resource type="Shader" uid="uid://broa4g8qx82sc" path="res://Assets/Shaders/Water shaders/underwaterEffect.gdshader" id="2_onqnd"]
-[ext_resource type="Script" uid="uid://cu613t26cej83" path="res://Assets/Scripts/Misc/fitQuadToCamera.gd" id="3_ag3g0"]
-[ext_resource type="Script" uid="uid://rod5bnxd463i" path="res://Assets/Scripts/Misc/setResolution.gd" id="4_awrem"]
-[ext_resource type="Script" uid="uid://8gfmmr0xf1an" path="res://Assets/Scripts/Misc/followCamera.gd" id="5_wedcn"]
+[ext_resource type="PackedScene" uid="uid://b8nupnvt31dl" path="res://Assets/Scenes/Setup/setup.tscn" id="1_b7ps6"]
 [ext_resource type="Shader" uid="uid://dyuelsvo5pqla" path="res://Assets/Shaders/Water shaders/belowWater.gdshader" id="6_kccnf"]
 [ext_resource type="Shader" uid="uid://ck0amug4virtw" path="res://Assets/Shaders/Water shaders/aboveWater.gdshader" id="7_jm03j"]
 [ext_resource type="Script" uid="uid://blff073421vio" path="res://Assets/Scripts/Misc/fpsCounter.gd" id="8_50q2m"]
@@ -24,42 +20,6 @@ albedo_color = Color(0.8720924, 0.41788074, 1.3091564e-05, 1)
 material = SubResource("StandardMaterial3D_b0q6j")
 size = Vector2(100, 100)
 orientation = 1
-
-[sub_resource type="QuadMesh" id="QuadMesh_a3se8"]
-size = Vector2(0.076732695, 0.032227732)
-
-[sub_resource type="ViewportTexture" id="ViewportTexture_xersf"]
-viewport_path = NodePath("Camera/noFilter")
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_ykrsh"]
-resource_local_to_scene = true
-render_priority = 1
-shader = ExtResource("2_onqnd")
-shader_parameter/albedo = Color(0.18, 0.3, 0.45, 1)
-shader_parameter/absorptionCoefficient = 0.05
-shader_parameter/screenTexture = SubResource("ViewportTexture_xersf")
-
-[sub_resource type="SphereShape3D" id="SphereShape3D_ehkex"]
-margin = 0.0
-radius = 0.001
-
-[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_ehkex"]
-energy_multiplier = 2.0
-
-[sub_resource type="Sky" id="Sky_xersf"]
-sky_material = SubResource("ProceduralSkyMaterial_ehkex")
-
-[sub_resource type="Environment" id="Environment_00tp4"]
-background_mode = 1
-sky = SubResource("Sky_xersf")
-sdfgi_cascades = 8
-glow_intensity = 1.0
-glow_strength = 1.5
-fog_light_color = Color(1, 1, 1, 1)
-volumetric_fog_albedo = Color(0.18, 0.3, 0.45, 1)
-volumetric_fog_gi_inject = 16.0
-volumetric_fog_ambient_inject = 0.1
-adjustment_enabled = true
 
 [sub_resource type="SphereMesh" id="SphereMesh_vbegm"]
 
@@ -90,7 +50,7 @@ as_normal_map = true
 bump_strength = 3.0
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_vbegm"]
-viewport_path = NodePath("Camera/screenTexture")
+viewport_path = NodePath("Setup/Camera/screenTexture")
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_xersf"]
 fractal_octaves = 10
@@ -127,7 +87,7 @@ subdivide_depth = 400
 orientation = 1
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_ehkex"]
-viewport_path = NodePath("Camera/screenTexture")
+viewport_path = NodePath("Setup/Camera/screenTexture")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_77dp3"]
 resource_local_to_scene = true
@@ -157,89 +117,14 @@ material = SubResource("StandardMaterial3D_xersf")
 
 [node name="World" type="Node3D"]
 
+[node name="Setup" parent="." instance=ExtResource("1_b7ps6")]
+
 [node name="Box" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -39.876083, 29.917671, -10.133652)
 mesh = SubResource("BoxMesh_0m0f1")
 
 [node name="Ground" type="MeshInstance3D" parent="."]
 mesh = SubResource("QuadMesh_mhym6")
-
-[node name="Camera" type="Camera3D" parent="."]
-transform = Transform3D(0.5792812, 0.0014226657, 0.8151266, 0, 0.9999985, -0.0017453284, -0.81512785, 0.001011036, 0.5792803, -18.64337, 56.651848, -20.030869)
-near = 0.01
-script = ExtResource("1_yw7n4")
-speed = 0.03
-
-[node name="Filter" type="MeshInstance3D" parent="Camera" node_paths=PackedStringArray("camera", "water")]
-transform = Transform3D(1, 0, 0, 0, 0.9999857, 0, 0, -2.9802322e-08, 0.9999858, 0, 0, -0.02)
-visible = false
-layers = 2
-cast_shadow = 0
-mesh = SubResource("QuadMesh_a3se8")
-skeleton = NodePath("")
-surface_material_override/0 = SubResource("ShaderMaterial_ykrsh")
-script = ExtResource("3_ag3g0")
-camera = NodePath("..")
-water = NodePath("../../Water")
-
-[node name="CamCollision" type="Area3D" parent="Camera"]
-metadata/isPlayer = true
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Camera/CamCollision"]
-transform = Transform3D(1, 0, 0, 0, 0.99999994, 0, 0, 0, 0.99999994, 0, 0, 0)
-shape = SubResource("SphereShape3D_ehkex")
-
-[node name="noFilter" type="SubViewport" parent="Camera"]
-size = Vector2i(2560, 1440)
-script = ExtResource("4_awrem")
-
-[node name="noFilterTexture" type="Camera3D" parent="Camera/noFilter" node_paths=PackedStringArray("camera")]
-transform = Transform3D(0.57928103, 0.0014226652, 0.8151264, 0, 0.99999815, -0.0017453281, -0.8151277, 0.0010110355, 0.57928014, -18.64337, 56.651848, -20.030869)
-cull_mask = 1048573
-script = ExtResource("5_wedcn")
-camera = NodePath("../..")
-
-[node name="screenTexture" type="SubViewport" parent="Camera"]
-size = Vector2i(2560, 1440)
-script = ExtResource("4_awrem")
-
-[node name="ScreenTexture" type="Camera3D" parent="Camera/screenTexture" node_paths=PackedStringArray("camera")]
-transform = Transform3D(0.57928103, 0.0014226643, 0.81512535, 0, 0.9999975, -0.0017453259, -0.8151277, 0.0010110349, 0.5792794, -18.64337, 56.651848, -20.030869)
-cull_mask = 1048569
-script = ExtResource("5_wedcn")
-camera = NodePath("../..")
-
-[node name="windowTexture" type="SubViewport" parent="Camera"]
-size = Vector2i(2560, 1440)
-script = ExtResource("4_awrem")
-
-[node name="windowTexture" type="Camera3D" parent="Camera/windowTexture" node_paths=PackedStringArray("camera")]
-transform = Transform3D(0.57928103, 0.0014226646, 0.8151261, 0, 0.9999977, -0.0017453275, -0.8151277, 0.001011035, 0.57927996, -18.64337, 56.651848, -20.030869)
-cull_mask = 1048563
-script = ExtResource("5_wedcn")
-camera = NodePath("../..")
-
-[node name="LargeCone" type="SpotLight3D" parent="Camera"]
-transform = Transform3D(1, 1.7763568e-15, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
-visible = false
-light_energy = 4.0
-light_bake_mode = 0
-shadow_bias = 0.1
-spot_range = 4096.0
-spot_angle = 30.0
-
-[node name="SmallCone" type="SpotLight3D" parent="Camera"]
-process_priority = 1
-transform = Transform3D(1, 1.7763568e-15, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
-visible = false
-light_energy = 4.0
-light_bake_mode = 0
-shadow_bias = 0.1
-spot_range = 4096.0
-spot_angle = 20.0
-
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
-environment = SubResource("Environment_00tp4")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8.825984, -1.3663249)
@@ -305,8 +190,9 @@ offset_bottom = 0.12799835
 script = ExtResource("8_50q2m")
 
 [node name="OmniLight3D" type="OmniLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -41.228348, 12.580649, -9.803646)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -39.891075, 12.51967, -9.803646)
 shadow_enabled = true
+shadow_blur = 3.0
 omni_range = 11.737
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="OmniLight3D"]
@@ -318,3 +204,6 @@ visible = false
 
 [node name="TestSubV1_0" parent="." instance=ExtResource("9_fwsdw")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -39.891373, 6.8068466, -7.7295113)
+
+[node name="TestSubV1_1" parent="." instance=ExtResource("9_fwsdw")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -27.046625, 6.8068466, -7.7295113)

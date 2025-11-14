@@ -1,0 +1,29 @@
+[gd_scene load_steps=5 format=3 uid="uid://c178mg3jg0q8e"]
+
+[ext_resource type="PackedScene" uid="uid://b8nupnvt31dl" path="res://Assets/Scenes/Setup/setup.tscn" id="1_l1vg7"]
+[ext_resource type="PackedScene" uid="uid://b58a83nv6u4tm" path="res://Assets/Scenes/Submarines/testSubV1_0.tscn" id="2_e0b86"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xersf"]
+emission_enabled = true
+emission = Color(1, 1, 1, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_l1vg7"]
+material = SubResource("StandardMaterial3D_xersf")
+
+[node name="World" type="Node3D" unique_id=1685754612]
+
+[node name="Setup" parent="." unique_id=1600338006 instance=ExtResource("1_l1vg7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.7904208, -1.1391847)
+
+[node name="TestSubV1_0" parent="." unique_id=626026584 instance=ExtResource("2_e0b86")]
+
+[node name="OmniLight3D" type="OmniLight3D" parent="." unique_id=2033325832]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 15.932854, 0)
+shadow_enabled = true
+shadow_bias = 0.2
+shadow_blur = 3.0
+omni_range = 4096.0
+omni_attenuation = 2.0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="OmniLight3D" unique_id=784490536]
+mesh = SubResource("SphereMesh_l1vg7")

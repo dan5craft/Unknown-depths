@@ -9,11 +9,11 @@ func isPlayer(node : Area3D):
 func _on_area_entered(area: Area3D) -> void:
 	if isPlayer(area):
 		var filter := area.get_parent().get_node("./Filter")
-		filter.insideHull = true
+		filter.underWater = false
 	print("ENTERED HULL")
 
 func _on_area_exited(area: Area3D) -> void:
 	if isPlayer(area):
 		var filter := area.get_parent().get_node("./Filter")
-		filter.insideHull = false
+		filter.underWater = true
 	print("EXITED HULL")

@@ -23,22 +23,10 @@ const rayLength = 1000
 		#visible = false
 
 func _process(delta: float) -> void:
-	if camera.position.y <= water.position.y and not insideHull:
-		underWater = true
-	else:
-		underWater = false
 	if underWater:
 		visible = true
-		water.get_child(0).visible = true
-		water.get_child(1).visible = false
-	elif insideHull:
-		visible = false
-		water.get_child(0).visible = true
-		water.get_child(1).visible = false
 	else:
 		visible = false
-		water.get_child(0).visible = false
-		water.get_child(1).visible = true
 	var size = tan(deg_to_rad(camera.fov/2))*distanceFromCamera
 	mesh.size.x = size*5
 	mesh.size.y = size*2.1
