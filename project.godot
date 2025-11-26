@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Water"
-run/main_scene="uid://cchwj0yom8s8u"
+run/main_scene="uid://c7uywa07kia1r"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://Assets/svg files/icon.svg"
 

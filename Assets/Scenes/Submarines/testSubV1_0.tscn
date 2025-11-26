@@ -871,6 +871,7 @@ shape = SubResource("ConcavePolygonShape3D_7bnqq")
 
 [node name="Light" type="OmniLight3D" parent="Rooms/Room01" unique_id=2146679205]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.525923, 0.5717433, -0.6562691)
+light_cull_mask = 4294967293
 shadow_enabled = true
 shadow_blur = 3.0
 omni_range = 361.637
@@ -1018,6 +1019,7 @@ shape = SubResource("BoxShape3D_88cm8")
 
 [node name="Light1" type="OmniLight3D" parent="Hull" unique_id=502087950]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.9089505, -1.2406498, 7.600504)
+visible = false
 light_energy = 2.0
 shadow_enabled = true
 shadow_blur = 3.0
@@ -1030,6 +1032,7 @@ mesh = SubResource("SphereMesh_jg0q5")
 
 [node name="Light2" type="OmniLight3D" parent="Hull" unique_id=487343767]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.909, -1.241, 7.601)
+visible = false
 light_energy = 2.0
 shadow_enabled = true
 shadow_blur = 3.0

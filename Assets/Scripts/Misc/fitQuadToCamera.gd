@@ -3,7 +3,7 @@ extends MeshInstance3D
 @export var distanceFromCamera = 0.02
 @export var camera : Camera3D
 
-var underWater : bool = false
+var underWater : bool = true
 @export var insideHull : bool = false
 const rayLength = 1000
 @export var water : Node3D

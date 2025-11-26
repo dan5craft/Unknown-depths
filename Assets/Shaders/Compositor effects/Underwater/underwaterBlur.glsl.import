@@ -1,0 +1,14 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://cphvovugis0yu"
+path="res://.godot/imported/underwaterBlur.glsl-c65e083986ec069031a2956d49dc29d2.res"
+
+[deps]
+
+source_file="res://Assets/Shaders/Compositor effects/Underwater/underwaterBlur.glsl"
+dest_files=["res://.godot/imported/underwaterBlur.glsl-c65e083986ec069031a2956d49dc29d2.res"]
+
+[params]
+

@@ -1,0 +1,53 @@
+[gd_scene load_steps=10 format=3 uid="uid://c7uywa07kia1r"]
+
+[ext_resource type="Texture2D" uid="uid://ckf25bqandv3q" path="res://Assets/svg files/icon.svg" id="1_cp0rw"]
+[ext_resource type="Script" uid="uid://b7ts6l8438x3b" path="res://Assets/Shaders/Compositor effects/Underwater/underwaterPostProcessEffect.gd" id="1_fk550"]
+
+[sub_resource type="Environment" id="Environment_fk550"]
+background_mode = 1
+
+[sub_resource type="CompositorEffect" id="CompositorEffect_fk550"]
+resource_local_to_scene = false
+resource_name = ""
+enabled = true
+effect_callback_type = 4
+needs_motion_vectors = false
+needs_normal_roughness = false
+script = ExtResource("1_fk550")
+metadata/_custom_type_script = "uid://b7ts6l8438x3b"
+
+[sub_resource type="Compositor" id="Compositor_1s3p6"]
+compositor_effects = Array[CompositorEffect]([SubResource("CompositorEffect_fk550")])
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qfa4o"]
+albedo_texture = ExtResource("1_cp0rw")
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_7fwww"]
+size = Vector2(10, 10)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_bsy72"]
+albedo_color = Color(1, 0.6313726, 0.1882353, 1)
+
+[sub_resource type="TorusMesh" id="TorusMesh_11rou"]
+material = SubResource("StandardMaterial3D_bsy72")
+
+[node name="Test05" type="Node3D" unique_id=866867002]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=433389057]
+environment = SubResource("Environment_fk550")
+compositor = SubResource("Compositor_1s3p6")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1672864818]
+material_override = SubResource("StandardMaterial3D_qfa4o")
+mesh = SubResource("PlaneMesh_7fwww")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="." unique_id=359372535]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.18342465, 0)
+mesh = SubResource("TorusMesh_11rou")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="." unique_id=993782094]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.859962, 1.3636458, 0)
+shadow_enabled = true
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=1511899497]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.689, 4.265)
