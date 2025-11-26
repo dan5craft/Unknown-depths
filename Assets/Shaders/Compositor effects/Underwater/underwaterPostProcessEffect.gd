@@ -12,11 +12,11 @@ var linear_sampler: RID
 var context : StringName = "underwaterEffects"
 var imageContainerName : StringName = "image_container"
 
-@export var water_color : Color = Color(1.0, 0.0, 0.0)
-@export var water_absorption : float = 0.5
-@export var blurRadius : float = 10.0
+@export var water_color : Color = Color(0.0, 0.0, 1.0)
+@export var water_absorption : float = 0.2
+@export var blurRadius : float = 2.0
 @export var blurStepAmount : int = 10
-@export var blurCircleAmount : int = 2
+@export var blurCircleAmount : int = 3
 
 # Called when this resource is constructed.
 func _init():
@@ -63,7 +63,9 @@ func _render_callback(p_effect_callback_type, p_render_data):
 			var size = render_scene_buffers.get_internal_size()
 			if size.x == 0 and size.y == 0:
 				return
-
+			if !render_scene_buffers.has_texture(context, imageContainerName):
+				var usage_bits : int = RenderingDevice.TEXTURE_USAGE_SAMPLING_BIT | RenderingDevice.TEXTURE_USAGE_STORAGE_BIT
+				render_scene_buffers.create_texture(context, imageContainerName, RenderingDevice.DATA_FORMAT_R16G16B16A16_UNORM, usage_bits, RenderingDevice.TEXTURE_SAMPLES_1, size, 1, 0, true, false)
 			# We can use a compute shader here.
 			var x_groups = (size.x - 1) / 8 + 1
 			var y_groups = (size.y - 1) / 8 + 1
@@ -114,8 +116,7 @@ func _render_callback(p_effect_callback_type, p_render_data):
 				# Get the RID for our color image, we will be reading from and writing to it.
 				var input_image = render_scene_buffers.get_color_layer(view)
 				var depth_image = render_scene_buffers.get_depth_layer(view)
-				var usage_bits : int = RenderingDevice.TEXTURE_USAGE_SAMPLING_BIT | RenderingDevice.TEXTURE_USAGE_STORAGE_BIT
-				var image_container = render_scene_buffers.create_texture(context, imageContainerName, RenderingDevice.DATA_FORMAT_R16G16B16A16_UNORM, usage_bits, RenderingDevice.TEXTURE_SAMPLES_1, size, 1, 0, true, true)
+				var image_container = render_scene_buffers.get_texture_slice(context, imageContainerName, view, 0, 1, 1)
 				# Create a uniform set.
 				# This will be cached; the cache will be cleared if our viewport's configuration is changed.
 				var color_uniform: RDUniform = RDUniform.new()
@@ -184,3 +185,7 @@ func _render_callback(p_effect_callback_type, p_render_data):
 				rd.compute_list_bind_uniform_set(compute_list, params_uniform_set, 4)
 				rd.compute_list_dispatch(compute_list, x_groups, y_groups, z_groups)
 				rd.compute_list_end()
+				if params_buffer.is_valid():
+					rd.free_rid(params_buffer)
+				if matrix_buffer.is_valid():
+					rd.free_rid(matrix_buffer) 

@@ -41,12 +41,13 @@ volumetric_fog_density = 0.0
 [sub_resource type="CompositorEffect" id="CompositorEffect_j76wr"]
 resource_local_to_scene = false
 resource_name = ""
-enabled = false
+enabled = true
 effect_callback_type = 4
 needs_motion_vectors = false
 needs_normal_roughness = false
 script = ExtResource("4_ajv2x")
-water_absorption = 0.13
+blurRadius = 2.0
+blurCircleAmount = 3
 metadata/_custom_type_script = "uid://b7ts6l8438x3b"
 
 [sub_resource type="Compositor" id="Compositor_8tsuy"]
@@ -317,7 +318,6 @@ mesh = SubResource("SphereMesh_00tp4")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=248700333]
 transform = Transform3D(1, 0, 0, 0, 0.8851097, 0.465383, 0, -0.465383, 0.8851097, 0, 53.532707, 0)
-visible = false
 
 [node name="TestSubV1_0" parent="." unique_id=1708030645 instance=ExtResource("9_fwsdw")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -39.891373, 6.8068466, -7.7295113)
