@@ -124,7 +124,7 @@ func _render_callback(p_effect_callback_type, p_render_data):
 				var avgColorPipeline = rd.compute_pipeline_create(avgColorShader)
 				rd.compute_list_bind_compute_pipeline(compute_list, avgColorPipeline)
 				rd.compute_list_bind_uniform_set(compute_list, avgColor_uniform_set, 0)
-				rd.compute_list_dispatch(compute_list, (size.x+7)/8, (size.y+7)/8, 1)
+				rd.compute_list_dispatch(compute_list, (size.x+15)/16, (size.y+15)/16, 1)
 				rd.compute_list_end()
 				var avgColor = rd.buffer_get_data(avgColorBuffer).to_int32_array()
 				var b : float = float(avgColor[0])/float(scale)/(size.x*size.y)

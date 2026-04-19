@@ -98,9 +98,9 @@ func _input(event):
 	# Mouse in viewport coordinates.
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT:
-			for x in range(10000):
+			for x in range(10):
 				var r : int = rng.randi_range(0, size.x*size.y-1)
-				waterHeightMap[r] += 1.0/pow(detail, 2.0)
+				waterHeightMap[r] += 10000.0/pow(detail, 2.0)
 		if event.button_index == MOUSE_BUTTON_RIGHT:
 			for x in range(1000):
 				var r : int = rng.randi_range(0, size.x*size.y-1)
