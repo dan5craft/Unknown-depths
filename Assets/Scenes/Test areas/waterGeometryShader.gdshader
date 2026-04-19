@@ -10,23 +10,24 @@ uniform float maxFoamSpeed = 3.0;
 uniform vec3 waterColor;
 uniform sampler2D depthTexture:hint_depth_texture;
 uniform sampler2D screenTexture;
+uniform sampler2D noiseTexture;
 
 render_mode cull_disabled;
 render_mode depth_draw_always;
 
 void vertex() {
 	float h = texture(heightmap, UV).r;
-	vec2 xTexel = 1.0 / vec2(textureSize(velXmap, 0));
-	vec2 yTexel = 1.0 / vec2(textureSize(velYmap, 0));
-	float vX1 = sqrt(pow(texture(velXmap, UV).r, 2.0));
-	float vX2 = sqrt(pow(texture(velXmap, vec2(UV.x+xTexel.x, UV.y)).r, 2.0));
-	float vY1 = sqrt(pow(texture(velXmap, UV).r, 2.0));
-	float vY2 = sqrt(pow(texture(velXmap, vec2(UV.x, UV.y+yTexel.y)).r, 2.0));
-	float v = (vX1 + vX2 + vY1 + vY2)/4.0;
-	float foamHeight = 0.0;
-	if(v >= minFoamSpeed){
-		foamHeight = 0.0*(v-minFoamSpeed)/(maxFoamSpeed-minFoamSpeed);
-	}
+	//vec2 xTexel = 1.0 / vec2(textureSize(velXmap, 0));
+	//vec2 yTexel = 1.0 / vec2(textureSize(velYmap, 0));
+	//float vX1 = sqrt(pow(texture(velXmap, UV).r, 2.0));
+	//float vX2 = sqrt(pow(texture(velXmap, vec2(UV.x+xTexel.x, UV.y)).r, 2.0));
+	//float vY1 = sqrt(pow(texture(velXmap, UV).r, 2.0));
+	//float vY2 = sqrt(pow(texture(velXmap, vec2(UV.x, UV.y+yTexel.y)).r, 2.0));
+	//float v = (vX1 + vX2 + vY1 + vY2)/4.0;
+	//float foamHeight = 0.0;
+	//if(v >= minFoamSpeed){
+		//foamHeight = 0.5*(v-minFoamSpeed)/(maxFoamSpeed-minFoamSpeed);
+	//}
 	VERTEX.y = h;//+foamHeight;
 	vec2 texel = 1.0 / vec2(textureSize(heightmap, 0));
 	vec3 R = vec3(detail, texture(heightmap, vec2(clamp(UV.x+texel.x, 0.0, 1.0), UV.y)).r-h, 0.0);
@@ -70,11 +71,11 @@ void fragment() {
 	}
 	float absorption = exp(-absorptionCoefficient*depth);
 	vec3 screenColor = pow(texture(screenTexture, SCREEN_UV).rgb, vec3(2.2));
-	vec3 color = lerp_color(waterColor*screenColor, screenColor, absorption)*absorption;
+	vec3 color = lerp_color(waterColor*screenColor, screenColor, absorption)*absorption+waterColor*0.2;
 	//ALBEDO = lerp_color(waterColor*screenColor, screenColor, absorption)*absorption;
 	if(v >= minFoamSpeed){
-		//ALBEDO = lerp_color(color, vec3(1.0), foamPercent);
-		ALBEDO = color;
+		ALBEDO = lerp_color(color, vec3(1.0), foamPercent);
+		//ALBEDO = color;
 	} else{
 		ALBEDO = color;
 	}

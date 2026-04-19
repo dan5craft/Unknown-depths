@@ -15,9 +15,17 @@ run/main_scene="uid://c7uywa07kia1r"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://Assets/svg files/icon.svg"
 
+[autoload]
+
+Globals="*uid://btmvcrsy0detj"
+
 [display]
 
 window/size/mode=3
+
+[global]
+
+waterColor=Color(0, 0.48235294, 0.654902, 1)
 
 [input]
 

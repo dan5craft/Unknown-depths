@@ -5,6 +5,7 @@ class_name UnderwaterEffect
 var rd: RenderingDevice
 var shader: RID
 var blurShader: RID
+var avgColorShader: RID
 var pipeline: RID
 var blurPipeline: RID
 var nearest_sampler: RID
@@ -28,6 +29,9 @@ func _init():
 	shader_file = load("res://Assets/Shaders/Compositor effects/Underwater/underwaterBlur.glsl")
 	shader_spirv = shader_file.get_spirv()
 	blurShader = rd.shader_create_from_spirv(shader_spirv)
+	shader_file = load("res://Assets/Shaders/Compositor effects/Underwater/avgColorFinder.glsl")
+	shader_spirv = shader_file.get_spirv()
+	avgColorShader = rd.shader_create_from_spirv(shader_spirv)
 	pipeline = rd.compute_pipeline_create(shader)
 	blurPipeline = rd.compute_pipeline_create(blurShader)
 	var sampler_state := RDSamplerState.new()
@@ -46,6 +50,10 @@ func _notification(what):
 		if shader.is_valid():
 			# Freeing our shader will also free any dependents such as the pipeline!
 			rd.free_rid(shader)
+		if avgColorShader.is_valid():
+			rd.free_rid(avgColorShader)
+		if blurShader.is_valid():
+			rd.free_rid(blurShader)
 		if nearest_sampler.is_valid():
 			rd.free_rid(nearest_sampler)
 		if linear_sampler.is_valid():
@@ -70,25 +78,6 @@ func _render_callback(p_effect_callback_type, p_render_data):
 			var x_groups = (size.x - 1) / 8 + 1
 			var y_groups = (size.y - 1) / 8 + 1
 			var z_groups = 1
-			# Push constant.
-			var params = [
-				size.x,
-				size.y,
-				0.0,
-				0.0,
-				water_color.r,
-				water_color.g,
-				water_color.b,
-				water_absorption
-			]
-			var pba = PackedByteArray()
-			pba.append_array(PackedFloat32Array(params).to_byte_array())
-			var params_buffer: RID = rd.uniform_buffer_create(pba.size(), pba)
-			var params_uniform: RDUniform = RDUniform.new()
-			params_uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_UNIFORM_BUFFER
-			params_uniform.binding = 0
-			params_uniform.add_id(params_buffer)
-			var params_uniform_set: RID = UniformSetCacheRD.get_cache(shader, 4, [params_uniform])
 
 			# Loop through views just in case we're doing stereo rendering. No extra cost if this is mono.
 			var view_count = render_scene_buffers.get_view_count()
@@ -123,6 +112,41 @@ func _render_callback(p_effect_callback_type, p_render_data):
 				color_uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_IMAGE
 				color_uniform.binding = 0
 				color_uniform.add_id(input_image)
+				var avgColor_uniform := RDUniform.new()
+				avgColor_uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_STORAGE_BUFFER
+				avgColor_uniform.binding = 1
+				var scale : int = 100;
+				var avgColorArray = PackedInt32Array([0, scale, size.x, size.y]).to_byte_array()
+				var avgColorBuffer = rd.storage_buffer_create(avgColorArray.size(), avgColorArray)
+				avgColor_uniform.add_id(avgColorBuffer)
+				var avgColor_uniform_set = rd.uniform_set_create([avgColor_uniform, color_uniform], avgColorShader, 0)
+				var compute_list := rd.compute_list_begin()
+				var avgColorPipeline = rd.compute_pipeline_create(avgColorShader)
+				rd.compute_list_bind_compute_pipeline(compute_list, avgColorPipeline)
+				rd.compute_list_bind_uniform_set(compute_list, avgColor_uniform_set, 0)
+				rd.compute_list_dispatch(compute_list, (size.x+7)/8, (size.y+7)/8, 1)
+				rd.compute_list_end()
+				var avgColor = rd.buffer_get_data(avgColorBuffer).to_int32_array()
+				var b : float = float(avgColor[0])/float(scale)/(size.x*size.y)
+				# Push constant.
+				var params = [
+					size.x,
+					size.y,
+					b,
+					0.0,
+					water_color.r,
+					water_color.g,
+					water_color.b,
+					water_absorption
+				]
+				var pba = PackedByteArray()
+				pba.append_array(PackedFloat32Array(params).to_byte_array())
+				var params_buffer: RID = rd.uniform_buffer_create(pba.size(), pba)
+				var params_uniform: RDUniform = RDUniform.new()
+				params_uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_UNIFORM_BUFFER
+				params_uniform.binding = 0
+				params_uniform.add_id(params_buffer)
+				var params_uniform_set: RID = UniformSetCacheRD.get_cache(shader, 4, [params_uniform])
 				var image_container_uniform: RDUniform = RDUniform.new()
 				image_container_uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_IMAGE
 				image_container_uniform.binding = 0
@@ -137,7 +161,7 @@ func _render_callback(p_effect_callback_type, p_render_data):
 				var depth_uniform_set = UniformSetCacheRD.get_cache(shader, 2, [depth_uniform])
 
 				# Run our compute shader.
-				var compute_list:= rd.compute_list_begin()
+				compute_list = rd.compute_list_begin()
 				rd.compute_list_bind_compute_pipeline(compute_list, pipeline)
 				rd.compute_list_bind_uniform_set(compute_list, color_uniform_set, 0)
 				rd.compute_list_bind_uniform_set(compute_list, image_container_uniform_set, 1)
@@ -189,3 +213,7 @@ func _render_callback(p_effect_callback_type, p_render_data):
 					rd.free_rid(params_buffer)
 				if matrix_buffer.is_valid():
 					rd.free_rid(matrix_buffer) 
+				if avgColorBuffer.is_valid():
+					rd.free_rid(avgColorBuffer)
+				if avgColorPipeline.is_valid():
+					rd.free_rid(avgColorPipeline)

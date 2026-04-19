@@ -67,6 +67,8 @@ func _ready() -> void:
 	#var r : int = rng.randi_range(0, size.x*size.y-1)
 	#waterHeightMap[r] -= 1.0
 	$MeshInstance3D.get_surface_override_material(0).set_shader_parameter("detail", detail)
+	$MeshInstance3D.get_surface_override_material(0).set_shader_parameter("waterColor", Globals.waterColor)
+	$"../Camera3D2".compositor.compositor_effects.get(0).water_color = Globals.waterColor
 	heightImage = Image.create_empty(size.x, size.y, false, Image.FORMAT_RGBF)
 	heightTexture = ImageTexture.create_from_image(heightImage)
 	velXImage = Image.create_empty(size.x+1, size.y, false, Image.FORMAT_RGBF)
@@ -96,7 +98,7 @@ func _input(event):
 	# Mouse in viewport coordinates.
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT:
-			for x in range(100):
+			for x in range(10000):
 				var r : int = rng.randi_range(0, size.x*size.y-1)
 				waterHeightMap[r] += 1.0/pow(detail, 2.0)
 		if event.button_index == MOUSE_BUTTON_RIGHT:

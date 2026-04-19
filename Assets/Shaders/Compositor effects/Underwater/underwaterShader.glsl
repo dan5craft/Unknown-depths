@@ -16,6 +16,7 @@ layout(set = 3, binding=0) uniform uniformBuffer {
 
 layout(set = 4, binding=0) uniform Params {
     ivec2 raster_size;
+    float brightness;
     vec4 water_color;
 } params;
 
@@ -42,7 +43,7 @@ void main() {
     float depth = -(view.xyz / view.w).z;
 
     float absorption = exp(-water_absorption*depth);
-    color = lerp_color(water_color*color, color, absorption)*absorption;
+    color = lerp_color(water_color*color, color, absorption)*absorption+params.brightness*0.1*water_color;
 
     imageStore(image_container, uv, vec4(color, 1.0));
 }

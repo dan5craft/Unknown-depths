@@ -116,7 +116,7 @@ omni_range = 6.678
 [node name="OmniLight3D" type="OmniLight3D" parent="." unique_id=993782094]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.4448723, 3.9323115, 0)
 shadow_enabled = true
-omni_range = 8.428
+omni_range = 6.738
 
 [node name="Camera3D2" type="Camera3D" parent="." unique_id=1485457800]
 transform = Transform3D(1, 0, 0, 0, 0.9914426, 0.13054344, 0, -0.13054326, 0.99144256, -2.3841858e-07, 2.0159864, 4.830284)
