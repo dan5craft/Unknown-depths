@@ -13,6 +13,7 @@
 [ext_resource type="Texture2D" uid="uid://drkewjon8ttja" path="res://Assets/Models/Environment/source/textures/Diffuse.webp" id="11_c47eh"]
 [ext_resource type="Script" uid="uid://btmvcrsy0detj" path="res://Assets/Scripts/Misc/globals.gd" id="11_ngdhw"]
 [ext_resource type="Texture2D" uid="uid://bcsdkb7m017cs" path="res://Assets/Models/Environment/source/NormalMap.webp" id="12_k2d0y"]
+[ext_resource type="PackedScene" uid="uid://ce25ci06u474i" path="res://Assets/Models/Submarine.blend files/TestSubV1.0.blend" id="14_6v5yr"]
 
 [sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_ngdhw"]
 panorama = ExtResource("1_vnsy4")
@@ -21,7 +22,7 @@ panorama = ExtResource("1_vnsy4")
 sky_material = SubResource("PanoramaSkyMaterial_ngdhw")
 
 [sub_resource type="Environment" id="Environment_fk550"]
-background_mode = 2
+background_mode = 1
 sky = SubResource("Sky_c47eh")
 
 [sub_resource type="CompositorEffect" id="CompositorEffect_fk550"]
@@ -140,7 +141,7 @@ shadow_enabled = true
 omni_range = 6.678
 
 [node name="OmniLight3D" type="OmniLight3D" parent="." unique_id=993782094]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.4448723, 3.9323115, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.092198044, 7.6207757, -4.9014626)
 shadow_enabled = true
 omni_range = 8.428
 
@@ -161,26 +162,30 @@ target = NodePath("../../Camera3D2")
 
 [node name="MeshInstance3D3" type="MeshInstance3D" parent="." unique_id=815580279]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.488627, -0.54393935, 0)
+visible = false
 mesh = SubResource("BoxMesh_11rou")
 
 [node name="MeshInstance3D4" type="MeshInstance3D" parent="." unique_id=1900381578]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.4405856, -0.544, 0)
+visible = false
 mesh = SubResource("BoxMesh_11rou")
 
 [node name="MeshInstance3D5" type="MeshInstance3D" parent="." unique_id=1316934544]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0.0758543, -0.544, -5.4749136)
+visible = false
 mesh = SubResource("BoxMesh_11rou")
 
 [node name="MeshInstance3D6" type="MeshInstance3D" parent="." unique_id=1738182682]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0.076, -0.544, 5.467278)
+visible = false
 mesh = SubResource("BoxMesh_11rou")
 
 [node name="Water" type="Node3D" parent="." unique_id=1661047408]
 script = ExtResource("3_1s3p6")
-detail = 5.0
+detail = 0.1
 framerate = 100
 timeScale = 1
-size = Vector2i(1000, 1000)
+size = Vector2i(10, 40)
 
 [node name="Control" type="Control" parent="Water" unique_id=1331129293]
 layout_mode = 3
@@ -242,3 +247,6 @@ mesh = SubResource("ArrayMesh_sulu6")
 
 [node name="Globals" type="Node3D" parent="." unique_id=1270793925]
 script = ExtResource("11_ngdhw")
+
+[node name="TestSubV1_0" parent="." unique_id=1823142251 instance=ExtResource("14_6v5yr")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8.615232, 0)
