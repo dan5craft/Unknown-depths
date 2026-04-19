@@ -1,8 +1,12 @@
 shader_type spatial;
 
 uniform sampler2D heightmap;
+uniform sampler2D velXmap;
+uniform sampler2D velYmap;
 uniform float detail;
 uniform float absorptionCoefficient = 0.2;
+uniform float minFoamSpeed = 0.5;
+uniform float maxFoamSpeed = 3.0;
 uniform vec3 waterColor;
 uniform sampler2D depthTexture:hint_depth_texture;
 uniform sampler2D screenTexture;
@@ -12,23 +16,47 @@ render_mode depth_draw_always;
 
 void vertex() {
 	float h = texture(heightmap, UV).r;
-	VERTEX.y = h;
+	vec2 xTexel = 1.0 / vec2(textureSize(velXmap, 0));
+	vec2 yTexel = 1.0 / vec2(textureSize(velYmap, 0));
+	float vX1 = sqrt(pow(texture(velXmap, UV).r, 2.0));
+	float vX2 = sqrt(pow(texture(velXmap, vec2(UV.x+xTexel.x, UV.y)).r, 2.0));
+	float vY1 = sqrt(pow(texture(velXmap, UV).r, 2.0));
+	float vY2 = sqrt(pow(texture(velXmap, vec2(UV.x, UV.y+yTexel.y)).r, 2.0));
+	float v = (vX1 + vX2 + vY1 + vY2)/4.0;
+	float foamHeight = 0.0;
+	if(v >= minFoamSpeed){
+		foamHeight = 0.0*(v-minFoamSpeed)/(maxFoamSpeed-minFoamSpeed);
+	}
+	VERTEX.y = h;//+foamHeight;
 	vec2 texel = 1.0 / vec2(textureSize(heightmap, 0));
-	vec3 R = vec3(detail, texture(heightmap, clamp(vec2(UV.x+texel.x, UV.y), vec2(0.0), vec2(1.0))).r-h, 0.0);
-	vec3 B = vec3(0.0, texture(heightmap, clamp(vec2(UV.x, UV.y+texel.y), vec2(0.0), vec2(1.0))).r-h, detail);
-	NORMAL = normalize(cross(B, R));
+	vec3 R = vec3(detail, texture(heightmap, vec2(clamp(UV.x+texel.x, 0.0, 1.0), UV.y)).r-h, 0.0);
+	vec3 B = vec3(0.0, texture(heightmap, vec2(UV.x, clamp(UV.y+texel.y, 0.0, 1.0))).r-h, detail);
+	vec3 L = vec3(-detail, texture(heightmap, vec2(clamp(UV.x-texel.x, 0.0, 1.0), UV.y)).r-h, 0.0);
+	vec3 T = vec3(0.0, texture(heightmap, vec2(UV.x, clamp(UV.y-texel.y, 0.0, 1.0))).r-h, -detail);
+	vec3 RB = cross(B, R);
+	vec3 LT = cross(T, L);
+	NORMAL = normalize(RB+LT);
 }
 
 vec3 lerp_color(vec3 color1, vec3 color2, float p){
+	p = clamp(p, 0.0, 1.0);
     return color1+(color2-color1)*p;
 }
 
 void fragment() {
 	float h = texture(heightmap, UV).r;
+	vec2 xTexel = 1.0 / vec2(textureSize(velXmap, 0));
+	vec2 yTexel = 1.0 / vec2(textureSize(velYmap, 0));
+	float vX1 = sqrt(pow(texture(velXmap, UV).r, 2.0));
+	float vX2 = sqrt(pow(texture(velXmap, vec2(UV.x+xTexel.x, UV.y)).r, 2.0));
+	float vY1 = sqrt(pow(texture(velXmap, UV).r, 2.0));
+	float vY2 = sqrt(pow(texture(velXmap, vec2(UV.x, UV.y+yTexel.y)).r, 2.0));
+	float v = (vX1 + vX2 + vY1 + vY2)/4.0;
+	float foamPercent = clamp((v-minFoamSpeed)/(maxFoamSpeed-minFoamSpeed), 0.0, 1.0);
 	if(h<0.001){
 		ALPHA = 0.0;
 	}
-	ROUGHNESS = 0.1;
+	ROUGHNESS = 0.1;//+foamPercent*0.9;
 	SPECULAR = 0.2;
 	CLEARCOAT = 1.0;
 	CLEARCOAT_ROUGHNESS = 0.1;
@@ -42,8 +70,14 @@ void fragment() {
 	}
 	float absorption = exp(-absorptionCoefficient*depth);
 	vec3 screenColor = pow(texture(screenTexture, SCREEN_UV).rgb, vec3(2.2));
-	ALBEDO = lerp_color(waterColor*screenColor, screenColor, absorption)*absorption;
-	//ALBEDO = vec3(angle, 0.0, 0.0);
+	vec3 color = lerp_color(waterColor*screenColor, screenColor, absorption)*absorption;
+	//ALBEDO = lerp_color(waterColor*screenColor, screenColor, absorption)*absorption;
+	if(v >= minFoamSpeed){
+		//ALBEDO = lerp_color(color, vec3(1.0), foamPercent);
+		ALBEDO = color;
+	} else{
+		ALBEDO = color;
+	}
 }
 
 float DistributionGGX(float cos_theta_m, float alpha)
