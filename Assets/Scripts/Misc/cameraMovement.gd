@@ -1,6 +1,6 @@
 extends Camera3D
 
-@export var speed : float = 0.1;
+@export var speed : float = 0.01;
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -22,6 +22,10 @@ func _process(delta: float) -> void:
 		global_position += Vector3.LEFT*global_transform.basis.inverse()*speed;
 	if Input.is_action_pressed("Right"):
 		global_position -= Vector3.LEFT*global_transform.basis.inverse()*speed;
+	if $"../Water".isUnderwater(position):
+		compositor.compositor_effects.get(0).enabled = true
+	else:
+		compositor.compositor_effects.get(0).enabled = false
 	pass
 
 func _input(event: InputEvent) -> void:

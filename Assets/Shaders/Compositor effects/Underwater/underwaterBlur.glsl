@@ -64,7 +64,7 @@ void main() {
             color += pixelColor;
         }
     }
-    color = color/(blurCircleAmount*blurStepAmount+1-skips);
+    color = color/(blurCircleAmount*(blurStepAmount+2)-skips);
 
     imageStore(color_image, uv, vec4(color, 1.0));
 }
