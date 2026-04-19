@@ -209,6 +209,12 @@ func iteratePhysics():
 	rd.free_rid(pipelineVelocity)
 	rd.free_rid(mapsUniformSetHeight)
 	rd.free_rid(mapsUniformSetVelocity)
+	rd.free_rid(hMapBuffer)
+	rd.free_rid(paramBuffer)
+	rd.free_rid(tempMapBuffer)
+	rd.free_rid(velXMapBuffer)
+	rd.free_rid(velYMapBuffer)
+	rd.free_rid(waterHMapBuffer)
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_PREDELETE:
