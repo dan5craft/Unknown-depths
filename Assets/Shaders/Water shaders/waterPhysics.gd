@@ -24,8 +24,12 @@ var waterHeightMap
 var heightMap
 var tempMap
 var timer = 0.0
-var texture : ImageTexture
-var image : Image
+var heightTexture : ImageTexture
+var velXTexture : ImageTexture
+var velYTexture : ImageTexture
+var heightImage : Image
+var velXImage : Image
+var velYImage : Image
 var rng = RandomNumberGenerator.new()
 
 func getWaterHeight(x : int, y : int) -> float:
@@ -63,8 +67,14 @@ func _ready() -> void:
 	#var r : int = rng.randi_range(0, size.x*size.y-1)
 	#waterHeightMap[r] -= 1.0
 	$MeshInstance3D.get_surface_override_material(0).set_shader_parameter("detail", detail)
-	image = Image.create_empty(size.x, size.y, false, Image.FORMAT_RGBF)
-	texture = ImageTexture.create_from_image(image)
+	$MeshInstance3D.get_surface_override_material(0).set_shader_parameter("waterColor", Globals.waterColor)
+	$"../Camera3D2".compositor.compositor_effects.get(0).water_color = Globals.waterColor
+	heightImage = Image.create_empty(size.x, size.y, false, Image.FORMAT_RGBF)
+	heightTexture = ImageTexture.create_from_image(heightImage)
+	velXImage = Image.create_empty(size.x+1, size.y, false, Image.FORMAT_RGBF)
+	velXTexture = ImageTexture.create_from_image(velXImage)
+	velYImage = Image.create_empty(size.x, size.y+1, false, Image.FORMAT_RGBF)
+	velYTexture = ImageTexture.create_from_image(velYImage)
 	#for x in range(100):
 		#var r : int = rng.randi_range(0, size.x*size.y-1)
 		#waterHeightMap[r] += 1.0/pow(detail, 2.0)
@@ -88,13 +98,13 @@ func _input(event):
 	# Mouse in viewport coordinates.
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT:
-			for x in range(100):
+			for x in range(10000):
 				var r : int = rng.randi_range(0, size.x*size.y-1)
 				waterHeightMap[r] += 1.0/pow(detail, 2.0)
 		if event.button_index == MOUSE_BUTTON_RIGHT:
-			for x in range(100):
+			for x in range(1000):
 				var r : int = rng.randi_range(0, size.x*size.y-1)
-				waterHeightMap[r] -= 1.0/pow(detail, 2.0)*10.0
+				waterHeightMap[r] -= 0.1/pow(detail, 2.0)
 
 func _process(delta: float) -> void:
 	#position.y += 0.01;
@@ -115,10 +125,22 @@ func _process(delta: float) -> void:
 		for y in range(size.y):
 			var h : float = waterHeightMap[x*size.y+y]
 			#var vx : float = velocityYMap[x*(size.y+1)+y]/5
-			image.set_pixel(x, y, Color(h, h, h))
-	texture.update(image)
-	$MeshInstance3D.get_surface_override_material(0).set_shader_parameter("heightmap", texture)
-	$Control/TextureRect.texture = texture
+			heightImage.set_pixel(x, y, Color(h, h, h))
+	for x in range(size.x+1):
+		for y in range(size.y):
+			var v : float = velocityXMap[x*size.y+y]
+			velXImage.set_pixel(x, y, Color(v, v, v))
+	for x in range(size.x):
+		for y in range(size.y+1):
+			var v : float = velocityYMap[x*size.y+y]
+			velYImage.set_pixel(x, y, Color(v, v, v))
+	heightTexture.update(heightImage)
+	velXTexture.update(velXImage)
+	velYTexture.update(velYImage)
+	$MeshInstance3D.get_surface_override_material(0).set_shader_parameter("heightmap", heightTexture)
+	$MeshInstance3D.get_surface_override_material(0).set_shader_parameter("velXmap", velXTexture)
+	$MeshInstance3D.get_surface_override_material(0).set_shader_parameter("velYmap", velYTexture)
+	$Control/TextureRect.texture = heightTexture
 
 func iteratePhysics():
 	var velXMapArray := PackedFloat32Array(velocityXMap)

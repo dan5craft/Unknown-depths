@@ -1,0 +1,14 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://de4hi2hbd1kw4"
+path="res://.godot/imported/avgColorFinder.glsl-d133a75ad537fea7b88ccf0ea92b733c.res"
+
+[deps]
+
+source_file="res://Assets/Shaders/Compositor effects/Underwater/avgColorFinder.glsl"
+dest_files=["res://.godot/imported/avgColorFinder.glsl-d133a75ad537fea7b88ccf0ea92b733c.res"]
+
+[params]
+
