@@ -23,6 +23,10 @@ Globals="*uid://btmvcrsy0detj"
 
 window/size/mode=3
 
+[filesystem]
+
+import/blender/enabled=false
+
 [global]
 
 waterColor=Color(0, 0.48235294, 0.654902, 1)
