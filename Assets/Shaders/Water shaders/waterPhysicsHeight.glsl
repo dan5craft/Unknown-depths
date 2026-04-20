@@ -67,10 +67,10 @@ vec4 getUpH(int x, int y){
     if(getVelX(x, y) > 0.0){
         upwindHeight.x = getWaterHeight(x-1, y);
     } else{
-        upwindHeight.x = getWaterHeight(x, y);
+        upwindHeight.x = getWaterHeight(x, y); //5.0
     }
     if(getVelX(x+1, y) > 0.0){
-        upwindHeight.y = getWaterHeight(x, y);
+        upwindHeight.y = getWaterHeight(x, y); //5.0
     } else{
         upwindHeight.y = getWaterHeight(x+1, y);
     }
@@ -84,8 +84,12 @@ vec4 getUpH(int x, int y){
     } else{
         upwindHeight.w = getWaterHeight(x, y+1);
     }
-    float hadj = 0.0;//max(0, (upwindHeight.y+upwindHeight.x+upwindHeight.w+upwindHeight.z)/4-2.0*(params.dx/(params.gravity*params.dt)));
-    upwindHeight -= hadj;
+    //float hadj = max(0, (upwindHeight.y+upwindHeight.x+upwindHeight.w+upwindHeight.z)/4.0-2.0*(params.dx/(params.gravity*params.dt)));
+    //upwindHeight -= hadj;
+    //upwindHeight.x = upwindHeight.x-max(0.0, upwindHeight.x-2.0*(params.dx/(params.gravity*params.dt)));
+    //upwindHeight.y = upwindHeight.y-max(0.0, upwindHeight.y-2.0*(params.dx/(params.gravity*params.dt)));
+    //upwindHeight.z = upwindHeight.z-max(0.0, upwindHeight.z-2.0*(params.dx/(params.gravity*params.dt)));
+    //upwindHeight.w = upwindHeight.w-max(0.0, upwindHeight.w-2.0*(params.dx/(params.gravity*params.dt)));
     return upwindHeight;
 }
 
@@ -94,10 +98,6 @@ void main() {
     int y = int(gl_GlobalInvocationID.y);
     if(x >= params.size.x || y >= params.size.y) return;
     vec4 upH = getUpH(x, y);
-    float dh = -((upH.y*getVelX(x+1, y)-upH.x*getVelX(x, y))
-    ///params.dx
-    +(upH.w*getVelY(x, y+1)-upH.z*getVelY(x, y))
-    ///params.dx
-    );
+    float dh = -((upH.y*getVelX(x+1, y)-upH.x*getVelX(x, y))/params.dx+(upH.w*getVelY(x, y+1)-upH.z*getVelY(x, y))/params.dx);
     changeWaterHeight(x, y, tempMap.data[x*params.size.y+y]+dh*params.dt);
 }

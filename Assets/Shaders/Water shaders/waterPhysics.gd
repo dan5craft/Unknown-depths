@@ -6,7 +6,7 @@ extends Node3D
 	set(value):
 		framerate = value
 @export var timeScale : int = 2;
-@export var gravity : float = 9.8:
+@export var gravity : float = -9.8:
 	set(value):
 		gravity = value
 @export var size : Vector2i = Vector2(10, 10):
@@ -79,6 +79,8 @@ func _ready() -> void:
 		#var r : int = rng.randi_range(0, size.x*size.y-1)
 		#waterHeightMap[r] += 1.0/pow(detail, 2.0)
 	#waterHeightMap[size.x/2*size.y+size.y/2] += 1000.0
+	waterHeightMap[1] += 10.0/pow(detail, 2.0)
+	#waterHeightMap[size.x*size.y-1] += 1000000.0/pow(detail, 2.0)
 
 func _createMaps():
 	velocityXMap = []
@@ -94,17 +96,34 @@ func _createMaps():
 			waterHeightMap.append(0.0)
 			heightMap.append(0.0)
 
+func getVolume():
+	var volume := 0.0
+	for y in range(size.x*size.y):
+		volume += waterHeightMap[y]*pow(detail, 2.0)
+	return volume
+
 func _input(event):
 	# Mouse in viewport coordinates.
 	if event is InputEventMouseButton:
+<<<<<<< Updated upstream
 		if event.button_index == MOUSE_BUTTON_LEFT:
 			for x in range(10000):
 				var r : int = rng.randi_range(0, size.x*size.y-1)
 				waterHeightMap[r] += 1.0/pow(detail, 2.0)
 		if event.button_index == MOUSE_BUTTON_RIGHT:
 			for x in range(1000):
+=======
+		if event.button_index == MOUSE_BUTTON_LEFT and event.is_pressed():
+			for x in range(1):
 				var r : int = rng.randi_range(0, size.x*size.y-1)
-				waterHeightMap[r] -= 0.1/pow(detail, 2.0)
+				waterHeightMap[r] += 1.0/pow(detail, 2.0)
+				#waterHeightMap[size.x/2*size.y+size.y/2] += 3.0
+		if event.button_index == MOUSE_BUTTON_RIGHT and event.is_pressed():
+			for x in range(100):
+>>>>>>> Stashed changes
+				var r : int = rng.randi_range(0, size.x*size.y-1)
+				waterHeightMap[r] -= 1.0/pow(detail, 2.0)
+				#waterHeightMap[size.x/2*size.y+size.y/2] -= 3.0
 
 func _process(delta: float) -> void:
 	#position.y += 0.01;
@@ -119,6 +138,7 @@ func _process(delta: float) -> void:
 		#waterHeightMap[r] += 0.00001/pow(detail, 2.0)
 	#waterHeightMap[size.x/2*size.y+size.y/2] += 0.01/pow(detail, 2.0)
 	timer = 0.0
+	print(getVolume())
 	for x in range(timeScale):
 		iteratePhysics()
 	for x in range(size.x):
@@ -132,7 +152,7 @@ func _process(delta: float) -> void:
 			velXImage.set_pixel(x, y, Color(v, v, v))
 	for x in range(size.x):
 		for y in range(size.y+1):
-			var v : float = velocityYMap[x*size.y+y]
+			var v : float = velocityYMap[x*(size.y+1)+y]
 			velYImage.set_pixel(x, y, Color(v, v, v))
 	heightTexture.update(heightImage)
 	velXTexture.update(velXImage)
@@ -140,7 +160,7 @@ func _process(delta: float) -> void:
 	$MeshInstance3D.get_surface_override_material(0).set_shader_parameter("heightmap", heightTexture)
 	$MeshInstance3D.get_surface_override_material(0).set_shader_parameter("velXmap", velXTexture)
 	$MeshInstance3D.get_surface_override_material(0).set_shader_parameter("velYmap", velYTexture)
-	$Control/TextureRect.texture = heightTexture
+	$Control/TextureRect.texture = velYTexture
 
 func iteratePhysics():
 	var velXMapArray := PackedFloat32Array(velocityXMap)
@@ -185,7 +205,7 @@ func iteratePhysics():
 	
 	var paramArray := PackedInt32Array([int(size.x), int(size.y)])
 	var paramBytes := paramArray.to_byte_array()
-	paramBytes.append_array(PackedFloat32Array([gravity, detail, 1.0/framerate*timeScale, 0.0, 0.0, 0.0]).to_byte_array())
+	paramBytes.append_array(PackedFloat32Array([gravity, detail, 1.0/framerate/timeScale, 0.0, 0.0, 0.0]).to_byte_array())
 	var paramBuffer := rd.uniform_buffer_create(paramBytes.size(), paramBytes)
 	var paramUniform := RDUniform.new()
 	paramUniform.uniform_type = RenderingDevice.UNIFORM_TYPE_UNIFORM_BUFFER

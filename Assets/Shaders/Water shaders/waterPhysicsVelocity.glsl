@@ -74,14 +74,14 @@ void changeWaterHeight(int x, int y, float value){
 void main() {
     int x = int(gl_GlobalInvocationID.x);
     int y = int(gl_GlobalInvocationID.y);
-    if(x >= params.size.x || y >= params.size.y) return;
+    if(x > params.size.x || y > params.size.y) return;
     float dvx = 0.0;
     float dvy = 0.0;
-    if(x > 0){
-        dvx = -(params.gravity/params.dx)*(getCombinedWaterHeight(x, y)-getCombinedWaterHeight(x-1, y));
+    if(x > 0 && x < params.size.x && y < params.size.y){
+        dvx = (-params.gravity/params.dx)*(getCombinedWaterHeight(x, y)-getCombinedWaterHeight(x-1, y));
     }
-    if(y > 0){
-        dvy = -(params.gravity/params.dx)*(getCombinedWaterHeight(x, y)-getCombinedWaterHeight(x, y-1));
+    if(y > 0 && y < params.size.y && x < params.size.x){
+        dvy = (-params.gravity/params.dx)*(getCombinedWaterHeight(x, y)-getCombinedWaterHeight(x, y-1));
     }
     changeVelX(x, y, getVelX(x, y)+dvx*params.dt);
     changeVelY(x, y, getVelY(x, y)+dvy*params.dt);
