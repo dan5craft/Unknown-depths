@@ -194,7 +194,7 @@ compositor = SubResource("Compositor_7fwww")
 script = ExtResource("3_2ayae")
 
 [node name="SubViewport" type="SubViewport" parent="." unique_id=1764804202]
-size = Vector2i(5120, 1440)
+size = Vector2i(2560, 1440)
 script = ExtResource("3_11rou")
 
 [node name="Camera3D" type="Camera3D" parent="SubViewport" unique_id=1511899497 node_paths=PackedStringArray("target")]
@@ -209,9 +209,8 @@ visible = false
 mesh = SubResource("BoxMesh_11rou")
 
 [node name="MeshInstance3D4" type="MeshInstance3D" parent="." unique_id=1900381578]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.4405856, -0.544, 0)
-visible = false
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.456179, -0.54400194, 0.012679577)
+visible = false
 mesh = SubResource("BoxMesh_11rou")
 
 [node name="MeshInstance3D5" type="MeshInstance3D" parent="." unique_id=1316934544]
@@ -229,7 +228,7 @@ script = ExtResource("3_1s3p6")
 detail = 0.1
 framerate = 100
 timeScale = 1
-size = Vector2i(10, 40)
+gravity = -9.8
 
 [node name="Control" type="Control" parent="Water" unique_id=1331129293]
 layout_mode = 3
@@ -294,11 +293,9 @@ script = ExtResource("11_ngdhw")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.4878066, 1.1770616, -3.6666584)
 mesh = SubResource("ArrayMesh_sulu6")
 
-[node name="Globals" type="Node3D" parent="." unique_id=1270793925]
-script = ExtResource("11_ngdhw")
-
-[node name="TestSubV1_0" parent="." unique_id=1823142251 instance=ExtResource("14_6v5yr")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8.615232, 0)
 [node name="rock02" type="MeshInstance3D" parent="Decorations" unique_id=1331115655]
 transform = Transform3D(-0.4021715, -0.91556436, 0, 0.91556436, -0.4021715, 0, 0, 0, 1, 3.7291865, 0.9579487, -2.0671673)
 mesh = SubResource("ArrayMesh_d8g52")
+
+[node name="TestSubV1_0" parent="." unique_id=1823142251 instance=ExtResource("14_6v5yr")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8.615232, 0)

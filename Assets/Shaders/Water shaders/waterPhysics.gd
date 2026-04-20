@@ -97,11 +97,11 @@ func _createMaps():
 func _input(event):
 	# Mouse in viewport coordinates.
 	if event is InputEventMouseButton:
-		if event.button_index == MOUSE_BUTTON_LEFT:
-			for x in range(100000):
+		if event.button_index == MOUSE_BUTTON_LEFT && event.is_pressed():
+			for x in range(1):
 				var r : int = rng.randi_range(0, size.x*size.y-1)
-				waterHeightMap[r] += 0.001/pow(detail, 2.0)
-		if event.button_index == MOUSE_BUTTON_RIGHT:
+				waterHeightMap[r] += 1000.0/pow(detail, 2.0)
+		if event.button_index == MOUSE_BUTTON_RIGHT && event.is_pressed():
 			for x in range(1000):
 				var r : int = rng.randi_range(0, size.x*size.y-1)
 				waterHeightMap[r] -= 0.1/pow(detail, 2.0)

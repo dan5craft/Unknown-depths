@@ -78,10 +78,10 @@ void main() {
     float dvx = 0.0;
     float dvy = 0.0;
     if(x > 0){
-        dvx = -(params.gravity/params.dx)*(getCombinedWaterHeight(x, y)-getCombinedWaterHeight(x-1, y));
+        dvx = (-params.gravity/params.dx)*(getCombinedWaterHeight(x, y)-getCombinedWaterHeight(x-1, y));
     }
     if(y > 0){
-        dvy = -(params.gravity/params.dx)*(getCombinedWaterHeight(x, y)-getCombinedWaterHeight(x, y-1));
+        dvy = (-params.gravity/params.dx)*(getCombinedWaterHeight(x, y)-getCombinedWaterHeight(x, y-1));
     }
     changeVelX(x, y, getVelX(x, y)+dvx*params.dt);
     changeVelY(x, y, getVelY(x, y)+dvy*params.dt);
