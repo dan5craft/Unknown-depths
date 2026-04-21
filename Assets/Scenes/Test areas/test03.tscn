@@ -225,7 +225,7 @@ mesh = SubResource("BoxMesh_11rou")
 
 [node name="Water" type="Node3D" parent="." unique_id=1661047408]
 script = ExtResource("3_1s3p6")
-detail = 0.1
+detail = 0.05
 framerate = 100
 timeScale = 1
 
@@ -238,6 +238,7 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="TextureRect" type="TextureRect" parent="Water/Control" unique_id=1187544866]
+visible = false
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5

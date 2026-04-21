@@ -54,7 +54,7 @@ void changeWaterHeight(int x, int y, float value){
     if(value < 0.0){
         outputParams.hasNegative = true;
     }
-    waterHMap.data[x*params.size.y+y] = value;
+    waterHMap.data[x*params.size.y+y] = value, 0.0;
 }
 
 vec4 getUpH(int x, int y){
@@ -100,10 +100,10 @@ vec4 getUpH(int x, int y){
     }
     //float hadj = max(0, (upwindHeight.y+upwindHeight.x+upwindHeight.w+upwindHeight.z)/(4/*-skipped*/)-2.0*(params.dx/(params.gravity*params.dt)));
     //upwindHeight -= hadj;
-    //upwindHeight.x -= max(0, upwindHeight.x-2.0*(params.dx/(params.gravity*params.dt)));
-    //upwindHeight.y -= max(0, upwindHeight.y-2.0*(params.dx/(params.gravity*params.dt)));
-    //upwindHeight.z -= max(0, upwindHeight.z-2.0*(params.dx/(params.gravity*params.dt)));
-    //upwindHeight.w -= max(0, upwindHeight.w-2.0*(params.dx/(params.gravity*params.dt)));
+    upwindHeight.x -= max(0, upwindHeight.x+2.0*(params.dx/(params.gravity*params.dt)));
+    upwindHeight.y -= max(0, upwindHeight.y+2.0*(params.dx/(params.gravity*params.dt)));
+    upwindHeight.z -= max(0, upwindHeight.z+2.0*(params.dx/(params.gravity*params.dt)));
+    upwindHeight.w -= max(0, upwindHeight.w+2.0*(params.dx/(params.gravity*params.dt)));
     return upwindHeight;
 }
 

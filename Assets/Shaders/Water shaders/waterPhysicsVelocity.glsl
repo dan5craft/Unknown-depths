@@ -83,6 +83,6 @@ void main() {
     if(y > 0){
         dvy = (-params.gravity/params.dx)*(getCombinedWaterHeight(x, y-1)-getCombinedWaterHeight(x, y));
     }
-    changeVelX(x, y, getVelX(x, y)+dvx*params.dt);
-    changeVelY(x, y, getVelY(x, y)+dvy*params.dt);
+    changeVelX(x, y, (getVelX(x, y)-getVelX(x, y)*0.5*params.dt)+dvx*params.dt);
+    changeVelY(x, y, (getVelY(x, y)-getVelY(x, y)*0.5*params.dt)+dvy*params.dt);
 }

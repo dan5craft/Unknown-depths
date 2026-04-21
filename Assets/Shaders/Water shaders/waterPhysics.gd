@@ -150,20 +150,20 @@ func _createMaps():
 		for y in range(size.x):
 			velocityXMap.append(0.0)
 			velocityYMap.append(0.0)
-			waterHeightMap.append(0.0)
+			waterHeightMap.append(10.0)
 			heightMap.append(0.0)
 
 func _input(event):
 	# Mouse in viewport coordinates.
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT && event.is_pressed():
-			for x in range(1):
+			for x in range(100):
 				var r : int = rng.randi_range(0, size.x*size.y-1)
-				addWater(floor(float(r)/size.y), r % size.y, 100.0)
+				addWater(floor(float(r)/size.y), r % size.y, 1.0)
 		if event.button_index == MOUSE_BUTTON_RIGHT && event.is_pressed():
 			for x in range(1):
 				var r : int = rng.randi_range(0, size.x*size.y-1)
-				addWater(floor(float(r)/size.y), r % size.y, -10.0)
+				addWater(floor(float(r)/size.y), r % size.y, -100.0)
 
 func _process(delta: float) -> void:
 	#position.y += 0.01;
