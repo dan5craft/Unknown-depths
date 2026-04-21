@@ -16,7 +16,9 @@ render_mode cull_disabled;
 render_mode depth_draw_always;
 
 void vertex() {
-	float h = texture(heightmap, UV).r;
+	ivec2 size = textureSize(heightmap, 0);
+	ivec2 texelCoords = ivec2(int(round(UV.x*float(size.x-1))), int(round(UV.y*float(size.y-1))));
+	float h = max(texelFetch(heightmap, texelCoords, 0).r, 0.0);
 	//vec2 xTexel = 1.0 / vec2(textureSize(velXmap, 0));
 	//vec2 yTexel = 1.0 / vec2(textureSize(velYmap, 0));
 	//float vX1 = sqrt(pow(texture(velXmap, UV).r, 2.0));

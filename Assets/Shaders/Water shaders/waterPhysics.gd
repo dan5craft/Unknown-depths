@@ -6,7 +6,7 @@ extends Node3D
 	set(value):
 		framerate = value
 @export var timeScale : int = 2;
-@export var gravity : float = 9.8:
+@export var gravity : float = -9.8:
 	set(value):
 		gravity = value
 @export var size : Vector2i = Vector2(10, 10):
@@ -46,6 +46,65 @@ func isUnderwater(pos : Vector3) -> bool:
 	else:
 		return false
 
+func getVolume():
+	var volume := 0.0
+	for y in range(size.x*size.y):
+		volume += waterHeightMap[y]*pow(detail, 2.0)
+	return volume
+
+func setWaterHeight(x:int, y:int, value:float):
+	waterHeightMap[x*size.y+y] = value
+
+func addWater(x:int, y:int, value:float):
+	waterHeightMap[x*size.y+y] += value/pow(detail, 2.0)
+
+func fixNegatives():
+	var waterHeightMapCopy = waterHeightMap.duplicate()
+	for x in range(size.x):
+		for y in range(size.y):
+			var h:float = waterHeightMapCopy[x*size.y+y]
+			if(h >= 0.0):
+				continue
+			var n := 0
+			var neighbours = []
+			var heights = []
+			var sum := 0.0
+			if x > 0:
+				var nh:float = waterHeightMapCopy[(x-1)*size.y+y]
+				if nh >= 0.0:
+					n+=1
+					neighbours.append(Vector2i(x-1, y))
+					heights.append(nh)
+					sum += nh
+			if x < size.x-1:
+				var nh:float = waterHeightMapCopy[(x+1)*size.y+y]
+				if nh >= 0.0:
+					n+=1
+					neighbours.append(Vector2i(x+1, y))
+					heights.append(nh)
+					sum += nh
+			if y > 0:
+				var nh:float = waterHeightMapCopy[x*size.y+(y-1)]
+				if nh >= 0.0:
+					n+=1
+					neighbours.append(Vector2i(x, y-1))
+					heights.append(nh)
+					sum += nh
+			if y < size.y-1:
+				var nh:float = waterHeightMapCopy[x*size.y+(y+1)]
+				if nh >= 0.0:
+					n+=1
+					neighbours.append(Vector2i(x, y+1))
+					heights.append(nh)
+					sum += nh
+			if sum < 0.01:
+				continue
+			var movedAmount = min(sum, -h)
+			for z in range(n):
+				var p = heights[z]/sum
+				waterHeightMap[neighbours[z].x*size.y+neighbours[z].y] += -movedAmount*p
+			waterHeightMap[x*size.y+y] += movedAmount
+
 func _ready() -> void:
 	#get_viewport().debug_draw = Viewport.DEBUG_DRAW_NORMAL_BUFFER
 	#get_viewport().debug_draw = Viewport.DEBUG_DRAW_WIREFRAME
@@ -78,7 +137,7 @@ func _ready() -> void:
 	#for x in range(100):
 		#var r : int = rng.randi_range(0, size.x*size.y-1)
 		#waterHeightMap[r] += 1.0/pow(detail, 2.0)
-	#waterHeightMap[size.x/2*size.y+size.y/2] += 1000.0
+	#waterHeightMap[0] += 1.0/pow(detail, 2.0)
 
 func _createMaps():
 	velocityXMap = []
@@ -100,11 +159,11 @@ func _input(event):
 		if event.button_index == MOUSE_BUTTON_LEFT && event.is_pressed():
 			for x in range(1):
 				var r : int = rng.randi_range(0, size.x*size.y-1)
-				waterHeightMap[r] += 1000.0/pow(detail, 2.0)
+				addWater(floor(float(r)/size.y), r % size.y, 100.0)
 		if event.button_index == MOUSE_BUTTON_RIGHT && event.is_pressed():
-			for x in range(1000):
+			for x in range(1):
 				var r : int = rng.randi_range(0, size.x*size.y-1)
-				waterHeightMap[r] -= 0.1/pow(detail, 2.0)
+				addWater(floor(float(r)/size.y), r % size.y, -10.0)
 
 func _process(delta: float) -> void:
 	#position.y += 0.01;
@@ -119,12 +178,15 @@ func _process(delta: float) -> void:
 		#waterHeightMap[r] += 0.00001/pow(detail, 2.0)
 	#waterHeightMap[size.x/2*size.y+size.y/2] += 0.01/pow(detail, 2.0)
 	timer = 0.0
+	print(getVolume())
 	for x in range(timeScale):
 		iteratePhysics()
 	for x in range(size.x):
 		for y in range(size.y):
 			var h : float = waterHeightMap[x*size.y+y]
-			#var vx : float = velocityYMap[x*(size.y+1)+y]/5
+			if(h < 0.0):
+				heightImage.set_pixel(x, y, Color(h, 0.0, 0.0))
+				continue
 			heightImage.set_pixel(x, y, Color(h, h, h))
 	for x in range(size.x+1):
 		for y in range(size.y):
@@ -182,17 +244,24 @@ func iteratePhysics():
 	tempMapUniform.uniform_type = RenderingDevice.UNIFORM_TYPE_STORAGE_BUFFER
 	tempMapUniform.binding = 4
 	tempMapUniform.add_id(tempMapBuffer)
-	
+	var hasNegative = false;
+	var outputArray := PackedInt32Array([hasNegative, 0, 0, 0])
+	var outputBytes := outputArray.to_byte_array()
+	var outputBuffer := rd.storage_buffer_create(outputBytes.size(), outputBytes)
+	var outputUniform := RDUniform.new()
+	outputUniform.uniform_type = RenderingDevice.UNIFORM_TYPE_STORAGE_BUFFER
+	outputUniform.binding = 5
+	outputUniform.add_id(outputBuffer)
 	var paramArray := PackedInt32Array([int(size.x), int(size.y)])
 	var paramBytes := paramArray.to_byte_array()
 	paramBytes.append_array(PackedFloat32Array([gravity, detail, 1.0/framerate*timeScale, 0.0, 0.0, 0.0]).to_byte_array())
 	var paramBuffer := rd.uniform_buffer_create(paramBytes.size(), paramBytes)
 	var paramUniform := RDUniform.new()
 	paramUniform.uniform_type = RenderingDevice.UNIFORM_TYPE_UNIFORM_BUFFER
-	paramUniform.binding = 5
+	paramUniform.binding = 6
 	paramUniform.add_id(paramBuffer)
 	
-	var mapsUniformSetHeight := rd.uniform_set_create([velXMapUniform, velYMapUniform, waterHMapUniform, hMapUniform, tempMapUniform, paramUniform], height_shader, 0)
+	var mapsUniformSetHeight := rd.uniform_set_create([velXMapUniform, velYMapUniform, waterHMapUniform, hMapUniform, tempMapUniform, outputUniform, paramUniform], height_shader, 0)
 	
 	var pipelineHeight := rd.compute_pipeline_create(height_shader)
 	var pipelineVelocity := rd.compute_pipeline_create(velocity_shader)
@@ -204,8 +273,22 @@ func iteratePhysics():
 	rd.submit()
 	rd.sync()
 	
+	var output_bytes := rd.buffer_get_data(waterHMapBuffer)
+	var output := output_bytes.to_float32_array()
+	waterHeightMap = output
+	if rd.buffer_get_data(outputBuffer).to_int32_array()[0]:
+		fixNegatives()
+		fixNegatives()
+	
 	paramUniform.binding = 4
-	var mapsUniformSetVelocity := rd.uniform_set_create([velXMapUniform, velYMapUniform, waterHMapUniform, hMapUniform, paramUniform], velocity_shader, 0)
+	waterHMapArray = PackedFloat32Array(waterHeightMap)
+	waterHMapBytes = waterHMapArray.to_byte_array()
+	var newWaterHMapBuffer = rd.storage_buffer_create(waterHMapBytes.size(), waterHMapBytes)
+	var newWaterHMapUniform = RDUniform.new()
+	newWaterHMapUniform.uniform_type = RenderingDevice.UNIFORM_TYPE_STORAGE_BUFFER
+	newWaterHMapUniform.binding = 2
+	newWaterHMapUniform.add_id(newWaterHMapBuffer)
+	var mapsUniformSetVelocity := rd.uniform_set_create([velXMapUniform, velYMapUniform, newWaterHMapUniform, hMapUniform, paramUniform], velocity_shader, 0)
 	mapsUniformSetVelocity.get_id()
 	compute_list = rd.compute_list_begin()
 	rd.compute_list_bind_compute_pipeline(compute_list, pipelineVelocity)
@@ -215,28 +298,33 @@ func iteratePhysics():
 	rd.submit()
 	rd.sync()
 	
-	var output_bytes := rd.buffer_get_data(velXMapBuffer)
-	var output := output_bytes.to_float32_array()
+	output_bytes = rd.buffer_get_data(velXMapBuffer)
+	output = output_bytes.to_float32_array()
 	velocityXMap = output
 	output_bytes = rd.buffer_get_data(velYMapBuffer)
 	output = output_bytes.to_float32_array()
 	velocityYMap = output
-	output_bytes = rd.buffer_get_data(waterHMapBuffer)
-	output = output_bytes.to_float32_array()
-	waterHeightMap = output
 	output_bytes = rd.buffer_get_data(hMapBuffer)
 	output = output_bytes.to_float32_array()
 	heightMap = output
-	rd.free_rid(pipelineHeight)
-	rd.free_rid(pipelineVelocity)
-	rd.free_rid(mapsUniformSetHeight)
-	rd.free_rid(mapsUniformSetVelocity)
+	output_bytes = rd.buffer_get_data(newWaterHMapBuffer)
+	output = output_bytes.to_float32_array()
+	waterHeightMap = output
+	if pipelineHeight.is_valid():
+		rd.free_rid(pipelineHeight)
+	if pipelineVelocity.is_valid():
+		rd.free_rid(pipelineVelocity)
+	if mapsUniformSetHeight.is_valid():
+		rd.free_rid(mapsUniformSetHeight)
+	if mapsUniformSetVelocity.is_valid():
+		rd.free_rid(mapsUniformSetVelocity)
 	rd.free_rid(hMapBuffer)
 	rd.free_rid(paramBuffer)
 	rd.free_rid(tempMapBuffer)
 	rd.free_rid(velXMapBuffer)
 	rd.free_rid(velYMapBuffer)
 	rd.free_rid(waterHMapBuffer)
+	rd.free_rid(newWaterHMapBuffer)
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_PREDELETE:

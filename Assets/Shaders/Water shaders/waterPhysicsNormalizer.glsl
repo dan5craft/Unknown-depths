@@ -8,9 +8,8 @@ layout(set = 0, binding = 1, std430) restrict buffer VelocityYMap   { float data
 layout(set = 0, binding = 2, std430) restrict buffer WaterHeightMap { float data[]; } waterHMap;
 layout(set = 0, binding = 3, std430) restrict buffer HeightMap      { float data[]; } hMap;
 layout(set = 0, binding = 4, std430) restrict buffer TemporaryMap   { float data[]; } tempMap;
-layout(set = 0, binding = 5, std430) restrict buffer OutputParams   { bool hasNegative; } outputParams;
 
-layout(set = 0, binding = 6) uniform Params {
+layout(set = 0, binding = 5) uniform Params {
     ivec2 size;
     float gravity;
     float dx;
@@ -51,9 +50,6 @@ float getHeight(int x, int y){
 }
 
 void changeWaterHeight(int x, int y, float value){
-    if(value < 0.0){
-        outputParams.hasNegative = true;
-    }
     waterHMap.data[x*params.size.y+y] = value;
 }
 

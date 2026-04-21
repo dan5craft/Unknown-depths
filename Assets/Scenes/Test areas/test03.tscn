@@ -25,7 +25,7 @@ panorama = ExtResource("1_vnsy4")
 sky_material = SubResource("PanoramaSkyMaterial_ngdhw")
 
 [sub_resource type="Environment" id="Environment_fk550"]
-background_mode = 1
+background_mode = 2
 sky = SubResource("Sky_c47eh")
 
 [sub_resource type="CompositorEffect" id="CompositorEffect_fk550"]
@@ -228,7 +228,6 @@ script = ExtResource("3_1s3p6")
 detail = 0.1
 framerate = 100
 timeScale = 1
-gravity = -9.8
 
 [node name="Control" type="Control" parent="Water" unique_id=1331129293]
 layout_mode = 3
@@ -239,7 +238,6 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="TextureRect" type="TextureRect" parent="Water/Control" unique_id=1187544866]
-visible = false
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
