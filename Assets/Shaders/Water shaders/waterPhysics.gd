@@ -18,6 +18,7 @@ extends Node3D
 var rd : RenderingDevice
 var height_shader : RID
 var velocity_shader : RID
+var negative_shader : RID
 var velocityXMap
 var velocityYMap
 var waterHeightMap
@@ -116,6 +117,9 @@ func _ready() -> void:
 	shader_file = load("res://Assets/Shaders/Water shaders/waterPhysicsVelocity.glsl")
 	shader_spirv = shader_file.get_spirv()
 	velocity_shader = rd.shader_create_from_spirv(shader_spirv)
+	shader_file = load("res://Assets/Shaders/Water shaders/waterPhysicsFixNegatives.glsl")
+	shader_spirv = shader_file.get_spirv()
+	negative_shader = rd.shader_create_from_spirv(shader_spirv)
 	if velocityXMap == null:
 		_createMaps()
 	var waterSurface := PlaneMesh.new()
@@ -273,22 +277,29 @@ func iteratePhysics():
 	rd.submit()
 	rd.sync()
 	
-	var output_bytes := rd.buffer_get_data(waterHMapBuffer)
-	var output := output_bytes.to_float32_array()
-	waterHeightMap = output
 	if rd.buffer_get_data(outputBuffer).to_int32_array()[0]:
-		fixNegatives()
-		fixNegatives()
+		var pipelineNegative := rd.compute_pipeline_create(negative_shader)
+		tempMapBytes = rd.buffer_get_data(waterHMapBuffer)
+		rd.buffer_update(tempMapBuffer, 0, tempMapBytes.size(), tempMapBytes)
+		waterHMapUniform.binding = 0
+		tempMapUniform.binding = 1
+		paramUniform.binding = 2
+		var uniformSetNegative := rd.uniform_set_create([waterHMapUniform, tempMapUniform, paramUniform], negative_shader, 0)
+		compute_list = rd.compute_list_begin()
+		rd.compute_list_bind_compute_pipeline(compute_list, pipelineNegative)
+		rd.compute_list_bind_uniform_set(compute_list, uniformSetNegative, 0)
+		rd.compute_list_dispatch(compute_list, (size.x+7)/8, (size.y+7)/8, 1)
+		rd.compute_list_end()
+		rd.submit()
+		rd.sync()
+		rd.free_rid(pipelineNegative)
+		rd.free_rid(uniformSetNegative)
 	
+	waterHMapUniform.binding = 2
 	paramUniform.binding = 4
 	waterHMapArray = PackedFloat32Array(waterHeightMap)
 	waterHMapBytes = waterHMapArray.to_byte_array()
-	var newWaterHMapBuffer = rd.storage_buffer_create(waterHMapBytes.size(), waterHMapBytes)
-	var newWaterHMapUniform = RDUniform.new()
-	newWaterHMapUniform.uniform_type = RenderingDevice.UNIFORM_TYPE_STORAGE_BUFFER
-	newWaterHMapUniform.binding = 2
-	newWaterHMapUniform.add_id(newWaterHMapBuffer)
-	var mapsUniformSetVelocity := rd.uniform_set_create([velXMapUniform, velYMapUniform, newWaterHMapUniform, hMapUniform, paramUniform], velocity_shader, 0)
+	var mapsUniformSetVelocity := rd.uniform_set_create([velXMapUniform, velYMapUniform, waterHMapUniform, hMapUniform, paramUniform], velocity_shader, 0)
 	mapsUniformSetVelocity.get_id()
 	compute_list = rd.compute_list_begin()
 	rd.compute_list_bind_compute_pipeline(compute_list, pipelineVelocity)
@@ -298,8 +309,8 @@ func iteratePhysics():
 	rd.submit()
 	rd.sync()
 	
-	output_bytes = rd.buffer_get_data(velXMapBuffer)
-	output = output_bytes.to_float32_array()
+	var output_bytes = rd.buffer_get_data(velXMapBuffer)
+	var output = output_bytes.to_float32_array()
 	velocityXMap = output
 	output_bytes = rd.buffer_get_data(velYMapBuffer)
 	output = output_bytes.to_float32_array()
@@ -307,7 +318,7 @@ func iteratePhysics():
 	output_bytes = rd.buffer_get_data(hMapBuffer)
 	output = output_bytes.to_float32_array()
 	heightMap = output
-	output_bytes = rd.buffer_get_data(newWaterHMapBuffer)
+	output_bytes = rd.buffer_get_data(waterHMapBuffer)
 	output = output_bytes.to_float32_array()
 	waterHeightMap = output
 	if pipelineHeight.is_valid():
@@ -324,9 +335,10 @@ func iteratePhysics():
 	rd.free_rid(velXMapBuffer)
 	rd.free_rid(velYMapBuffer)
 	rd.free_rid(waterHMapBuffer)
-	rd.free_rid(newWaterHMapBuffer)
+	rd.free_rid(outputBuffer)
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_PREDELETE:
 		rd.free_rid(height_shader)
 		rd.free_rid(velocity_shader)
+		rd.free_rid(negative_shader)

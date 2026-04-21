@@ -225,7 +225,7 @@ mesh = SubResource("BoxMesh_11rou")
 
 [node name="Water" type="Node3D" parent="." unique_id=1661047408]
 script = ExtResource("3_1s3p6")
-detail = 0.05
+detail = 0.1
 framerate = 100
 timeScale = 1
 
