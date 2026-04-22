@@ -19,11 +19,13 @@ var rd : RenderingDevice
 var height_shader : RID
 var velocity_shader : RID
 var negative_shader : RID
+var negative_shader2 : RID
 var velocityXMap
 var velocityYMap
 var waterHeightMap
 var heightMap
 var tempMap
+var emptyMap
 var timer = 0.0
 var heightTexture : ImageTexture
 var velXTexture : ImageTexture
@@ -63,9 +65,9 @@ func printMap(map):
 	var mapString := ""
 	for y in range(size.y):
 		for x in range(size.x):
-			var h = str(round(map[x*size.y+y]*100.0)/100.0)
+			var h = str(round(map[x*size.y+y]*1000000.0)/1000000.0)
 			mapString += h
-			var spaces = 8-len(h)
+			var spaces = 12-len(h)
 			for s in range(spaces):
 				mapString += " "
 		mapString += "\n"
@@ -85,6 +87,9 @@ func _ready() -> void:
 	shader_file = load("res://Assets/Shaders/Water shaders/waterPhysicsFixNegatives.glsl")
 	shader_spirv = shader_file.get_spirv()
 	negative_shader = rd.shader_create_from_spirv(shader_spirv)
+	shader_file = load("res://Assets/Shaders/Water shaders/waterPhysicsFixNegatives2.glsl")
+	shader_spirv = shader_file.get_spirv()
+	negative_shader2 = rd.shader_create_from_spirv(shader_spirv)
 	if velocityXMap == null:
 		_createMaps()
 	var waterSurface := PlaneMesh.new()
@@ -106,13 +111,14 @@ func _ready() -> void:
 	#for x in range(100):
 		#var r : int = rng.randi_range(0, size.x*size.y-1)
 		#waterHeightMap[r] += 1.0/pow(detail, 2.0)
-	#waterHeightMap[0] -= 4.0/pow(detail, 2.0)
+	#waterHeightMap[5] -= 9
 
 func _createMaps():
 	velocityXMap = []
 	velocityYMap = []
 	waterHeightMap = []
 	heightMap = []
+	emptyMap = []
 	for x in range(size.y):
 		velocityXMap.append(0.0)
 		velocityYMap.append(0.0)
@@ -121,6 +127,7 @@ func _createMaps():
 			velocityYMap.append(0.0)
 			waterHeightMap.append(1.0)
 			heightMap.append(0.0)
+			emptyMap.append(0.0)
 
 func _input(event):
 	# Mouse in viewport coordinates.
@@ -132,7 +139,7 @@ func _input(event):
 		if event.button_index == MOUSE_BUTTON_RIGHT && event.is_pressed():
 			for x in range(1):
 				var r : int = rng.randi_range(0, size.x*size.y-1)
-				addWater(floor(float(r)/size.y), r % size.y, -10.0)
+				addWater(floor(float(r)/size.y), r % size.y, -100.0)
 
 func _process(delta: float) -> void:
 	#position.y += 0.01;
@@ -153,9 +160,9 @@ func _process(delta: float) -> void:
 	for x in range(size.x):
 		for y in range(size.y):
 			var h : float = waterHeightMap[x*size.y+y]
-			if(h < 0.0):
-				heightImage.set_pixel(x, y, Color(-h, 0.0, 0.0))
-				continue
+			#if(h < 0.0):
+				#heightImage.set_pixel(x, y, Color(-h, 0.0, 0.0))
+				#continue
 			heightImage.set_pixel(x, y, Color(h, h, h))
 	for x in range(size.x+1):
 		for y in range(size.y):
@@ -242,10 +249,15 @@ func iteratePhysics():
 	rd.submit()
 	rd.sync()
 	
-	if rd.buffer_get_data(outputBuffer).to_int32_array()[0]:
-		print("negative")
-		#printMap(waterHeightMap)
+	if rd.buffer_get_data(outputBuffer).to_int32_array()[0] and getVolume() > 0.1:
 		var pipelineNegative := rd.compute_pipeline_create(negative_shader)
+		var pipelineNegative2 := rd.compute_pipeline_create(negative_shader2)
+		var diffMapBytes = PackedFloat32Array(emptyMap).to_byte_array()
+		var diffMapBuffer = rd.storage_buffer_create(diffMapBytes.size(), diffMapBytes)
+		var diffMapUniform := RDUniform.new()
+		diffMapUniform.uniform_type = RenderingDevice.UNIFORM_TYPE_STORAGE_BUFFER
+		diffMapUniform.binding = 2
+		diffMapUniform.add_id(diffMapBuffer)
 		tempMapBytes = rd.buffer_get_data(waterHMapBuffer)
 		rd.buffer_update(tempMapBuffer, 0, tempMapBytes.size(), tempMapBytes)
 		outputBytes = PackedInt32Array([false]).to_byte_array()
@@ -254,10 +266,14 @@ func iteratePhysics():
 		tempMapUniform.binding = 1
 		outputUniform.binding = 2
 		paramUniform.binding = 3
-		var uniformSetNegative := rd.uniform_set_create([waterHMapUniform, tempMapUniform, outputUniform, paramUniform], negative_shader, 0)
 		hasNegative = true
-		var iterations := 0
-		while hasNegative and iterations < 10:
+		#printMap(waterHeightMap)
+		#print(getVolume())
+		#printMap(tempMapBytes.to_float32_array())
+		var iterations = 0
+		while hasNegative:
+			iterations += 1
+			var uniformSetNegative := rd.uniform_set_create([waterHMapUniform, tempMapUniform, diffMapUniform, paramUniform], negative_shader, 0)
 			compute_list = rd.compute_list_begin()
 			rd.compute_list_bind_compute_pipeline(compute_list, pipelineNegative)
 			rd.compute_list_bind_uniform_set(compute_list, uniformSetNegative, 0)
@@ -265,15 +281,37 @@ func iteratePhysics():
 			rd.compute_list_end()
 			rd.submit()
 			rd.sync()
+			diffMapUniform.binding = 1
+			var uniformSetNegative2 := rd.uniform_set_create([waterHMapUniform, diffMapUniform, outputUniform, paramUniform], negative_shader2, 0)
+			compute_list = rd.compute_list_begin()
+			rd.compute_list_bind_compute_pipeline(compute_list, pipelineNegative2)
+			rd.compute_list_bind_uniform_set(compute_list, uniformSetNegative2, 0)
+			rd.compute_list_dispatch(compute_list, (size.x+7)/8, (size.y+7)/8, 1)
+			rd.compute_list_end()
+			rd.submit()
+			rd.sync()
 			tempMapBytes = rd.buffer_get_data(waterHMapBuffer)
-			#printMap(tempMapBytes.to_float32_array())
+			#tempMapArray = tempMapBytes.to_float32_array()
+			#var volume := 0.0
+			#for y in range(size.x*size.y):
+				#volume += tempMapArray[y]*pow(detail, 2.0)
+			#print("Negative: "+str(volume))
+			#if(volume < 0.15):
+				#printMap(rd.buffer_get_data(diffMapBuffer).to_float32_array())
+				#printMap(tempMapArray)
+			#print("Iteration "+str(iterations)+":")
+			#printMap(tempMapArray)
 			rd.buffer_update(tempMapBuffer, 0, tempMapBytes.size(), tempMapBytes)
+			rd.buffer_update(diffMapBuffer, 0, diffMapBytes.size(), diffMapBytes)
+			diffMapUniform.binding = 2
 			hasNegative = rd.buffer_get_data(outputBuffer).to_int32_array()[0]
 			outputBytes = PackedInt32Array([false]).to_byte_array()
 			rd.buffer_update(outputBuffer, 0, outputBytes.size(), outputBytes)
-			iterations += 1
+			rd.free_rid(uniformSetNegative)
+			rd.free_rid(uniformSetNegative2)
 		rd.free_rid(pipelineNegative)
-		rd.free_rid(uniformSetNegative)
+		rd.free_rid(pipelineNegative2)
+		rd.free_rid(diffMapBuffer)
 	
 	waterHMapUniform.binding = 2
 	paramUniform.binding = 4

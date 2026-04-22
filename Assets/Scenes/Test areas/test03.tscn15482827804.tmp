@@ -225,9 +225,10 @@ mesh = SubResource("BoxMesh_11rou")
 
 [node name="Water" type="Node3D" parent="." unique_id=1661047408]
 script = ExtResource("3_1s3p6")
-detail = 0.05
+detail = 1.0
 framerate = 100
 timeScale = 1
+size = Vector2i(4, 4)
 
 [node name="Control" type="Control" parent="Water" unique_id=1331129293]
 layout_mode = 3

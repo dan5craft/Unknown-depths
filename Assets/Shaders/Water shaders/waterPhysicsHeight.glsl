@@ -51,7 +51,7 @@ float getHeight(int x, int y){
 }
 
 void changeWaterHeight(int x, int y, float value){
-    if(value < 0.0){
+    if(value < -1.0){
         outputParams.hasNegative = true;
     }
     waterHMap.data[x*params.size.y+y] = value, 0.0;
