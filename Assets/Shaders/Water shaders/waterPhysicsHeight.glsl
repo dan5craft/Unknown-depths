@@ -8,9 +8,10 @@ layout(set = 0, binding = 1, std430) restrict buffer VelocityYMap   { float data
 layout(set = 0, binding = 2, std430) restrict buffer WaterHeightMap { float data[]; } waterHMap;
 layout(set = 0, binding = 3, std430) restrict buffer HeightMap      { float data[]; } hMap;
 layout(set = 0, binding = 4, std430) restrict buffer TemporaryMap   { float data[]; } tempMap;
-layout(set = 0, binding = 5, std430) restrict buffer OutputParams   { bool hasNegative; } outputParams;
+layout(set = 0, binding = 5, r32f) uniform image2D waterHeightTexture;
+layout(set = 0, binding = 6, std430) restrict buffer OutputParams   { bool hasNegative; } outputParams;
 
-layout(set = 0, binding = 6) uniform Params {
+layout(set = 0, binding = 7) uniform Params {
     ivec2 size;
     float gravity;
     float dx;
@@ -54,7 +55,8 @@ void changeWaterHeight(int x, int y, float value){
     if(value < -1.0){
         outputParams.hasNegative = true;
     }
-    waterHMap.data[x*params.size.y+y] = value, 0.0;
+    waterHMap.data[x*params.size.y+y] = value;
+    imageStore(waterHeightTexture, ivec2(x, y), vec4(value));
 }
 
 vec4 getUpH(int x, int y){
@@ -98,12 +100,12 @@ vec4 getUpH(int x, int y){
     } else{
         upwindHeight.w = getWaterHeight(x, y+1);
     }
-    //float hadj = max(0, (upwindHeight.y+upwindHeight.x+upwindHeight.w+upwindHeight.z)/(4/*-skipped*/)-2.0*(params.dx/(params.gravity*params.dt)));
+    //float hadj = max(0, (upwindHeight.y+upwindHeight.x+upwindHeight.w+upwindHeight.z)/(4.0/*-skipped*/)-2.0*(params.dx/(-params.gravity*params.dt)));
     //upwindHeight -= hadj;
-    upwindHeight.x -= max(0, upwindHeight.x+2.0*(params.dx/(params.gravity*params.dt)));
-    upwindHeight.y -= max(0, upwindHeight.y+2.0*(params.dx/(params.gravity*params.dt)));
-    upwindHeight.z -= max(0, upwindHeight.z+2.0*(params.dx/(params.gravity*params.dt)));
-    upwindHeight.w -= max(0, upwindHeight.w+2.0*(params.dx/(params.gravity*params.dt)));
+    //upwindHeight.x -= max(0, upwindHeight.x+2.0*(params.dx/(params.gravity*params.dt)));
+    //upwindHeight.y -= max(0, upwindHeight.y+2.0*(params.dx/(params.gravity*params.dt)));
+    //upwindHeight.z -= max(0, upwindHeight.z+2.0*(params.dx/(params.gravity*params.dt)));
+    //upwindHeight.w -= max(0, upwindHeight.w+2.0*(params.dx/(params.gravity*params.dt)));
     return upwindHeight;
 }
 
@@ -113,5 +115,5 @@ void main() {
     if(x >= params.size.x || y >= params.size.y) return;
     vec4 upH = getUpH(x, y);
     float dh = -((upH.y*getVelX(x+1, y)-upH.x*getVelX(x, y))/params.dx+(upH.w*getVelY(x, y+1)-upH.z*getVelY(x, y))/params.dx);
-    changeWaterHeight(x, y, tempMap.data[x*params.size.y+y]+dh*params.dt);
+    changeWaterHeight(x, y, getWaterHeight(x, y)+dh*params.dt);
 }

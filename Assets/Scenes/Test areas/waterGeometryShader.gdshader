@@ -38,7 +38,9 @@ void vertex() {
 	vec3 T = vec3(0.0, texture(heightmap, vec2(UV.x, clamp(UV.y-texel.y, 0.0, 1.0))).r-h, -detail);
 	vec3 RB = cross(B, R);
 	vec3 LT = cross(T, L);
-	NORMAL = normalize(RB+LT);
+	if(texelCoords.x > 1 && texelCoords.y > 1 && texelCoords.x < size.x-2 && texelCoords.y < size.y-2){
+		NORMAL = normalize(RB+LT);
+	}
 }
 
 vec3 lerp_color(vec3 color1, vec3 color2, float p){
