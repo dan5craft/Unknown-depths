@@ -7,8 +7,10 @@ layout(set = 0, binding = 0, std430) restrict buffer VelocityXMap   { float data
 layout(set = 0, binding = 1, std430) restrict buffer VelocityYMap   { float data[]; } velYMap;
 layout(set = 0, binding = 2, std430) restrict buffer WaterHeightMap { float data[]; } waterHMap;
 layout(set = 0, binding = 3, std430) restrict buffer HeightMap      { float data[]; } hMap;
+layout(set = 0, binding = 4, r32f) uniform image2D velXTexture;
+layout(set = 0, binding = 5, r32f) uniform image2D velYTexture;
 
-layout(set = 0, binding = 4) uniform Params {
+layout(set = 0, binding = 6) uniform Params {
     ivec2 size;
     float gravity;
     float dx;
@@ -62,10 +64,14 @@ float getCombinedWaterHeight(int x, int y){
 }
 
 void changeVelX(int x, int y, float value){
-    velXMap.data[x*params.size.y+y] = clamp(value, -0.5*(params.dx/params.dt), 0.5*(params.dx/params.dt));
+    value = clamp(value, -0.25*(params.dx/params.dt), 0.25*(params.dx/params.dt));
+    velXMap.data[x*params.size.y+y] = value;
+    imageStore(velXTexture, ivec2(x, y), vec4(value));
 }
 void changeVelY(int x, int y, float value){
-    velYMap.data[x*(params.size.y+1)+y] = clamp(value, -0.5*(params.dx/params.dt), 0.5*(params.dx/params.dt));
+    value = clamp(value, -0.25*(params.dx/params.dt), 0.25*(params.dx/params.dt));
+    velYMap.data[x*(params.size.y+1)+y] = value;
+    imageStore(velYTexture, ivec2(x, y), vec4(value));
 }
 void changeWaterHeight(int x, int y, float value){
     waterHMap.data[x*params.size.y+y] = value;
@@ -83,6 +89,8 @@ void main() {
     if(y > 0){
         dvy = (-params.gravity/params.dx)*(getCombinedWaterHeight(x, y-1)-getCombinedWaterHeight(x, y));
     }
-    changeVelX(x, y, (getVelX(x, y)-getVelX(x, y)*0.5*params.dt)+dvx*params.dt);
-    changeVelY(x, y, (getVelY(x, y)-getVelY(x, y)*0.5*params.dt)+dvy*params.dt);
+    //changeVelX(x, y, (getVelX(x, y)-0.5*getVelX(x, y)*params.dt)+dvx*params.dt);
+    //changeVelY(x, y, (getVelY(x, y)-0.5*getVelY(x, y)*params.dt)+dvy*params.dt);
+    changeVelX(x, y, getVelX(x, y)/(1.0+0.1*params.dt)+dvx*params.dt);
+    changeVelY(x, y, getVelY(x, y)/(1.0+0.1*params.dt)+dvy*params.dt);
 }
