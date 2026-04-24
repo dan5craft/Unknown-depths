@@ -6,6 +6,7 @@
 [ext_resource type="Script" uid="uid://dk6l3frjdom3i" path="res://Assets/Shaders/Water shaders/waterPhysics.gd" id="3_1s3p6"]
 [ext_resource type="Script" uid="uid://1gwxs31o4gd2" path="res://Assets/Scripts/Misc/cameraMovement.gd" id="3_2ayae"]
 [ext_resource type="Script" uid="uid://rod5bnxd463i" path="res://Assets/Scripts/Misc/setResolution.gd" id="3_11rou"]
+[ext_resource type="ArrayMesh" uid="uid://cky7kta3b3ien" path="res://Assets/Models/TestObjects/testMap.obj" id="4_7u4ll"]
 [ext_resource type="Script" uid="uid://bfcgspbjr47j1" path="res://Assets/Scenes/Test areas/FpsCounter.gd" id="4_qfa4o"]
 [ext_resource type="Shader" uid="uid://bkn0u34fvk1f2" path="res://Assets/Scenes/Test areas/waterGeometryShader.gdshader" id="5_7fwww"]
 [ext_resource type="Script" uid="uid://ba2pn1o5o0tis" path="res://Assets/Scenes/Test areas/followCamera.gd" id="5_inrog"]
@@ -44,9 +45,6 @@ compositor_effects = Array[CompositorEffect]([SubResource("CompositorEffect_fk55
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qfa4o"]
 albedo_texture = ExtResource("1_cp0rw")
-
-[sub_resource type="PlaneMesh" id="PlaneMesh_7fwww"]
-size = Vector2(10, 10)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_bsy72"]
 albedo_color = Color(1, 0.6313726, 0.1882353, 1)
@@ -164,8 +162,9 @@ environment = SubResource("Environment_fk550")
 compositor = SubResource("Compositor_1s3p6")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1672864818]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -15.835504, 0)
 material_override = SubResource("StandardMaterial3D_qfa4o")
-mesh = SubResource("PlaneMesh_7fwww")
+mesh = ExtResource("4_7u4ll")
 
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="." unique_id=359372535]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.18342465, 0)
@@ -226,7 +225,7 @@ mesh = SubResource("BoxMesh_11rou")
 script = ExtResource("3_1s3p6")
 detail = 0.1
 framerate = 288
-size = Vector2i(20, 20)
+size = Vector2i(100, 100)
 
 [node name="Control" type="Control" parent="Water" unique_id=1331129293]
 layout_mode = 3
