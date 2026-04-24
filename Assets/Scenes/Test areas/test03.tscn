@@ -193,11 +193,11 @@ compositor = SubResource("Compositor_7fwww")
 script = ExtResource("3_2ayae")
 
 [node name="SubViewport" type="SubViewport" parent="." unique_id=1764804202]
-size = Vector2i(2560, 1440)
+size = Vector2i(5120, 1440)
 script = ExtResource("3_11rou")
 
 [node name="Camera3D" type="Camera3D" parent="SubViewport" unique_id=1511899497 node_paths=PackedStringArray("target")]
-transform = Transform3D(1, 0, 0, 0, 0.99144256, 0.13054329, 0, -0.13054329, 0.99144256, -2.3841858e-07, 2.0159864, 4.830284)
+transform = Transform3D(0.45634106, -0.7063165, 0.54117453, -0.06459701, 0.58029234, 0.8118423, -0.88745713, -0.40543523, 0.21918544, 3.9249156, 8.998459, 7.969134)
 cull_mask = 1048573
 script = ExtResource("5_inrog")
 target = NodePath("../../Camera3D2")
@@ -224,7 +224,7 @@ mesh = SubResource("BoxMesh_11rou")
 
 [node name="Water" type="Node3D" parent="." unique_id=1661047408]
 script = ExtResource("3_1s3p6")
-detail = 0.05
+detail = 0.1
 framerate = 288
 size = Vector2i(20, 20)
 
