@@ -1,6 +1,7 @@
-extends Node3D
+extends Node
 
 var waterColor : Color = Color("#007ba7", 1.0);
+var waterAbsorption : float = 0.2
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
