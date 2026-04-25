@@ -84,13 +84,27 @@ void main() {
     float dvx = 0.0;
     float dvy = 0.0;
     if(x > 0){
-        dvx = (-params.gravity/params.dx)*(getCombinedWaterHeight(x-1, y)-getCombinedWaterHeight(x, y));
+        float wh1 = getWaterHeight(x-1, y);
+        float wh2 = getWaterHeight(x, y);
+        float h1 = getHeight(x-1, y);
+        float h2 = getHeight(x, y);
+        if(wh1+wh2 < 0.01){
+            dvx = 0.0;
+        } else{
+            dvx = (-params.gravity/params.dx)*(getCombinedWaterHeight(x-1, y)-getCombinedWaterHeight(x, y));
+        }
     }
     if(y > 0){
-        dvy = (-params.gravity/params.dx)*(getCombinedWaterHeight(x, y-1)-getCombinedWaterHeight(x, y));
+        float wh1 = getWaterHeight(x, y-1);
+        float wh2 = getWaterHeight(x, y);
+        float h1 = getHeight(x, y-1);
+        float h2 = getHeight(x, y);
+        if(wh1+wh2 < 0.01){
+            dvy = 0.0;
+        } else{
+            dvy = (-params.gravity/params.dx)*(getCombinedWaterHeight(x, y-1)-getCombinedWaterHeight(x, y));
+        }
     }
-    //changeVelX(x, y, (getVelX(x, y)-0.5*getVelX(x, y)*params.dt)+dvx*params.dt);
-    //changeVelY(x, y, (getVelY(x, y)-0.5*getVelY(x, y)*params.dt)+dvy*params.dt);
     changeVelX(x, y, getVelX(x, y)/(1.0+0.1*params.dt)+dvx*params.dt);
     changeVelY(x, y, getVelY(x, y)/(1.0+0.1*params.dt)+dvy*params.dt);
 }
