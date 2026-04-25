@@ -1,8 +1,8 @@
 extends Node3D
-@export var detail : float = 4:
+@export var detail : float = 0.2:
 	set(value):
 		detail = value
-@export var framerate : int = 60:
+@export var framerate : int = 288:
 	set(value):
 		framerate = value
 @export var timeScale : int = 2;
@@ -29,9 +29,8 @@ var emptyMap
 var waterHeightTextureBuffer : RID
 var velocityXTextureBuffer : RID
 var velocityYTextureBuffer : RID
-var waterHeightTexture : Image
 var timer = 0.0
-var heightTexture : Texture2DRD
+var waterHeightTexture : Texture2DRD
 var velXTexture : Texture2DRD
 var velYTexture : Texture2DRD
 var rng = RandomNumberGenerator.new()
@@ -64,6 +63,20 @@ func addWater(x:int, y:int, volume:float):
 
 func addWaterArea(x:int, y:int, volume:float, area:float):
 	var cellAmount:int= round(area/pow(detail, 2.0))
+	var waterAmount:float = volume/pow(detail, 2.0)/cellAmount
+	var radius:float = sqrt(area/PI)
+	var cells = []
+	while cellAmount > 0:
+		for X in range(radius*2):
+			for Y in range(radius*2):
+				var pos = Vector2i(x-radius+X, y-radius+Y)
+				if pos.x < 0 or pos.x > size.x-1 or pos.y < 0 or pos.y > size.y-1 or sqrt(pow(pos.x-x, 2.0)+pow(pos.y-y, 2.0)) > radius or cells.count(pos) > 0:
+					continue
+				waterHeightMap[pos.x*size.y+pos.y] += waterAmount
+				cells.append(pos)
+				#print("Added water to cell at X: "+str(pos.x)+" Y: "+str(pos.y))
+				cellAmount -= 1
+		radius += 1
 
 func printMap(map):
 	var mapString := ""
@@ -106,8 +119,8 @@ func _ready() -> void:
 	)
 	var emptyBytes := PackedFloat32Array(waterHeightMap).to_byte_array()
 	waterHeightTextureBuffer = rd.texture_create(texFormat, RDTextureView.new(), [emptyBytes])
-	heightTexture = Texture2DRD.new()
-	heightTexture.set_texture_rd_rid(waterHeightTextureBuffer)
+	waterHeightTexture = Texture2DRD.new()
+	waterHeightTexture.set_texture_rd_rid(waterHeightTextureBuffer)
 	texFormat.width = size.x+1
 	emptyBytes = PackedFloat32Array(velocityXMap).to_byte_array()
 	velocityXTextureBuffer = rd.texture_create(texFormat, RDTextureView.new(), [emptyBytes])
@@ -154,35 +167,35 @@ func _input(event):
 	# Mouse in viewport coordinates.
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT && event.is_pressed():
-			for x in range(100):
+			for x in range(1000):
 				var r : int = rng.randi_range(0, size.x*size.y-1)
-				addWater(floor(float(r)/size.y), r % size.y, 10000.0)
+				addWaterArea(floor(float(r)/size.y), r % size.y, 10.0, 10.0)
 		if event.button_index == MOUSE_BUTTON_RIGHT && event.is_pressed():
 			for x in range(1):
 				var r : int = rng.randi_range(0, size.x*size.y-1)
-				addWater(floor(float(r)/size.y), r % size.y, -100.0)
+				addWaterArea(floor(float(r)/size.y), r % size.y, -100.0, 100.0)
 
 func _process(delta: float) -> void:
 	#position.y += 0.01;
 	#$"../SubViewport/Camera3D".position.y += 0.01;
 	#$"../Camera3D2".position.y += 0.01;
 	#$"../OmniLight3D2".position.y += 0.01;
-	timer += delta
-	if timer < 1.0/framerate:
-		return
+	#timer += delta
+	#if timer < 1.0/framerate:
+		#return
 	#for x in range(20000):
 		#var r : int = rng.randi_range(0, size.x*size.y-1)
 		#waterHeightMap[r] += 0.00001/pow(detail, 2.0)
 	#waterHeightMap[size.x/2*size.y+size.y/2] += 0.01/pow(detail, 2.0)
-	timer = 0.0
+	#timer = 0.0
 	#print(getVolume())
 	#print(waterHeightMap[50*size.y+50])
 	for x in range(timeScale):
 		iteratePhysics()
-	$MeshInstance3D.get_surface_override_material(0).set_shader_parameter("heightmap", heightTexture)
+	$MeshInstance3D.get_surface_override_material(0).set_shader_parameter("heightmap", waterHeightTexture)
 	$MeshInstance3D.get_surface_override_material(0).set_shader_parameter("velXmap", velXTexture)
 	$MeshInstance3D.get_surface_override_material(0).set_shader_parameter("velYmap", velYTexture)
-	$Control/TextureRect.texture = heightTexture
+	$Control/TextureRect.texture = waterHeightTexture
 
 func iteratePhysics():
 	var velXMapArray := PackedFloat32Array(velocityXMap)
@@ -256,7 +269,7 @@ func iteratePhysics():
 	rd.compute_list_add_barrier(compute_list)
 	rd.compute_list_end()
 	
-	if rd.buffer_get_data(outputBuffer).to_int32_array()[0] and getVolume() > 1.0 and 1 == 2:
+	if 1 == 2 and rd.buffer_get_data(outputBuffer).to_int32_array()[0] and getVolume() > 1.0:
 		var pipelineNegative := rd.compute_pipeline_create(negative_shader)
 		var pipelineNegative2 := rd.compute_pipeline_create(negative_shader2)
 		var diffMapBytes = PackedFloat32Array(emptyMap).to_byte_array()

@@ -43,7 +43,7 @@ void main() {
     float depth = -(view.xyz / view.w).z;
 
     float absorption = exp(-water_absorption*depth);
-    color = lerp_color(water_color*color, color, absorption)*absorption+params.brightness*0.1*water_color;
+    color = lerp_color(water_color*color, color, absorption)*absorption/*+params.brightness*0.1*water_color*/;
 
     imageStore(image_container, uv, vec4(color, 1.0));
 }

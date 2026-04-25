@@ -75,7 +75,7 @@ void fragment() {
 	}
 	float absorption = exp(-absorptionCoefficient*depth);
 	vec3 screenColor = pow(texture(screenTexture, SCREEN_UV).rgb, vec3(2.2));
-	vec3 color = lerp_color(waterColor*screenColor, screenColor, absorption)*absorption+waterColor*0.2;
+	vec3 color = lerp_color(waterColor*screenColor, screenColor, absorption)*absorption+waterColor*0.05;
 	//ALBEDO = lerp_color(waterColor*screenColor, screenColor, absorption)*absorption;
 	if(v >= minFoamSpeed){
 		ALBEDO = lerp_color(color, vec3(1.0), foamPercent);
