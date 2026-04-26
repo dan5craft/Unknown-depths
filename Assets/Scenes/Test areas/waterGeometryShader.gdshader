@@ -38,8 +38,8 @@ void vertex() {
 	float Lwh = texture(waterHeightmap, vec2(clamp(UV.x-texel.x, 0.0, 1.0), UV.y)).r;
 	float Twh = texture(waterHeightmap, vec2(UV.x, clamp(UV.y-texel.y, 0.0, 1.0))).r;
 	float avgWh = (Rwh+Bwh+Lwh+Twh)/4.0;
-	if(wh > avgWh*1.25){
-		wh = avgWh*1.25;
+	if(wh > avgWh*1.1){
+		wh = avgWh*1.1;
 	}
 	float Rh = Rwh + texture(heightmap, vec2(clamp(UV.x+texel.x, 0.0, 1.0), UV.y)).r;
 	float Bh = Bwh + texture(heightmap, vec2(UV.x, clamp(UV.y+texel.y, 0.0, 1.0))).r;
