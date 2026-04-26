@@ -1,19 +1,23 @@
 extends Node3D
-@export var detail : float = 4:
+@export_category("Water properties")
+@export_custom(PROPERTY_HINT_NONE, "suffix:m") var detail : float = 0.2:
 	set(value):
 		detail = value
-@export var framerate : int = 60:
+@export var framerate : int = 288:
 	set(value):
 		framerate = value
 @export var timeScale : int = 2;
-@export var gravity : float = -9.8:
+@export_custom(PROPERTY_HINT_NONE, "suffix:m/s²") var gravity : float = -9.8:
 	set(value):
 		gravity = value
-@export var size : Vector2i = Vector2(10, 10):
+var size : Vector2i
+@export_custom(PROPERTY_HINT_NONE, "suffix:m") var gridSize : Vector2i = Vector2(10, 10):
 	set(value):
-		size = value
+		gridSize = value
+		size = value/detail
 		_createMaps()
-@export var maxTerrainHeight = 2.0;
+@export_category("Height map")
+@export_custom(PROPERTY_HINT_NONE, "suffix:m") var maxTerrainHeight = 2.0;
 
 var rd : RenderingDevice
 var height_shader : RID
@@ -29,23 +33,46 @@ var emptyMap
 var waterHeightTextureBuffer : RID
 var velocityXTextureBuffer : RID
 var velocityYTextureBuffer : RID
-var waterHeightTexture : Image
 var timer = 0.0
-var heightTexture : Texture2DRD
+var waterHeightTexture : Texture2DRD
+var heightTexture : ImageTexture
 var velXTexture : Texture2DRD
 var velYTexture : Texture2DRD
 var rng = RandomNumberGenerator.new()
+
+func bakeHeightMaps():
+	var heighestHeight = 0.0
+	var space_state = get_world_3d().direct_space_state
+	var gridCorner:Vector2 = Vector2(global_position.x - gridSize.x/2.0, global_position.z - gridSize.y/2.0)
+	var heightImage = Image.create(size.x, size.y, 0, Image.FORMAT_RF)
+	for x in range(size.x):
+		for y in range(size.y):
+			var start:Vector3 = Vector3(gridCorner.x+x*detail+detail/2, global_position.y+maxTerrainHeight, gridCorner.y+y*detail+detail/2)
+			var end:Vector3 = Vector3(gridCorner.x+x*detail+detail/2, global_position.y, gridCorner.y+y*detail+detail/2)
+			var query = PhysicsRayQueryParameters3D.create(start, end)
+			var result = space_state.intersect_ray(query)
+			if result:
+				var h:float = result.position.y-global_position.y
+				if h > heighestHeight:
+					heighestHeight = h
+				heightImage.set_pixel(x, y, Color(h, 0.0, 0.0))
+				heightMap[x*size.y+y] = h
+			else:
+				heightImage.set_pixel(x, y, Color(0.0, 0.0, 0.0))
+				heightMap[x*size.y+y] = 0.0
+	#print("The maximum height found was "+str(heighestHeight))
+	heightTexture = ImageTexture.create_from_image(heightImage)
 
 func getWaterHeight(x : int, y : int) -> float:
 	return waterHeightMap[x*size.y+y]
 
 func isUnderwater(pos : Vector3) -> bool:
-	var diff := Vector2(pos.x-(position.x-size.x*detail/2.0), pos.z-(position.z-size.y*detail/2.0))
+	var diff := Vector2(pos.x-(global_position.x-size.x*detail/2.0), pos.z-(global_position.z-size.y*detail/2.0))
 	var x : int = round(diff.x/detail)-1
 	var y : int = round(diff.y/detail)-1
 	if x < 0.0 or x > size.x-1 or y < 0.0 or y > size.y-1:
 		return false
-	if(getWaterHeight(x, y)+position.y >= pos.y):
+	if(getWaterHeight(x, y)+global_position.y+heightMap[x*size.y+y] >= pos.y):
 		return true
 	else:
 		return false
@@ -64,6 +91,20 @@ func addWater(x:int, y:int, volume:float):
 
 func addWaterArea(x:int, y:int, volume:float, area:float):
 	var cellAmount:int= round(area/pow(detail, 2.0))
+	var waterAmount:float = volume/pow(detail, 2.0)/cellAmount
+	var radius:float = sqrt(area/PI)
+	var cells = []
+	while cellAmount > 0:
+		for X in range(radius*2):
+			for Y in range(radius*2):
+				var pos = Vector2i(x-radius+X, y-radius+Y)
+				if pos.x < 0 or pos.x > size.x-1 or pos.y < 0 or pos.y > size.y-1 or sqrt(pow(pos.x-x, 2.0)+pow(pos.y-y, 2.0)) > radius or cells.count(pos) > 0:
+					continue
+				waterHeightMap[pos.x*size.y+pos.y] += waterAmount
+				cells.append(pos)
+				#print("Added water to cell at X: "+str(pos.x)+" Y: "+str(pos.y))
+				cellAmount -= 1
+		radius += 1
 
 func printMap(map):
 	var mapString := ""
@@ -80,7 +121,7 @@ func printMap(map):
 func _ready() -> void:
 	#get_viewport().debug_draw = Viewport.DEBUG_DRAW_NORMAL_BUFFER
 	#get_viewport().debug_draw = Viewport.DEBUG_DRAW_WIREFRAME
-	size = size/detail;
+	size = gridSize/detail
 	rd = RenderingServer.get_rendering_device()
 	var shader_file := load("res://Assets/Shaders/Water shaders/waterPhysicsHeight.glsl")
 	var shader_spirv: RDShaderSPIRV = shader_file.get_spirv()
@@ -96,6 +137,7 @@ func _ready() -> void:
 	negative_shader2 = rd.shader_create_from_spirv(shader_spirv)
 	if velocityXMap == null:
 		_createMaps()
+	bakeHeightMaps()
 	var texFormat := RDTextureFormat.new()
 	texFormat.width = size.x
 	texFormat.height = size.y
@@ -106,8 +148,8 @@ func _ready() -> void:
 	)
 	var emptyBytes := PackedFloat32Array(waterHeightMap).to_byte_array()
 	waterHeightTextureBuffer = rd.texture_create(texFormat, RDTextureView.new(), [emptyBytes])
-	heightTexture = Texture2DRD.new()
-	heightTexture.set_texture_rd_rid(waterHeightTextureBuffer)
+	waterHeightTexture = Texture2DRD.new()
+	waterHeightTexture.set_texture_rd_rid(waterHeightTextureBuffer)
 	texFormat.width = size.x+1
 	emptyBytes = PackedFloat32Array(velocityXMap).to_byte_array()
 	velocityXTextureBuffer = rd.texture_create(texFormat, RDTextureView.new(), [emptyBytes])
@@ -128,7 +170,8 @@ func _ready() -> void:
 	#waterHeightMap[r] -= 1.0
 	$MeshInstance3D.get_surface_override_material(0).set_shader_parameter("detail", detail)
 	$MeshInstance3D.get_surface_override_material(0).set_shader_parameter("waterColor", Globals.waterColor)
-	$"../Camera3D2".compositor.compositor_effects.get(0).water_color = Globals.waterColor
+	$MeshInstance3D.get_surface_override_material(0).set_shader_parameter("absorptionCoefficient", Globals.waterAbsorption)
+	$MeshInstance3D.get_surface_override_material(0).set_shader_parameter("heightmap", heightTexture)
 	#for x in range(100):
 		#var r : int = rng.randi_range(0, size.x*size.y-1)
 		#waterHeightMap[r] += 1.0/pow(detail, 2.0)
@@ -154,35 +197,35 @@ func _input(event):
 	# Mouse in viewport coordinates.
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT && event.is_pressed():
-			for x in range(200):
+			for x in range(1):
 				var r : int = rng.randi_range(0, size.x*size.y-1)
-				addWater(floor(float(r)/size.y), r % size.y, 1.0)
+				addWaterArea(floor(float(r)/size.y), r % size.y, 10000.0, 100.0)
 		if event.button_index == MOUSE_BUTTON_RIGHT && event.is_pressed():
 			for x in range(1):
 				var r : int = rng.randi_range(0, size.x*size.y-1)
-				addWater(floor(float(r)/size.y), r % size.y, -1.0)
+				addWaterArea(floor(float(r)/size.y), r % size.y, -100.0, 100.0)
 
 func _process(delta: float) -> void:
 	#position.y += 0.01;
 	#$"../SubViewport/Camera3D".position.y += 0.01;
 	#$"../Camera3D2".position.y += 0.01;
 	#$"../OmniLight3D2".position.y += 0.01;
-	timer += delta
-	if timer < 1.0/framerate:
-		return
+	#timer += delta
+	#if timer < 1.0/framerate:
+		#return
 	#for x in range(20000):
 		#var r : int = rng.randi_range(0, size.x*size.y-1)
 		#waterHeightMap[r] += 0.00001/pow(detail, 2.0)
 	#waterHeightMap[size.x/2*size.y+size.y/2] += 0.01/pow(detail, 2.0)
-	timer = 0.0
+	#timer = 0.0
 	#print(getVolume())
 	#print(waterHeightMap[50*size.y+50])
 	for x in range(timeScale):
 		iteratePhysics()
-	$MeshInstance3D.get_surface_override_material(0).set_shader_parameter("heightmap", heightTexture)
+	$MeshInstance3D.get_surface_override_material(0).set_shader_parameter("waterHeightmap", waterHeightTexture)
 	$MeshInstance3D.get_surface_override_material(0).set_shader_parameter("velXmap", velXTexture)
 	$MeshInstance3D.get_surface_override_material(0).set_shader_parameter("velYmap", velYTexture)
-	$Control/TextureRect.texture = heightTexture
+	$Control/TextureRect.texture = waterHeightTexture
 
 func iteratePhysics():
 	var velXMapArray := PackedFloat32Array(velocityXMap)
@@ -256,7 +299,7 @@ func iteratePhysics():
 	rd.compute_list_add_barrier(compute_list)
 	rd.compute_list_end()
 	
-	if rd.buffer_get_data(outputBuffer).to_int32_array()[0] and getVolume() > 1.0 and 1 == 2:
+	if 1 == 2 and rd.buffer_get_data(outputBuffer).to_int32_array()[0] and getVolume() > 1.0:
 		var pipelineNegative := rd.compute_pipeline_create(negative_shader)
 		var pipelineNegative2 := rd.compute_pipeline_create(negative_shader2)
 		var diffMapBytes = PackedFloat32Array(emptyMap).to_byte_array()
@@ -366,3 +409,7 @@ func _notification(what: int) -> void:
 		rd.free_rid(height_shader)
 		rd.free_rid(velocity_shader)
 		rd.free_rid(negative_shader)
+		rd.free_rid(negative_shader2)
+		rd.free_rid(velocityXTextureBuffer)
+		rd.free_rid(velocityYTextureBuffer)
+		rd.free_rid(waterHeightTextureBuffer)

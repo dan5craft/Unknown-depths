@@ -13,8 +13,6 @@ var linear_sampler: RID
 var context : StringName = "underwaterEffects"
 var imageContainerName : StringName = "image_container"
 
-@export var water_color : Color = Color(0.0, 0.0, 1.0)
-@export var water_absorption : float = 0.2
 @export var blurRadius : float = 2.0
 @export var blurStepAmount : int = 10
 @export var blurCircleAmount : int = 3
@@ -134,10 +132,10 @@ func _render_callback(p_effect_callback_type, p_render_data):
 					size.y,
 					b,
 					0.0,
-					water_color.r,
-					water_color.g,
-					water_color.b,
-					water_absorption
+					Globals.waterColor.r,
+					Globals.waterColor.g,
+					Globals.waterColor.b,
+					Globals.waterAbsorption
 				]
 				var pba = PackedByteArray()
 				pba.append_array(PackedFloat32Array(params).to_byte_array())
@@ -175,10 +173,10 @@ func _render_callback(p_effect_callback_type, p_render_data):
 					size.y,
 					0.0,
 					0.0,
-					water_color.r,
-					water_color.g,
-					water_color.b,
-					water_absorption,
+					Globals.waterColor.r,
+					Globals.waterColor.g,
+					Globals.waterColor.b,
+					Globals.waterAbsorption,
 					blurRadius,
 					blurStepAmount,
 					blurCircleAmount,
