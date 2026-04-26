@@ -105,6 +105,6 @@ void main() {
             dvy = (-params.gravity/params.dx)*(getCombinedWaterHeight(x, y-1)-getCombinedWaterHeight(x, y));
         }
     }
-    changeVelX(x, y, getVelX(x, y)/(1.0+0.1*params.dt)+dvx*params.dt);
-    changeVelY(x, y, getVelY(x, y)/(1.0+0.1*params.dt)+dvy*params.dt);
+    changeVelX(x, y, getVelX(x, y)/(1.0+0.25*params.dt)+dvx*params.dt);
+    changeVelY(x, y, getVelY(x, y)/(1.0+0.25*params.dt)+dvy*params.dt);
 }

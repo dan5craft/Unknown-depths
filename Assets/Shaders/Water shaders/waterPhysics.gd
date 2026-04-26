@@ -62,6 +62,7 @@ func bakeHeightMaps():
 				heightMap[x*size.y+y] = 0.0
 	#print("The maximum height found was "+str(heighestHeight))
 	heightTexture = ImageTexture.create_from_image(heightImage)
+	#$Control/TextureRect.texture = heightTexture
 
 func getWaterHeight(x : int, y : int) -> float:
 	return waterHeightMap[x*size.y+y]
@@ -199,7 +200,7 @@ func _input(event):
 		if event.button_index == MOUSE_BUTTON_LEFT && event.is_pressed():
 			for x in range(1):
 				var r : int = rng.randi_range(0, size.x*size.y-1)
-				addWaterArea(floor(float(r)/size.y), r % size.y, 10000.0, 100.0)
+				addWaterArea(floor(float(r)/size.y), r % size.y, 10000.0, 100.0*pow(detail, 2.0))
 		if event.button_index == MOUSE_BUTTON_RIGHT && event.is_pressed():
 			for x in range(1):
 				var r : int = rng.randi_range(0, size.x*size.y-1)
@@ -225,7 +226,6 @@ func _process(delta: float) -> void:
 	$MeshInstance3D.get_surface_override_material(0).set_shader_parameter("waterHeightmap", waterHeightTexture)
 	$MeshInstance3D.get_surface_override_material(0).set_shader_parameter("velXmap", velXTexture)
 	$MeshInstance3D.get_surface_override_material(0).set_shader_parameter("velYmap", velYTexture)
-	$Control/TextureRect.texture = waterHeightTexture
 
 func iteratePhysics():
 	var velXMapArray := PackedFloat32Array(velocityXMap)
