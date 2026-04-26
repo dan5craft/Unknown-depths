@@ -6,8 +6,8 @@ uniform sampler2D velXmap;
 uniform sampler2D velYmap;
 uniform float detail;
 uniform float absorptionCoefficient;
-uniform float minFoamSpeed = 0.5;
-uniform float maxFoamSpeed = 3.0;
+uniform float minFoamSpeed = 1.0;
+uniform float maxFoamSpeed = 5.0;
 uniform vec3 waterColor;
 uniform sampler2D depthTexture:hint_depth_texture;
 uniform sampler2D screenTexture;
@@ -71,10 +71,8 @@ void fragment() {
 	float vY1 = sqrt(pow(texture(velXmap, UV).r, 2.0));
 	float vY2 = sqrt(pow(texture(velXmap, vec2(UV.x, UV.y+yTexel.y)).r, 2.0));
 	float v = (vX1 + vX2 + vY1 + vY2)/4.0;
-	float foamPercent = 0.0;//clamp((v-minFoamSpeed)/(maxFoamSpeed-minFoamSpeed), 0.0, 1.0);
-	if(h<0.0001){
-		ALPHA = 0.0;
-	}
+	float foamPercent = clamp((v-minFoamSpeed)/(maxFoamSpeed-minFoamSpeed), 0.0, 1.0);
+	ALPHA = min(1.0, h/0.1);
 	ROUGHNESS = 0.1;//+foamPercent*0.9;
 	SPECULAR = 0.2;
 	CLEARCOAT = 1.0;
@@ -89,7 +87,7 @@ void fragment() {
 	}
 	float absorption = exp(-absorptionCoefficient*depth);
 	vec3 screenColor = pow(texture(screenTexture, SCREEN_UV).rgb, vec3(2.2));
-	vec3 color = lerp_color(waterColor*screenColor, screenColor, absorption)*absorption+waterColor*0.1*(1.0-absorption);
+	vec3 color = lerp_color(waterColor*screenColor, screenColor, absorption)*absorption+waterColor*0.05*(1.0-absorption);
 	//ALBEDO = lerp_color(waterColor*screenColor, screenColor, absorption)*absorption;
 	if(v >= minFoamSpeed){
 		ALBEDO = lerp_color(color, vec3(1.0), foamPercent);
