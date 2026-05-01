@@ -2,14 +2,11 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bmetmi8xwc7nr"
+uid="uid://dia2ce5cn1jyx"
 path.s3tc="res://.godot/imported/miniSub08_worn-rusted-painted_albedo.webp-954d65ce9131fc8325b713d902725638.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
-}
-generator_parameters={
-"md5": "26cfc3b9a461b4615cf9d9f13481b8b9"
 }
 
 [deps]

@@ -2,14 +2,11 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://jo3r0eyaybsm"
+uid="uid://c8joa4ieh13jr"
 path.s3tc="res://.godot/imported/miniSub08_decal01.webp-0089acb8dc90032b88e153568dc8e499.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
-}
-generator_parameters={
-"md5": "b35a171b9774d5cd93013c55d903c99f"
 }
 
 [deps]

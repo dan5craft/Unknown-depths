@@ -2,13 +2,10 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c2w3wd75ofn0d"
+uid="uid://dis0fwugcxik7"
 path="res://.godot/imported/miniSub08_worn-rusted-painted_normal-ogl_1.png-b0365dfe1cc57e11c302dc2b4e0058d0.ctex"
 metadata={
 "vram_texture": false
-}
-generator_parameters={
-"md5": "0d0e4185933933b49594f2234aebfd9b"
 }
 
 [deps]
@@ -26,7 +23,7 @@ compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
 compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=true
+mipmaps/generate=false
 mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""

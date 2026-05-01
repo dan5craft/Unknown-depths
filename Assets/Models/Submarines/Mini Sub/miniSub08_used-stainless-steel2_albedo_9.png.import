@@ -2,13 +2,10 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dsf6hbiil5pe"
+uid="uid://d0c1vo3anot86"
 path="res://.godot/imported/miniSub08_used-stainless-steel2_albedo_9.png-2ed173334b7edb1ff9396cec4956cf6b.ctex"
 metadata={
 "vram_texture": false
-}
-generator_parameters={
-"md5": "2e9bec29762b8ed6066b3c20c9360159"
 }
 
 [deps]
@@ -26,7 +23,7 @@ compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
 compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=true
+mipmaps/generate=false
 mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""

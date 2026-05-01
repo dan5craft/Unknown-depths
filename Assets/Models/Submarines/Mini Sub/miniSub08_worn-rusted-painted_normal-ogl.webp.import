@@ -2,14 +2,11 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://tcvetij58j2t"
+uid="uid://b7gf0gp2n4ofg"
 path.s3tc="res://.godot/imported/miniSub08_worn-rusted-painted_normal-ogl.webp-f779bddfb2bc964856c518cd64904ceb.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
-}
-generator_parameters={
-"md5": "79b37e298accd69c6f0937f64c2eeda9"
 }
 
 [deps]

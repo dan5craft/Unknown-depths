@@ -2,14 +2,11 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dia4ts0wfydfb"
+uid="uid://5e1xb6jb8r56"
 path.s3tc="res://.godot/imported/miniSub08_rusted-steel_albedo.webp-ac40256b57eedca61b81df3c201b2525.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
-}
-generator_parameters={
-"md5": "cf48925c82727195edc0170cce8cceb0"
 }
 
 [deps]

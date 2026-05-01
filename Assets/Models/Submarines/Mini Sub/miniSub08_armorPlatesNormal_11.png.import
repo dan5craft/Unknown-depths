@@ -2,13 +2,10 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cx41tapxx1pln"
+uid="uid://c3k7n4u1qw6hl"
 path="res://.godot/imported/miniSub08_armorPlatesNormal_11.png-55af7da3a54ecad7fb7bba8a061dd074.ctex"
 metadata={
 "vram_texture": false
-}
-generator_parameters={
-"md5": "149f84fd9b067ee6825c5637166a7fc3"
 }
 
 [deps]
@@ -26,7 +23,7 @@ compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
 compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=true
+mipmaps/generate=false
 mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""

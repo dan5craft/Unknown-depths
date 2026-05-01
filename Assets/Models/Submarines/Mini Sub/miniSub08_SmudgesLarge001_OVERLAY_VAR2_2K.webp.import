@@ -2,13 +2,10 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dlbfotfkf5302"
+uid="uid://dvbrcj1vof1ha"
 path="res://.godot/imported/miniSub08_SmudgesLarge001_OVERLAY_VAR2_2K.webp-56041fca586dab37b8e9f549bc47f3f1.ctex"
 metadata={
 "vram_texture": false
-}
-generator_parameters={
-"md5": "10a09d064e37ce7f3345500588d031c1"
 }
 
 [deps]
@@ -26,7 +23,7 @@ compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
 compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=true
+mipmaps/generate=false
 mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""
