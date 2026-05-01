@@ -1,0 +1,5 @@
+[gd_scene format=3 uid="uid://bomaljuuiwmmd"]
+
+[ext_resource type="PackedScene" uid="uid://72y34gtf5xpm" path="res://Assets/Models/Submarines/Mini Sub/miniSub06.glb" id="1_x1c3j"]
+
+[node name="miniSub06" unique_id=1414904179 instance=ExtResource("1_x1c3j")]
