@@ -25,12 +25,10 @@ float getVelY(int x, int y){
     return velYMap.data[x*(params.size.y+1)+y];
 }
 
-vec4 getHeight(int x, int y){
+vec2 getHeight(int x, int y){
     /*
     x = max height
     y = min height
-    z = top height
-    w = bottom height
     */
     if(x >= params.size.x){
         x = params.size.x-1;
@@ -45,9 +43,7 @@ vec4 getHeight(int x, int y){
     int arraySize = params.size.x*params.size.y;
     float maxH = hMap.data[x*params.size.y+y];
     float minH = hMap.data[x*params.size.y+y+arraySize];
-    float topH = hMap.data[x*params.size.y+y+arraySize*2];
-    float bottomH = hMap.data[x*params.size.y+y+arraySize*3];
-    return vec4(maxH, minH, topH, bottomH);
+    return vec2(maxH, minH);
 }
 
 float getWaterHeight(int x, int y){
@@ -61,21 +57,14 @@ float getWaterHeight(int x, int y){
     } else if(y < 0){
         y = 0;
     }
-    float wh = tempMap.data[x*params.size.y+y];
-    vec4 h = getHeight(x, y);
-    if(wh+h.y >= h.w){
-        wh -= (h.w-h.y);
-    }
-    return wh;
+    return tempMap.data[x*params.size.y+y];
 }
 
 void changeWaterHeight(int x, int y, float value){
     if(value < -1.0){
         outputParams.hasNegative = true;
     }
-    vec4 height = getHeight(x, y);
-    waterHMap.data[x*params.size.y+y] = clamp(value, 0.0, height.x-height.y);
-    //waterHMap.data[x*params.size.y+y] = value;
+    waterHMap.data[x*params.size.y+y] = value;
     imageStore(waterHeightTexture, ivec2(x, y), vec4(value));
 }
 

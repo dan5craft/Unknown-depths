@@ -15,19 +15,15 @@ uniform sampler2D screenTexture;
 render_mode cull_disabled;
 render_mode depth_draw_always;
 
-float getCombinedHeight(vec4 height, float wh){
-	if(wh+height.y <= height.w){
-        return wh+height.y;
-    } else{
-        return wh+height.y+(height.z-height.w);
-    }
+float getCombinedHeight(vec2 height, float wh){
+	return wh+height.y;
 }
 
 void vertex() {
 	ivec2 size = textureSize(waterHeightmap, 0);
 	ivec2 texelCoords = ivec2(int(round(UV.x*float(size.x-1))), int(round(UV.y*float(size.y-1))));
-	float wh = texelFetch(waterHeightmap, texelCoords, 0).r;
-	vec4 h = texelFetch(heightmap, texelCoords, 0);
+	float wh = texelFetch(waterHeightmap, texelCoords, 0).x;
+	vec2 h = texelFetch(heightmap, texelCoords, 0).xy;
 	float cwh = getCombinedHeight(h, wh);
 	//vec2 xTexel = 1.0 / vec2(textureSize(velXmap, 0));
 	//vec2 yTexel = 1.0 / vec2(textureSize(velYmap, 0));
@@ -52,10 +48,10 @@ void vertex() {
 	if(wh > avgWh*1.1){
 		wh = avgWh*1.1;
 	}
-	vec4 Rh = texelFetch(heightmap, Rtc, 0);
-	vec4 Bh = texelFetch(heightmap, Btc, 0);
-	vec4 Lh = texelFetch(heightmap, Ltc, 0);
-	vec4 Th = texelFetch(heightmap, Ttc, 0);
+	vec2 Rh = texelFetch(heightmap, Rtc, 0).xy;
+	vec2 Bh = texelFetch(heightmap, Btc, 0).xy;
+	vec2 Lh = texelFetch(heightmap, Ltc, 0).xy;
+	vec2 Th = texelFetch(heightmap, Ttc, 0).xy;
 	float Rcwh = getCombinedHeight(Rh, Rwh);
 	float Bcwh = getCombinedHeight(Bh, Bwh);
 	float Lcwh = getCombinedHeight(Lh, Lwh);
@@ -78,7 +74,11 @@ vec3 lerp_color(vec3 color1, vec3 color2, float p){
 }
 
 void fragment() {
-	float h = texture(waterHeightmap, UV).r;
+	ivec2 size = textureSize(waterHeightmap, 0);
+	ivec2 texelCoords = ivec2(int(round(UV.x*float(size.x-1))), int(round(UV.y*float(size.y-1))));
+	float wh = texelFetch(waterHeightmap, texelCoords, 0).x;
+	vec2 h = texelFetch(heightmap, texelCoords, 0).xy;
+	float cwh = getCombinedHeight(h, wh);
 	vec2 xTexel = 1.0 / vec2(textureSize(velXmap, 0));
 	vec2 yTexel = 1.0 / vec2(textureSize(velYmap, 0));
 	float vX1 = sqrt(pow(texture(velXmap, UV).r, 2.0));
@@ -87,7 +87,7 @@ void fragment() {
 	float vY2 = sqrt(pow(texture(velXmap, vec2(UV.x, UV.y+yTexel.y)).r, 2.0));
 	float v = (vX1 + vX2 + vY1 + vY2)/4.0;
 	float foamPercent = clamp((v-minFoamSpeed)/(maxFoamSpeed-minFoamSpeed), 0.0, 1.0);
-	ALPHA = min(1.0, h/0.05);
+	ALPHA = min(1.0, wh/0.05);
 	ROUGHNESS = 0.1;//+foamPercent*0.9;
 	SPECULAR = 0.2;
 	CLEARCOAT = 1.0;

@@ -23,8 +23,6 @@ var velocityYMap
 var waterHeightMap
 var maxHeightMap
 var minHeightMap
-var topHeightMap
-var bottomHeightMap
 var tempMap
 var emptyMap
 var waterHeightTextureBuffer : RID
@@ -69,34 +67,19 @@ func bakeHeightMaps():
 			result = castRay(x, y, minHeight, maxHeight)
 			if result:
 				var h:float = result.position.y-global_position.y
-				heightColor.g = h
-				minHeightMap[x*size.y+y] = h
+				if h < heightColor.r+0.1 && h > heightColor.r-0.1:
+					heightColor.g = minHeight
+					minHeightMap[x*size.y+y] = minHeight
+				else:
+					heightColor.g = h
+					minHeightMap[x*size.y+y] = h
 			else:
 				heightColor.g = minHeight
 				minHeightMap[x*size.y+y] = minHeight
-			result = castRay(x, y, maxHeightMap[x*size.y+y], minHeight)
-			if result:
-				var h:float = result.position.y-global_position.y
-				if h < minHeightMap[x*size.y+y]+0.1 and h > minHeightMap[x*size.y+y]-0.1:
-					h = maxHeight
-				heightColor.b = h
-				topHeightMap[x*size.y+y] = h
-			else:
-				heightColor.b = maxHeight
-				topHeightMap[x*size.y+y] = maxHeight
-			result = castRay(x, y, minHeightMap[x*size.y+y], maxHeight)
-			if result:
-				var h:float = result.position.y-global_position.y
-				if h < maxHeightMap[x*size.y+y]+0.1 and h > maxHeightMap[x*size.y+y]-0.1:
-					h = maxHeight
-				heightColor.a = h
-				bottomHeightMap[x*size.y+y] = h
-			else:
-				heightColor.a = maxHeight
-				bottomHeightMap[x*size.y+y] = maxHeight
 			heightImage.set_pixel(x, y, heightColor)
 	print("The maximum height found was "+str(heighestHeight))
 	heightTexture = ImageTexture.create_from_image(heightImage)
+	#$Control/TextureRect.texture = heightTexture
 
 func getWaterHeight(x : int, y : int) -> float:
 	return waterHeightMap[x*size.y+y]
@@ -218,8 +201,6 @@ func _createMaps():
 	waterHeightMap = []
 	maxHeightMap = []
 	minHeightMap = []
-	topHeightMap = []
-	bottomHeightMap = []
 	emptyMap = []
 	for x in range(size.x):
 		for y in range(size.y):
@@ -228,8 +209,6 @@ func _createMaps():
 			waterHeightMap.append(0.0)
 			maxHeightMap.append(0.0)
 			minHeightMap.append(0.0)
-			topHeightMap.append(0.0)
-			bottomHeightMap.append(0.0)
 			emptyMap.append(0.0)
 	for x in range(size.x):
 		velocityYMap.append(0.0)
@@ -241,12 +220,14 @@ func _input(event):
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT && event.is_pressed():
 			for x in range(1):
-				var r : int = rng.randi_range(0, size.x*size.y-1)
-				addWaterArea(floor(float(r)/size.y), r % size.y, 10.0, 10.0)
+				#var r : int = rng.randi_range(0, size.x*size.y-1)
+				#addWaterArea(floor(float(r)/size.y), r % size.y, 10.0, 10.0)
+				addWaterArea(size.x/2, size.y/2, 1.0, 1.0)
 		if event.button_index == MOUSE_BUTTON_RIGHT && event.is_pressed():
 			for x in range(1):
-				var r : int = rng.randi_range(0, size.x*size.y-1)
-				addWaterArea(floor(float(r)/size.y), r % size.y, -100.0, 100.0)
+				#var r : int = rng.randi_range(0, size.x*size.y-1)
+				#addWaterArea(floor(float(r)/size.y), r % size.y, -100.0, 100.0)
+				addWaterArea(size.x/2, size.y/2, -1.0, 1.0)
 
 func _process(delta: float) -> void:
 	#position.y += 0.01;
@@ -261,7 +242,7 @@ func _process(delta: float) -> void:
 		#addWater(floor(float(r)/size.y), r % size.y, 0.01)
 	#waterHeightMap[size.x/2*size.y+size.y/2] += 0.01/pow(detail, 2.0)
 	#timer = 0.0
-	#print(getVolume())
+	print(getVolume())
 	#print(waterHeightMap[50*size.y+50])
 	for x in range(timeScale):
 		iteratePhysics()
@@ -304,8 +285,6 @@ func iteratePhysics():
 	tempMapUniform.add_id(tempMapBuffer)
 	var hMapArray := PackedFloat32Array(maxHeightMap)
 	hMapArray.append_array(PackedFloat32Array(minHeightMap))
-	hMapArray.append_array(PackedFloat32Array(topHeightMap))
-	hMapArray.append_array(PackedFloat32Array(bottomHeightMap))
 	var hMapBytes := hMapArray.to_byte_array()
 	var hMapBuffer := rd.storage_buffer_create(hMapBytes.size(), hMapBytes)
 	var hMapUniform := RDUniform.new()
