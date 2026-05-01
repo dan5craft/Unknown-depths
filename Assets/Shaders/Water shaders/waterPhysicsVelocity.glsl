@@ -85,15 +85,15 @@ void changeVelX(int x, int y, float value){
     float wh2 = getWaterHeight(x, y);
     vec4 h1 = getHeight(x-1, y);
     vec4 h2 = getHeight(x, y);
-    float cwh1 = wh1+h1.y;
-    float cwh2 = wh2+h2.y;
+    float cwh1 = getCombinedWaterHeight(x-1, y);
+    float cwh2 = getCombinedWaterHeight(x, y);
     value = clamp(value, -(h1.x-getCombinedWaterHeight(x-1, y))/wh2*0.25*(params.dx/params.dt), (h2.x-getCombinedWaterHeight(x, y))/wh1*0.25*(params.dx/params.dt));
     //value = min(value, (h2.w-cwh2)/wh1*0.25*(params.dx/params.dt));
     //value = max(value, -(h1.w-cwh1)/wh2*0.25*(params.dx/params.dt));
-    if(cwh1+(h1.z-h1.w) <= h2.z){
+    if(cwh1 <= h2.z){
         value = min(value, (h2.w-cwh2)/wh1*0.25*(params.dx/params.dt));
     }
-    if(cwh2+(h2.z-h2.w) <= h1.z){
+    if(cwh2 <= h1.z){
         value = max(value, -(h1.w-cwh1)/wh2*0.25*(params.dx/params.dt));
     }
     value = clamp(value, -0.25*(params.dx/params.dt), 0.25*(params.dx/params.dt));
@@ -105,15 +105,15 @@ void changeVelY(int x, int y, float value){
     float wh2 = getWaterHeight(x, y);
     vec4 h1 = getHeight(x, y-1);
     vec4 h2 = getHeight(x, y);
-    float cwh1 = wh1+h1.y;
-    float cwh2 = wh2+h2.y;
+    float cwh1 = getCombinedWaterHeight(x, y-1);
+    float cwh2 = getCombinedWaterHeight(x, y);
     value = clamp(value, -(h1.x-getCombinedWaterHeight(x, y-1))/wh2*0.25*(params.dx/params.dt), (h2.x-getCombinedWaterHeight(x, y))/wh1*0.25*(params.dx/params.dt));
     //value = min(value, (h2.w-cwh2)/wh1*0.25*(params.dx/params.dt));
     //value = max(value, -(h1.w-cwh1)/wh2*0.25*(params.dx/params.dt));
-    if(cwh1+(h1.z-h1.w) <= h2.z){
+    if(cwh1 <= h2.z){
         value = min(value, (h2.w-cwh2)/wh1*0.25*(params.dx/params.dt));
     }
-    if(cwh2+(h2.z-h2.w) <= h1.z){
+    if(cwh2 <= h1.z){
         value = max(value, -(h1.w-cwh1)/wh2*0.25*(params.dx/params.dt));
     }
     value = clamp(value, -0.25*(params.dx/params.dt), 0.25*(params.dx/params.dt));
@@ -138,13 +138,13 @@ void main() {
         if(wh1+wh2 < 0.01){
             changeVelX(x, y, 0.0);
         } else{
-            float cwh1 = wh1+h1.y;
-            float cwh2 = wh2+h2.y;
+            float cwh1 = getCombinedWaterHeight(x-1, y);
+            float cwh2 = getCombinedWaterHeight(x, y);
             float temp = cwh2;
-            if(cwh1+(h1.z-h1.w) > h2.z){
+            if(cwh1 > h2.z){
                 temp = wh2+h2.y+(h2.z-h2.w);
             }
-            if(cwh2+(h2.z-h2.w) > h1.z){
+            if(cwh2 > h1.z){
                 cwh1 = wh1+h1.y+(h1.z-h1.w);
             }
             cwh2 = temp;
@@ -160,13 +160,13 @@ void main() {
         if(wh1+wh2 < 0.01){
             changeVelY(x, y, 0.0);
         } else{
-            float cwh1 = wh1+h1.y;
-            float cwh2 = wh2+h2.y;
+            float cwh1 = getCombinedWaterHeight(x, y-1);
+            float cwh2 = getCombinedWaterHeight(x, y);
             float temp = cwh2;
-            if(cwh1+(h1.z-h1.w) > h2.z){
+            if(cwh1 > h2.z){
                 temp = wh2+h2.y+(h2.z-h2.w);
             }
-            if(cwh2+(h2.z-h2.w) > h1.z){
+            if(cwh2 > h1.z){
                 cwh1 = wh1+h1.y+(h1.z-h1.w);
             }
             cwh2 = temp;

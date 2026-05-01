@@ -11,7 +11,6 @@ uniform float maxFoamSpeed = 5.0;
 uniform vec3 waterColor;
 uniform sampler2D depthTexture:hint_depth_texture;
 uniform sampler2D screenTexture;
-uniform sampler2D noiseTexture;
 
 render_mode cull_disabled;
 render_mode depth_draw_always;
@@ -41,30 +40,33 @@ void vertex() {
 	//if(v >= minFoamSpeed){
 		//foamHeight = 0.5*(v-minFoamSpeed)/(maxFoamSpeed-minFoamSpeed);
 	//}
-	vec2 texel = 1.0 / vec2(textureSize(waterHeightmap, 0));
-	float Rwh = texture(waterHeightmap, vec2(clamp(UV.x+texel.x, 0.0, 1.0), UV.y)).r;
-	float Bwh = texture(waterHeightmap, vec2(UV.x, clamp(UV.y+texel.y, 0.0, 1.0))).r;
-	float Lwh = texture(waterHeightmap, vec2(clamp(UV.x-texel.x, 0.0, 1.0), UV.y)).r;
-	float Twh = texture(waterHeightmap, vec2(UV.x, clamp(UV.y-texel.y, 0.0, 1.0))).r;
+	ivec2 Rtc = ivec2(min(texelCoords.x+1, size.x-1), texelCoords.y);
+	ivec2 Btc = ivec2(texelCoords.x, min(texelCoords.y+1, size.y-1));
+	ivec2 Ltc = ivec2(max(texelCoords.x-1, 0), texelCoords.y);
+	ivec2 Ttc = ivec2(texelCoords.x, max(texelCoords.y-1, 0));
+	float Rwh = texelFetch(waterHeightmap, Rtc, 0).r;
+	float Bwh = texelFetch(waterHeightmap, Btc, 0).r;
+	float Lwh = texelFetch(waterHeightmap, Ltc, 0).r;
+	float Twh = texelFetch(waterHeightmap, Ttc, 0).r;
 	float avgWh = (Rwh+Bwh+Lwh+Twh)/4.0;
 	if(wh > avgWh*1.1){
 		wh = avgWh*1.1;
 	}
-	vec4 Rh = texture(heightmap, vec2(clamp(UV.x+texel.x, 0.0, 1.0), UV.y));
-	vec4 Bh = texture(heightmap, vec2(UV.x, clamp(UV.y+texel.y, 0.0, 1.0)));
-	vec4 Lh = texture(heightmap, vec2(clamp(UV.x-texel.x, 0.0, 1.0), UV.y));
-	vec4 Th = texture(heightmap, vec2(UV.x, clamp(UV.y-texel.y, 0.0, 1.0)));
+	vec4 Rh = texelFetch(heightmap, Rtc, 0);
+	vec4 Bh = texelFetch(heightmap, Btc, 0);
+	vec4 Lh = texelFetch(heightmap, Ltc, 0);
+	vec4 Th = texelFetch(heightmap, Ttc, 0);
 	float Rcwh = getCombinedHeight(Rh, Rwh);
 	float Bcwh = getCombinedHeight(Bh, Bwh);
 	float Lcwh = getCombinedHeight(Lh, Lwh);
 	float Tcwh = getCombinedHeight(Th, Twh);
-	vec3 R = vec3(detail, Rcwh-(cwh+wh), 0.0);
-	vec3 B = vec3(0.0, Bcwh-(cwh+wh), detail);
-	vec3 L = vec3(-detail, Lcwh-(cwh+wh), 0.0);
-	vec3 T = vec3(0.0, Tcwh-(cwh+wh), -detail);
+	vec3 R = vec3(detail, Rcwh-cwh, 0.0);
+	vec3 B = vec3(0.0, Bcwh-cwh, detail);
+	vec3 L = vec3(-detail, Lcwh-cwh, 0.0);
+	vec3 T = vec3(0.0, Tcwh-cwh, -detail);
 	vec3 RB = cross(B, R);
 	vec3 LT = cross(T, L);
-	if(texelCoords.x > 1 && texelCoords.y > 1 && texelCoords.x < size.x-2 && texelCoords.y < size.y-2){
+	if(texelCoords.x > 0 && texelCoords.y > 0 && texelCoords.x < size.x-1 && texelCoords.y < size.y-1){
 		NORMAL = normalize(RB+LT);
 	}
 	VERTEX.y = cwh;//+foamHeight;
@@ -108,6 +110,7 @@ void fragment() {
 	} else{
 		ALBEDO = color;
 	}
+	//ALBEDO = vec3(1.0);
 }
 
 float DistributionGGX(float cos_theta_m, float alpha)

@@ -221,10 +221,8 @@ func _createMaps():
 	topHeightMap = []
 	bottomHeightMap = []
 	emptyMap = []
-	for x in range(size.y):
-		velocityXMap.append(0.0)
-		velocityYMap.append(0.0)
-		for y in range(size.x):
+	for x in range(size.x):
+		for y in range(size.y):
 			velocityXMap.append(0.0)
 			velocityYMap.append(0.0)
 			waterHeightMap.append(0.0)
@@ -233,6 +231,10 @@ func _createMaps():
 			topHeightMap.append(0.0)
 			bottomHeightMap.append(0.0)
 			emptyMap.append(0.0)
+	for x in range(size.x):
+		velocityYMap.append(0.0)
+	for y in range(size.y):
+		velocityXMap.append(0.0)
 
 func _input(event):
 	# Mouse in viewport coordinates.
@@ -240,7 +242,7 @@ func _input(event):
 		if event.button_index == MOUSE_BUTTON_LEFT && event.is_pressed():
 			for x in range(1):
 				var r : int = rng.randi_range(0, size.x*size.y-1)
-				addWaterArea(floor(float(r)/size.y), r % size.y, 10000.0, 1000.0)
+				addWaterArea(floor(float(r)/size.y), r % size.y, 10.0, 10.0)
 		if event.button_index == MOUSE_BUTTON_RIGHT && event.is_pressed():
 			for x in range(1):
 				var r : int = rng.randi_range(0, size.x*size.y-1)
