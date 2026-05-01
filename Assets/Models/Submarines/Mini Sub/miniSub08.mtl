@@ -1,0 +1,107 @@
+# Blender 5.1.0 MTL File: 'miniSub08.blend'
+# www.blender.org
+
+newmtl Decals
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_d /home/vincent/Downloads/decal01.png
+
+newmtl GlassTransmission
+Ns 360.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl Material
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+
+newmtl Material.001
+Ns 8.598352
+Ka 0.585455 0.585455 0.585455
+Kd 0.061229 0.061229 0.061229
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 3
+
+newmtl Material.002
+Ns 353.484314
+Ka 1.000000 1.000000 1.000000
+Kd 0.393896 0.393896 0.393896
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 3
+
+newmtl cameraBase
+Ns 414.267761
+Ka 1.000000 1.000000 1.000000
+Kd 0.072970 0.072970 0.072970
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+
+newmtl cameraLight
+Ns 1000.000000
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 1585.299927 158.925186 165.294266
+Ni 1.500000
+d 1.000000
+illum 2
+
+newmtl wornRustedPaint
+Ka 1.000000 1.000000 1.000000
+Kd 0.003728 0.005515 0.016247
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Ns /home/vincent/Documents/Blender/textures/PBRs/worn-rusted-painted-bl/worn-rusted-painted_roughness.png
+map_refl /home/vincent/Documents/Blender/textures/PBRs/worn-rusted-painted-bl/worn-rusted-painted_metallic.png
+map_Bump -bm 1.000000 /home/vincent/Documents/Blender/textures/PBRs/worn-rusted-painted-bl/worn-rusted-painted_normal-ogl.png
+
+newmtl wornRustedSteel
+Ka 1.000000 1.000000 1.000000
+Kd 0.102936 0.204303 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 3
+map_Ns /home/vincent/Documents/Blender/textures/PBRs/rusted-steel-bl/rusted-steel_roughness.png
+map_refl /home/vincent/Documents/Blender/textures/PBRs/rusted-steel-bl/rusted-steel_metallic.png
+map_Bump -bm 1.000000 /home/vincent/Documents/Blender/textures/PBRs/rusted-steel-bl/rusted-steel_normal-ogl.png
+
+newmtl wornRustedSteel.001
+Ns 409.599976
+Ka 0.425455 0.425455 0.425455
+Kd 0.102936 0.204303 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 3
+map_Bump -bm 1.000000 /home/vincent/Documents/Blender/textures/PBRs/used-stainless-steel2-bl/used-stainless-steel2_normal-ogl.png
