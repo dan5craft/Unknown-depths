@@ -66,6 +66,7 @@ void vertex() {
 		NORMAL = normalize(RB+LT);
 	}
 	VERTEX.y = cwh;//+foamHeight;
+	
 }
 
 vec3 lerp_color(vec3 color1, vec3 color2, float p){
@@ -88,6 +89,18 @@ void fragment() {
 	float v = (vX1 + vX2 + vY1 + vY2)/4.0;
 	float foamPercent = clamp((v-minFoamSpeed)/(maxFoamSpeed-minFoamSpeed), 0.0, 1.0);
 	ALPHA = min(1.0, wh/0.05);
+	ivec2 Rtc = ivec2(min(texelCoords.x+1, size.x-1), texelCoords.y);
+	ivec2 Btc = ivec2(texelCoords.x, min(texelCoords.y+1, size.y-1));
+	ivec2 Ltc = ivec2(max(texelCoords.x-1, 0), texelCoords.y);
+	ivec2 Ttc = ivec2(texelCoords.x, max(texelCoords.y-1, 0));
+	float Rwh = texelFetch(waterHeightmap, Rtc, 0).r;
+	float Bwh = texelFetch(waterHeightmap, Btc, 0).r;
+	float Lwh = texelFetch(waterHeightmap, Ltc, 0).r;
+	float Twh = texelFetch(waterHeightmap, Ttc, 0).r;
+	float avgWh = (Rwh+Bwh+Lwh+Twh)/4.0;
+	if(Rwh < 0.01 && Rwh > -0.01 || Bwh < 0.01 && Bwh > -0.01 || Lwh < 0.01 && Lwh > -0.01 || Twh < 0.01 && Twh > -0.01){
+		wh = avgWh*0.8;
+	}
 	ROUGHNESS = 0.1;//+foamPercent*0.9;
 	SPECULAR = 0.2;
 	CLEARCOAT = 1.0;
