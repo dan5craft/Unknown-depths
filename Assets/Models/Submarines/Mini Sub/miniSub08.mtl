@@ -2,176 +2,255 @@
 # www.blender.org
 
 newmtl Armor_plates
-Ns 523.649658
-Ka 1.000000 1.000000 1.000000
 Kd 0.003728 0.005515 0.016247
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 3
+Pr 0.276364
+Pm 1.000000
+Ps 0.000000
+Pc 0.000000
+Pcr 0.291818
+aniso 0.000000
+anisor 0.000000
 
 newmtl Decals
-Ns 0.000000
-Ka 1.000000 1.000000 1.000000
 Kd 0.800000 0.800000 0.800000
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 illum 2
+Pr 1.000000
+Pm 0.000000
+Ps 0.000000
+Pc 0.000000
+Pcr 0.030000
+aniso 0.000000
+anisor 0.000000
 map_d /home/vincent/Downloads/decal01.png
 
 newmtl GlassTransmission
-Ns 859.834778
-Ka 1.000000 1.000000 1.000000
 Kd 1.000000 1.000000 1.000000
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
+Pr 0.072727
+Pm 0.000000
+Ps 0.000000
+Pc 4.000000
+Pcr 1.000000
+aniso 0.000000
+anisor 0.000000
+Tf 1.000000 1.000000 1.000000
 
 newmtl Material
-Ns 250.000000
-Ka 1.000000 1.000000 1.000000
 Kd 0.800000 0.800000 0.800000
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
+Pr 0.500000
+Pm 0.000000
+Ps 0.000000
+Pc 0.000000
+Pcr 0.030000
+aniso 0.000000
+anisor 0.000000
 
 newmtl Material.001
-Ns 8.598352
-Ka 0.585455 0.585455 0.585455
 Kd 0.061229 0.061229 0.061229
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 3
+Pr 0.907273
+Pm 0.585455
+Ps 0.000000
+Pc 0.000000
+Pcr 0.030000
+aniso 0.000000
+anisor 0.000000
 
 newmtl Material.002
-Ns 353.484314
-Ka 1.000000 1.000000 1.000000
 Kd 0.393896 0.393896 0.393896
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 3
+Pr 0.405455
+Pm 1.000000
+Ps 0.000000
+Pc 0.000000
+Pcr 0.030000
+aniso 0.000000
+anisor 0.000000
 
 newmtl Material.008
-Ns 250.000000
-Ka 1.000000 1.000000 1.000000
 Kd 0.027461 0.027461 0.027461
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
+Pr 0.500000
+Pm 0.000000
+Ps 0.000000
+Pc 0.000000
+Pcr 0.030000
+aniso 0.000000
+anisor 0.000000
 
 newmtl VOID
-Ns 0.000000
-Ka 1.000000 1.000000 1.000000
 Kd 0.000000 0.000000 0.000000
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
+Pr 1.000000
+Pm 0.000000
+Ps 0.000000
+Pc 0.000000
+Pcr 0.030000
+aniso 0.000000
+anisor 0.000000
 
 newmtl cameraBase
-Ns 414.267761
-Ka 1.000000 1.000000 1.000000
 Kd 0.072970 0.072970 0.072970
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
+Pr 0.356364
+Pm 0.000000
+Ps 0.000000
+Pc 4.000000
+Pcr 0.000000
+aniso 0.000000
+anisor 0.000000
 
 newmtl cameraBodyMaterial
-Ns 52.482655
-Ka 1.000000 1.000000 1.000000
 Kd 0.800000 0.800000 0.800000
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 3
+Pr 0.770909
+Pm 1.000000
+Ps 0.000000
+Pc 0.000000
+Pcr 0.030000
+aniso 0.000000
+anisor 0.000000
 
 newmtl cameraContainerHeatsinkPlate
-Ns 83.573570
-Ka 1.000000 1.000000 1.000000
 Kd 0.019162 0.019162 0.019162
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 3
+Pr 0.710909
+Pm 1.000000
+Ps 0.000000
+Pc 0.000000
+Pcr 0.030000
+aniso 0.000000
+anisor 0.000000
 
 newmtl cameraLensBody
-Ns 0.000000
-Ka 1.000000 1.000000 1.000000
 Kd 0.030655 0.030655 0.030655
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 3
+Pr 1.000000
+Pm 1.000000
+Ps 0.000000
+Pc 0.000000
+Pcr 0.030000
+aniso 0.000000
+anisor 0.000000
 
 newmtl cameraLensGlass
-Ns 360.000000
-Ka 1.000000 1.000000 1.000000
 Kd 0.800000 0.800000 0.800000
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
+Pr 0.400000
+Pm 0.000000
 
 newmtl cameraLight
-Ns 1000.000000
-Ka 1.000000 1.000000 1.000000
 Kd 1.000000 1.000000 1.000000
 Ks 0.500000 0.500000 0.500000
 Ke 1585.299927 158.925186 165.294266
 Ni 1.500000
 d 1.000000
 illum 2
+Pr 0.000000
+Pm 0.000000
+Ps 0.000000
+Pc 0.000000
+Pcr 0.030000
+aniso 0.000000
+anisor 0.000000
 
 newmtl wornRustedPaint
-Ka 1.000000 1.000000 1.000000
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
+Ps 0.000000
+Pc 0.000000
+Pcr 0.291818
+aniso 0.000000
+anisor 0.000000
 map_Kd /home/vincent/Documents/Blender/textures/PBRs/worn-rusted-painted-bl/worn-rusted-painted_albedo.png
-map_Ns /home/vincent/Documents/Blender/textures/PBRs/worn-rusted-painted-bl/worn-rusted-painted_roughness.png
-map_refl /home/vincent/Documents/Blender/textures/PBRs/worn-rusted-painted-bl/worn-rusted-painted_metallic.png
+map_Pm /home/vincent/Documents/Blender/textures/PBRs/worn-rusted-painted-bl/worn-rusted-painted_metallic.png
+map_Pr /home/vincent/Documents/Blender/textures/PBRs/worn-rusted-painted-bl/worn-rusted-painted_roughness.png
 map_Bump -bm 1.000000 /home/vincent/Documents/Blender/textures/PBRs/worn-rusted-painted-bl/worn-rusted-painted_normal-ogl.png
 
 newmtl wornRustedSteel
-Ka 1.000000 1.000000 1.000000
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 3
+Ps 0.000000
+Pc 0.000000
+Pcr 0.000000
+aniso 0.000000
+anisor 0.000000
 map_Kd /home/vincent/Documents/Blender/textures/PBRs/rusted-steel-bl/rusted-steel_albedo.png
-map_Ns /home/vincent/Documents/Blender/textures/PBRs/rusted-steel-bl/rusted-steel_roughness.png
-map_refl /home/vincent/Documents/Blender/textures/PBRs/rusted-steel-bl/rusted-steel_metallic.png
+map_Pm /home/vincent/Documents/Blender/textures/PBRs/rusted-steel-bl/rusted-steel_metallic.png
+map_Pr /home/vincent/Documents/Blender/textures/PBRs/rusted-steel-bl/rusted-steel_roughness.png
 map_Bump -bm 1.000000 /home/vincent/Documents/Blender/textures/PBRs/rusted-steel-bl/rusted-steel_normal-ogl.png
 
 newmtl wornRustedSteel.001
-Ns 409.599976
-Ka 0.425455 0.425455 0.425455
 Kd 0.102936 0.204303 1.000000
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 3
+Pr 0.360000
+Pm 0.425455
+Ps 0.000000
+Pc 0.000000
+Pcr 0.000000
+aniso 0.000000
+anisor 0.000000
 map_Bump -bm 1.000000 /home/vincent/Documents/Blender/textures/PBRs/used-stainless-steel2-bl/used-stainless-steel2_normal-ogl.png
