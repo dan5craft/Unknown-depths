@@ -79,7 +79,7 @@ void changeVelX(int x, int y, float value){
     vec2 h2 = getHeight(x, y);
     float cwh1 = getCombinedWaterHeight(x-1, y);
     float cwh2 = getCombinedWaterHeight(x, y);
-    value = clamp(value, -(h1.x-cwh1)/wh2*0.25*(params.dx/params.dt), (h2.x-cwh2)/wh1*0.25*(params.dx/params.dt));
+    value = clamp(value, -(h1.x-cwh1)/wh2*0.2*(params.dx/params.dt), (h2.x-cwh2)/wh1*0.2*(params.dx/params.dt));
     value = clamp(value, -0.25*(params.dx/params.dt), 0.25*(params.dx/params.dt));
     velXMap.data[x*params.size.y+y] = value;
     imageStore(velXTexture, ivec2(x, y), vec4(value));

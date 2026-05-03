@@ -93,13 +93,31 @@ void fragment() {
 	ivec2 Btc = ivec2(texelCoords.x, min(texelCoords.y+1, size.y-1));
 	ivec2 Ltc = ivec2(max(texelCoords.x-1, 0), texelCoords.y);
 	ivec2 Ttc = ivec2(texelCoords.x, max(texelCoords.y-1, 0));
+	ivec2 D1tc = ivec2(Rtc.x, Ttc.y);
+	ivec2 D2tc = ivec2(Ltc.x, Btc.y);
 	float Rwh = texelFetch(waterHeightmap, Rtc, 0).r;
 	float Bwh = texelFetch(waterHeightmap, Btc, 0).r;
 	float Lwh = texelFetch(waterHeightmap, Ltc, 0).r;
 	float Twh = texelFetch(waterHeightmap, Ttc, 0).r;
-	float avgWh = (Rwh+Bwh+Lwh+Twh)/4.0;
-	if(Rwh < 0.01 && Rwh > -0.01 || Bwh < 0.01 && Bwh > -0.01 || Lwh < 0.01 && Lwh > -0.01 || Twh < 0.01 && Twh > -0.01){
-		wh = avgWh*0.8;
+	float D1wh = texelFetch(waterHeightmap, D1tc, 0).r;
+	float D2wh = texelFetch(waterHeightmap, D2tc, 0).r;
+	vec2 Rh = texelFetch(heightmap, Rtc, 0).xy;
+	vec2 Bh = texelFetch(heightmap, Btc, 0).xy;
+	vec2 Lh = texelFetch(heightmap, Ltc, 0).xy;
+	vec2 Th = texelFetch(heightmap, Ttc, 0).xy;
+	vec2 D1h = texelFetch(heightmap, D1tc, 0).xy;
+	vec2 D2h = texelFetch(heightmap, D2tc, 0).xy;
+	float Rcwh = getCombinedHeight(Rh, Rwh);
+	float Bcwh = getCombinedHeight(Bh, Bwh);
+	float Lcwh = getCombinedHeight(Lh, Lwh);
+	float Tcwh = getCombinedHeight(Th, Twh);
+	float D1cwh = getCombinedHeight(D1h, D1wh);
+	float D2cwh = getCombinedHeight(D2h, D2wh);
+	/*if(Rcwh < h.y || Bcwh < h.y || Lcwh < h.y || Tcwh < h.y || D1cwh < h.y || D2cwh < h.y){
+		ALPHA = 0.0;
+	}*/
+	if(Rh.y == 0.0 || Bh.y == 0.0 || Lh.y == 0.0 || Th.y == 0.0 || D1h.y == 0.0 || D2h.y == 0.0){
+		ALPHA = 0.0;
 	}
 	ROUGHNESS = 0.1;//+foamPercent*0.9;
 	SPECULAR = 0.2;

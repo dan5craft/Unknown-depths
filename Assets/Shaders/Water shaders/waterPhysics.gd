@@ -218,7 +218,7 @@ func _input(event):
 			for x in range(1):
 				#var r : int = rng.randi_range(0, size.x*size.y-1)
 				#addWaterArea(floor(float(r)/size.y), r % size.y, 10.0, 10.0)
-				addWaterArea(size.x/2, size.y/2, 1.0, 1.0)
+				addWaterArea(size.x/2, size.y/2, 5.0, 1.0)
 		if event.button_index == MOUSE_BUTTON_RIGHT && event.is_pressed():
 			for x in range(1):
 				#var r : int = rng.randi_range(0, size.x*size.y-1)
