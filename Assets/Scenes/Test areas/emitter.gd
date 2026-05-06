@@ -22,7 +22,7 @@ func _process(delta: float) -> void:
 		appliedForce = appliedForce.rotated(Vector3(1.0, 0.0, 0.0), rotation.x)
 		appliedForce = appliedForce.rotated(Vector3(0.0, 1.0, 0.0), rotation.y)
 		appliedForce = appliedForce.rotated(Vector3(0.0, 0.0, 1.0), rotation.z)
-		obj.apply_force(appliedForce)
 		obj.lifetime = lifetime
 		emitter.add_child(obj)
+		obj.apply_force(appliedForce)
 	pass
