@@ -22,6 +22,8 @@
 [ext_resource type="Texture2D" uid="uid://brcieemqnyna0" path="res://Assets/Models/Submarines/Mini Sub/miniSub08_worn-rusted-painted_metallic-worn-rusted-painted_roughness.webp" id="18_feiyb"]
 [ext_resource type="Texture2D" uid="uid://b7gf0gp2n4ofg" path="res://Assets/Models/Submarines/Mini Sub/miniSub08_worn-rusted-painted_normal-ogl.webp" id="19_yj1fj"]
 [ext_resource type="Texture2D" uid="uid://ctgq8l2ihkwb" path="res://Assets/Models/Submarines/Mini Sub/miniSub08_armorPlatesNormal.webp" id="20_bxn36"]
+[ext_resource type="PackedScene" uid="uid://18af1500engn" path="res://Assets/Scenes/World/Water/water_particle.tscn" id="23_h53yh"]
+[ext_resource type="Script" uid="uid://c3adopd1gx78m" path="res://Assets/Scenes/Test areas/emitter.gd" id="24_h64rg"]
 
 [sub_resource type="Texture2DRD" id="Texture2DRD_7qx47"]
 
@@ -51,7 +53,7 @@ size = Vector2(11, 4)
 subdivide_width = 20
 subdivide_depth = 6
 
-[sub_resource type="Image" id="Image_8y2vh"]
+[sub_resource type="Image" id="Image_6swxi"]
 data = {
 "data": PackedByteArray("AAAQQQAAEEEAABBBAAAQQQAAEEEAABBBAAAQQQAAEEEAABBBAAAQQQAAEEEAABBBAAAQQQAAEEEAABBBAAAQQQAAEEEAABBBAAAQQQAAEEEAABBBAAAQQQAAEEEAABBBAAAQQQAAEEEAABBBAAAQQQAAEEHKe3BAmlxrQApuZUB4f19AwAFZQEBnUUCKSkpAvdtCQIKVNkCqWylA4kkPQAAAEEEAABBBAAAQQQAAEEEAABBB64KSQKOrj0AlV41AYfOKQImiiEAxWIZAAjiEQKMIgkCWy3tA8HFzQEoYa0AqomJAAB1aQIhlUUAFfkRAyNw3QHieK0AlYB9A0iETQAAAEEEAABBBAAAQQbe1mkBXCphA916VQOs6kkDhIY9AFwGMQDjniEDld4VAGwiBQN6seUBMcnJAvDdrQMjCYkCoXlhADtBKQHhBPUDgsi9ASCQiQLCVFEAqm/w/AAAQQQAAEEFXoJdAFEOVQD8Xk0A8bpBA07SNQDPqikCnHYhAVSCFQNzbgECOFHlAZnFwQFKoZ0BSNl9AcBVWQN64SECNtztAOLYuQOW0IUCQsxRAj7L1PwAAEEEAABBBAAAQQfTqikAXLolAiZWGQOkRhEC4i4FAqn5+QEKmeUDOY3JAWiFrQB6/Y0DawFtA2vRTQEbiS0D9Sj9AuLMyQBLxJUDlDxlAOugFQAAAEEEAABBBAAAQQQAAEEEAABBBAAAQQQAAEEEAABBBAAAQQQAAEEEAABBBAAAQQQAAEEH400lARepGQACoQkCg9zxAoDstQAAAEEEAABBBAAAQQQAAEEEAABBBAAAQQQAAEEEAABBBAAAQQQAAEEEAABBBAAAQQQAAEEEAABBBAAAQQQAAEEEAABBBAAAQQQAAEEEAABBBAAAQQQAAEEEAABBBAAAQQQAAEEEAABBBAAAQQQAAEEE="),
 "format": "RFloat",
@@ -61,7 +63,7 @@ data = {
 }
 
 [sub_resource type="ImageTexture" id="ImageTexture_h53yh"]
-image = SubResource("Image_8y2vh")
+image = SubResource("Image_6swxi")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_h53yh"]
 render_priority = 0
@@ -77,7 +79,7 @@ size = Vector2(11, 4)
 subdivide_width = 20
 subdivide_depth = 6
 
-[sub_resource type="Image" id="Image_hdpq0"]
+[sub_resource type="Image" id="Image_8y2vh"]
 data = {
 "data": PackedByteArray("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFuTFAOEnTP6qyvD82HaY/lMeHPwJbhz+Day0/dIb0PoDbOz/kBpE/4RjMPwAAAAAAAAAAAAAAAAAAAAAAAAAAFORWQG5yM0BhACZAVI4YQMjIC0D0dgFAjBTxPwRbhz8CW4c/AluHPwJbhz8CW4c/g2stP2Zhlz5mYZc+ZmGXPmZhlz4QTqQ+3PdGPwAAAAAAAAAAAAAAACRvUEAerzNAukAmQFrSGEBUDAxAhnABQD0N8T8CW4c/AluHPwJbhz8CW4c/BFuHP4NrLT9mYZc+ZmGXPmZhlz5mYZc+FE6kPrA38z04RIY/AAAAAAAAAAA6001AHq8zQL1AJkBY0hhAVgwMQIZwAUA+DfE/AluHPwNbhz8DW4c/A1uHPwNbhz+Day0/ZmGXPmZhlz5mYZc+ZmGXPhBOpD6QBls+Ci+RPwAAAAAAAAAAAAAAAHp7fUB+ZEVAzGgZQEQ7C0AtmAFA/UPxPwJbhz8CW4c/AluHPwJbhz8CW4c/g2stP45cvT6E074+QEnAPibMrD7s/aU+wW+2PwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADOfQhAaUTbP2jwwj84vsM/vOrhPwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="),
 "format": "RFloat",
@@ -87,7 +89,7 @@ data = {
 }
 
 [sub_resource type="ImageTexture" id="ImageTexture_rqha6"]
-image = SubResource("Image_hdpq0")
+image = SubResource("Image_8y2vh")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_8y2vh"]
 render_priority = 0
@@ -1079,6 +1081,11 @@ _surfaces = [{
 blend_shape_mode = 0
 shadow_mesh = SubResource("ArrayMesh_e4o1f")
 
+[sub_resource type="CylinderMesh" id="CylinderMesh_hdpq0"]
+top_radius = 0.1
+bottom_radius = 0.1
+height = 0.5
+
 [node name="TestSubScene01" type="Node3D" unique_id=2002794139]
 
 [node name="Water" type="Node3D" parent="." unique_id=864092496]
@@ -1154,7 +1161,7 @@ mesh = SubResource("PlaneMesh_h64rg")
 surface_material_override/0 = SubResource("ShaderMaterial_8y2vh")
 
 [node name="Camera3D2" type="Camera3D" parent="." unique_id=915867330]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.7868443, 4.83)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7002622, 0.91383696)
 compositor = SubResource("Compositor_6swxi")
 script = ExtResource("6_ir4rb")
 
@@ -1253,3 +1260,17 @@ mesh = SubResource("ArrayMesh_to13u")
 [node name="Cube" type="MeshInstance3D" parent="miniSub08" unique_id=1469226562]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.7378666, -0.6187379, 0)
 mesh = SubResource("ArrayMesh_b5cov")
+
+[node name="Faucet" type="Node3D" parent="." unique_id=2145388798 node_paths=PackedStringArray("emitter")]
+transform = Transform3D(1, 0, 0, 0, -0.75229996, 0.65882075, 0, -0.65882075, -0.75229996, 0, -0.0003118515, -1.152873)
+script = ExtResource("24_h64rg")
+spawnInterval = 0.02
+emissionObject = ExtResource("23_h53yh")
+emitter = NodePath("Emitter")
+force = Vector3(0, -20, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Faucet" unique_id=2027899495]
+mesh = SubResource("CylinderMesh_hdpq0")
+
+[node name="Emitter" type="Node3D" parent="Faucet" unique_id=801926069]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.2504362, 0)

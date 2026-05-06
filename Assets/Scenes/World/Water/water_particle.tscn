@@ -1,0 +1,36 @@
+[gd_scene format=3 uid="uid://18af1500engn"]
+
+[ext_resource type="Script" uid="uid://q2oteu7vp16d" path="res://Assets/Scenes/World/Water/water_particle.gd" id="1_okk6j"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_6swxi"]
+bounce = 0.1
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_8y2vh"]
+radius = 0.05
+
+[sub_resource type="SphereMesh" id="SphereMesh_h53yh"]
+radius = 0.05
+height = 0.1
+radial_segments = 6
+rings = 3
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vtfym"]
+transparency = 1
+albedo_color = Color(0, 0, 1, 0.097)
+metallic = 0.29
+metallic_specular = 1.0
+roughness = 0.19
+refraction_enabled = true
+
+[node name="Water particle" type="RigidBody3D" unique_id=435576836]
+mass = 0.1
+physics_material_override = SubResource("PhysicsMaterial_6swxi")
+continuous_cd = true
+script = ExtResource("1_okk6j")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=782582226]
+shape = SubResource("SphereShape3D_8y2vh")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1276951887]
+mesh = SubResource("SphereMesh_h53yh")
+surface_material_override/0 = SubResource("StandardMaterial3D_vtfym")
