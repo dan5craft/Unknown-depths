@@ -2,13 +2,10 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dprixxylk0vln"
+uid="uid://bthqahprxxajx"
 path="res://.godot/imported/miniSub08_worn-rusted-painted_albedo_3.png-4fe6c3135feb7520453e7bf1add9a20f.ctex"
 metadata={
 "vram_texture": false
-}
-generator_parameters={
-"md5": "c9c52f93af6d5d9df797b4dbf8049507"
 }
 
 [deps]
@@ -26,7 +23,7 @@ compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
 compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=true
+mipmaps/generate=false
 mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""

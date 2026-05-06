@@ -2,14 +2,11 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ccjptjn18h3fe"
+uid="uid://brcieemqnyna0"
 path.s3tc="res://.godot/imported/miniSub08_worn-rusted-painted_metallic-worn-rusted-painted_roughness.webp-707a7000f7da4a08000e4a1c3345a200.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
-}
-generator_parameters={
-"md5": "82a68238a27b19b2b8e6f0eccd5d41ae"
 }
 
 [deps]

@@ -79,7 +79,13 @@ void changeVelX(int x, int y, float value){
     vec2 h2 = getHeight(x, y);
     float cwh1 = getCombinedWaterHeight(x-1, y);
     float cwh2 = getCombinedWaterHeight(x, y);
-    value = clamp(value, -(h1.x-cwh1)/wh2*0.25*(params.dx/params.dt), (h2.x-cwh2)/wh1*0.25*(params.dx/params.dt));
+    value = clamp(value, -(h1.x-cwh1)/wh2*0.2*(params.dx/params.dt), (h2.x-cwh2)/wh1*0.2*(params.dx/params.dt));
+    if(h1.y == 0 || wh2 < 0.001){
+        value = max(value, 0.0);
+    }
+    if(h2.y == 0 || wh1 < 0.001){
+        value = min(value, 0.0);
+    }
     value = clamp(value, -0.25*(params.dx/params.dt), 0.25*(params.dx/params.dt));
     velXMap.data[x*params.size.y+y] = value;
     imageStore(velXTexture, ivec2(x, y), vec4(value));
@@ -92,6 +98,12 @@ void changeVelY(int x, int y, float value){
     float cwh1 = getCombinedWaterHeight(x, y-1);
     float cwh2 = getCombinedWaterHeight(x, y);
     value = clamp(value, -(h1.x-cwh1)/wh2*0.25*(params.dx/params.dt), (h2.x-cwh2)/wh1*0.25*(params.dx/params.dt));
+    if(h1.y == 0 || wh2 < 0.001){
+        value = max(value, 0.0);
+    }
+    if(h2.y == 0 || wh1 < 0.001){
+        value = min(value, 0.0);
+    }
     value = clamp(value, -0.25*(params.dx/params.dt), 0.25*(params.dx/params.dt));
     velYMap.data[x*(params.size.y+1)+y] = value;
     imageStore(velYTexture, ivec2(x, y), vec4(value));
@@ -108,13 +120,13 @@ void main() {
         float wh2 = getWaterHeight(x, y);
         vec2 h1 = getHeight(x-1, y);
         vec2 h2 = getHeight(x, y);
-        if(wh1+wh2 < 0.01 || h1.y == 0 || h2.y == 0){
-            changeVelX(x, y, 0.0);
+        if(false){//wh1+wh2 < 0.01){
+            //changeVelX(x, y, 0.0);
         } else{
             float cwh1 = getCombinedWaterHeight(x-1, y);
             float cwh2 = getCombinedWaterHeight(x, y);
             dvx = (-params.gravity/params.dx)*(cwh1-cwh2)*params.dt;
-            changeVelX(x, y, getVelX(x, y)/(1.0+0.25*params.dt)+dvx);
+            changeVelX(x, y, getVelX(x, y)/(1.0+0.01*params.dt)+dvx);
         }
     }
     if(y > 0){
@@ -122,13 +134,13 @@ void main() {
         float wh2 = getWaterHeight(x, y);
         vec2 h1 = getHeight(x, y-1);
         vec2 h2 = getHeight(x, y);
-        if(wh1+wh2 < 0.01 || h1.y == 0 || h2.y == 0){
-            changeVelY(x, y, 0.0);
+        if(false){//wh1+wh2 < 0.01){
+            //changeVelY(x, y, 0.0);
         } else{
             float cwh1 = getCombinedWaterHeight(x, y-1);
             float cwh2 = getCombinedWaterHeight(x, y);
             dvy = (-params.gravity/params.dx)*(cwh1-cwh2)*params.dt;
-            changeVelY(x, y, getVelY(x, y)/(1.0+0.25*params.dt)+dvy);
+            changeVelY(x, y, getVelY(x, y)/(1.0+0.01*params.dt)+dvy);
         }
     }
 }

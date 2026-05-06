@@ -2,13 +2,10 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bdu0in6b5k0vq"
+uid="uid://xcrwfhvky857"
 path="res://.godot/imported/miniSub08_rusted-steel_albedo_15.png-14cea9a08dbfb958cc09a59f5731aec8.ctex"
 metadata={
 "vram_texture": false
-}
-generator_parameters={
-"md5": "8526bd2653943f58487c160bec7a5ba3"
 }
 
 [deps]
@@ -26,7 +23,7 @@ compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
 compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=true
+mipmaps/generate=false
 mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""

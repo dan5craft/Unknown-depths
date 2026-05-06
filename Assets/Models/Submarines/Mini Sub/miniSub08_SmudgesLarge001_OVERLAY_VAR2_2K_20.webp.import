@@ -2,14 +2,11 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://rtr2hr48cnpg"
+uid="uid://cltoimu8vcj7b"
 path.s3tc="res://.godot/imported/miniSub08_SmudgesLarge001_OVERLAY_VAR2_2K_20.webp-66dad6cbd042d39318cb8a6cdaf63267.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
-}
-generator_parameters={
-"md5": "b9674db8eaa46eae509ab3e0cc4290da"
 }
 
 [deps]

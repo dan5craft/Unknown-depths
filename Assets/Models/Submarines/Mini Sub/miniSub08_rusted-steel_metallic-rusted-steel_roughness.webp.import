@@ -2,14 +2,11 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dhm8k8td567gh"
+uid="uid://dyl6tkmrbidpf"
 path.s3tc="res://.godot/imported/miniSub08_rusted-steel_metallic-rusted-steel_roughness.webp-9baeafa8644fe050d45afacf97bba2da.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
-}
-generator_parameters={
-"md5": "deb81dac2a5ce4324533c9a6d0b80e84"
 }
 
 [deps]

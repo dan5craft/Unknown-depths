@@ -64,6 +64,10 @@ void changeWaterHeight(int x, int y, float value){
     if(value < -1.0){
         outputParams.hasNegative = true;
     }
+    //waterHMap.data[x*params.size.y+y] = value;
+    vec2 h = getHeight(x, y);
+    //waterHMap.data[x*params.size.y+y] = max(value, 0.0);
+    value = clamp(value, 0.0, h.x-h.y);
     waterHMap.data[x*params.size.y+y] = value;
     imageStore(waterHeightTexture, ivec2(x, y), vec4(value));
 }

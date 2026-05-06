@@ -3,12 +3,12 @@ extends Node3D
 @export_custom(PROPERTY_HINT_NONE, "suffix:m") var detail : float = 0.2
 @export var timeScale : int = 2;
 @export_custom(PROPERTY_HINT_NONE, "suffix:m/s²") var gravity : float = -9.8
-var size : Vector2i
-@export_custom(PROPERTY_HINT_NONE, "suffix:m") var gridSize : Vector2i = Vector2(10, 10):
+@export_custom(PROPERTY_HINT_NONE, "suffix:m") var gridSize : Vector2:
 	set(value):
 		gridSize = value
 		size = value/detail
 		_createMaps()
+var size : Vector2i
 @export_category("Height map")
 @export_custom(PROPERTY_HINT_NONE, "suffix:m") var maxHeight = 2.0;
 @export_custom(PROPERTY_HINT_NONE, "suffix:m") var minHeight = 0.0;
@@ -67,12 +67,8 @@ func bakeHeightMaps():
 			result = castRay(x, y, minHeight, maxHeight)
 			if result:
 				var h:float = result.position.y-global_position.y
-				if h < heightColor.r+0.1 && h > heightColor.r-0.1:
-					heightColor.g = minHeight
-					minHeightMap[x*size.y+y] = minHeight
-				else:
-					heightColor.g = h
-					minHeightMap[x*size.y+y] = h
+				heightColor.g = h
+				minHeightMap[x*size.y+y] = h
 			else:
 				heightColor.g = minHeight
 				minHeightMap[x*size.y+y] = minHeight
@@ -222,7 +218,8 @@ func _input(event):
 			for x in range(1):
 				#var r : int = rng.randi_range(0, size.x*size.y-1)
 				#addWaterArea(floor(float(r)/size.y), r % size.y, 10.0, 10.0)
-				addWaterArea(size.x/2, size.y/2, 1.0, 1.0)
+				var r : int = rng.randi_range(-10, 10)
+				addWaterArea(size.x/2, size.y/2, 5.0, 1.0)
 		if event.button_index == MOUSE_BUTTON_RIGHT && event.is_pressed():
 			for x in range(1):
 				#var r : int = rng.randi_range(0, size.x*size.y-1)
@@ -242,14 +239,14 @@ func _process(delta: float) -> void:
 		#addWater(floor(float(r)/size.y), r % size.y, 0.01)
 	#waterHeightMap[size.x/2*size.y+size.y/2] += 0.01/pow(detail, 2.0)
 	#timer = 0.0
-	print(getVolume())
+	#print(getVolume())
 	#print(waterHeightMap[50*size.y+50])
 	for x in range(timeScale):
 		iteratePhysics()
 	$MeshInstance3D.get_surface_override_material(0).set_shader_parameter("waterHeightmap", waterHeightTexture)
 	$MeshInstance3D.get_surface_override_material(0).set_shader_parameter("velXmap", velXTexture)
 	$MeshInstance3D.get_surface_override_material(0).set_shader_parameter("velYmap", velYTexture)
-	$Control/TextureRect.texture = waterHeightTexture
+	$Control/TextureRect.texture = velXTexture
 
 func iteratePhysics():
 	var velXMapArray := PackedFloat32Array(velocityXMap)

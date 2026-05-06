@@ -2,14 +2,11 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://du1ihe26wcoo"
+uid="uid://ctgq8l2ihkwb"
 path.s3tc="res://.godot/imported/miniSub08_armorPlatesNormal.webp-5f49f9f00a7d70b6911afa78f60ca917.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
-}
-generator_parameters={
-"md5": "bc2a9758ae56afb1bd745c6d7a15af54"
 }
 
 [deps]
@@ -29,8 +26,8 @@ compress/normal_map=1
 compress/channel_pack=0
 mipmaps/generate=true
 mipmaps/limit=-1
-roughness/mode=1
-roughness/src_normal="res://Assets/Models/Submarines/Mini Sub/miniSub08_armorPlatesNormal.webp"
+roughness/mode=0
+roughness/src_normal=""
 process/channel_remap/red=0
 process/channel_remap/green=1
 process/channel_remap/blue=2
