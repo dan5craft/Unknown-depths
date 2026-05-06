@@ -1,0 +1,14 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://b1i6ejdhnf0ob"
+path="res://.godot/imported/waterPhysicsVelocity.glsl-2e15b4b5d95c74b9dfbd8fc15a395a22.res"
+
+[deps]
+
+source_file="res://Assets/Shaders/Compute shaders/Water/waterPhysicsVelocity.glsl"
+dest_files=["res://.godot/imported/waterPhysicsVelocity.glsl-2e15b4b5d95c74b9dfbd8fc15a395a22.res"]
+
+[params]
+
