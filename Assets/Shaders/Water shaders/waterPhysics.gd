@@ -3,12 +3,12 @@ extends Node3D
 @export_custom(PROPERTY_HINT_NONE, "suffix:m") var detail : float = 0.2
 @export var timeScale : int = 2;
 @export_custom(PROPERTY_HINT_NONE, "suffix:m/s²") var gravity : float = -9.8
-var size : Vector2i
 @export_custom(PROPERTY_HINT_NONE, "suffix:m") var gridSize : Vector2:
 	set(value):
 		gridSize = value
 		size = value/detail
 		_createMaps()
+var size : Vector2i
 @export_category("Height map")
 @export_custom(PROPERTY_HINT_NONE, "suffix:m") var maxHeight = 2.0;
 @export_custom(PROPERTY_HINT_NONE, "suffix:m") var minHeight = 0.0;
@@ -75,7 +75,7 @@ func bakeHeightMaps():
 			heightImage.set_pixel(x, y, heightColor)
 	print("The maximum height found was "+str(heighestHeight))
 	heightTexture = ImageTexture.create_from_image(heightImage)
-	$Control/TextureRect.texture = heightTexture
+	#$Control/TextureRect.texture = heightTexture
 
 func getWaterHeight(x : int, y : int) -> float:
 	return waterHeightMap[x*size.y+y]
@@ -218,6 +218,7 @@ func _input(event):
 			for x in range(1):
 				#var r : int = rng.randi_range(0, size.x*size.y-1)
 				#addWaterArea(floor(float(r)/size.y), r % size.y, 10.0, 10.0)
+				var r : int = rng.randi_range(-10, 10)
 				addWaterArea(size.x/2, size.y/2, 5.0, 1.0)
 		if event.button_index == MOUSE_BUTTON_RIGHT && event.is_pressed():
 			for x in range(1):
@@ -245,7 +246,7 @@ func _process(delta: float) -> void:
 	$MeshInstance3D.get_surface_override_material(0).set_shader_parameter("waterHeightmap", waterHeightTexture)
 	$MeshInstance3D.get_surface_override_material(0).set_shader_parameter("velXmap", velXTexture)
 	$MeshInstance3D.get_surface_override_material(0).set_shader_parameter("velYmap", velYTexture)
-	#$Control/TextureRect.texture = waterHeightTexture
+	$Control/TextureRect.texture = velXTexture
 
 func iteratePhysics():
 	var velXMapArray := PackedFloat32Array(velocityXMap)

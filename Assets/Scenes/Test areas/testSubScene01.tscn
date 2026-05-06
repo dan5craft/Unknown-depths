@@ -5,6 +5,8 @@
 [ext_resource type="Shader" uid="uid://bkn0u34fvk1f2" path="res://Assets/Scenes/Test areas/waterGeometryShader.gdshader" id="3_cclrf"]
 [ext_resource type="Script" uid="uid://qa4smpcf01gd" path="res://Assets/Scenes/Test areas/waterSurface.gd" id="4_5f4hd"]
 [ext_resource type="Script" uid="uid://b7ts6l8438x3b" path="res://Assets/Shaders/Compositor effects/Underwater/underwaterPostProcessEffect.gd" id="5_452ld"]
+[ext_resource type="Script" uid="uid://dncgdayggosm8" path="res://Assets/Scenes/Test areas/hmap_Baker.gd" id="5_cpjye"]
+[ext_resource type="Shader" uid="uid://b5bknxniico3j" path="res://Assets/Scenes/Test areas/hmapShader.gdshader" id="6_6swxi"]
 [ext_resource type="Script" uid="uid://1gwxs31o4gd2" path="res://Assets/Scripts/Misc/cameraMovement.gd" id="6_ir4rb"]
 [ext_resource type="Script" uid="uid://rod5bnxd463i" path="res://Assets/Scripts/Misc/setResolution.gd" id="7_qvy3q"]
 [ext_resource type="Script" uid="uid://ba2pn1o5o0tis" path="res://Assets/Scenes/Test areas/followCamera.gd" id="8_cvm0q"]
@@ -43,6 +45,59 @@ shader_parameter/screenTexture = SubResource("ViewportTexture_gsjn4")
 [sub_resource type="PlaneMesh" id="PlaneMesh_cpjye"]
 size = Vector2(11, 4)
 
+[sub_resource type="PlaneMesh" id="PlaneMesh_6swxi"]
+flip_faces = true
+size = Vector2(11, 4)
+subdivide_width = 20
+subdivide_depth = 6
+
+[sub_resource type="Image" id="Image_8y2vh"]
+data = {
+"data": PackedByteArray("AAAQQQAAEEEAABBBAAAQQQAAEEEAABBBAAAQQQAAEEEAABBBAAAQQQAAEEEAABBBAAAQQQAAEEEAABBBAAAQQQAAEEEAABBBAAAQQQAAEEEAABBBAAAQQQAAEEEAABBBAAAQQQAAEEEAABBBAAAQQQAAEEHKe3BAmlxrQApuZUB4f19AwAFZQEBnUUCKSkpAvdtCQIKVNkCqWylA4kkPQAAAEEEAABBBAAAQQQAAEEEAABBB64KSQKOrj0AlV41AYfOKQImiiEAxWIZAAjiEQKMIgkCWy3tA8HFzQEoYa0AqomJAAB1aQIhlUUAFfkRAyNw3QHieK0AlYB9A0iETQAAAEEEAABBBAAAQQbe1mkBXCphA916VQOs6kkDhIY9AFwGMQDjniEDld4VAGwiBQN6seUBMcnJAvDdrQMjCYkCoXlhADtBKQHhBPUDgsi9ASCQiQLCVFEAqm/w/AAAQQQAAEEFXoJdAFEOVQD8Xk0A8bpBA07SNQDPqikCnHYhAVSCFQNzbgECOFHlAZnFwQFKoZ0BSNl9AcBVWQN64SECNtztAOLYuQOW0IUCQsxRAj7L1PwAAEEEAABBBAAAQQfTqikAXLolAiZWGQOkRhEC4i4FAqn5+QEKmeUDOY3JAWiFrQB6/Y0DawFtA2vRTQEbiS0D9Sj9AuLMyQBLxJUDlDxlAOugFQAAAEEEAABBBAAAQQQAAEEEAABBBAAAQQQAAEEEAABBBAAAQQQAAEEEAABBBAAAQQQAAEEH400lARepGQACoQkCg9zxAoDstQAAAEEEAABBBAAAQQQAAEEEAABBBAAAQQQAAEEEAABBBAAAQQQAAEEEAABBBAAAQQQAAEEEAABBBAAAQQQAAEEEAABBBAAAQQQAAEEEAABBBAAAQQQAAEEEAABBBAAAQQQAAEEEAABBBAAAQQQAAEEE="),
+"format": "RFloat",
+"height": 8,
+"mipmaps": false,
+"width": 22
+}
+
+[sub_resource type="ImageTexture" id="ImageTexture_h53yh"]
+image = SubResource("Image_8y2vh")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_h53yh"]
+render_priority = 0
+shader = ExtResource("6_6swxi")
+shader_parameter/heightmap = SubResource("ImageTexture_h53yh")
+shader_parameter/color = Vector3(0, 1, 0)
+shader_parameter/detail = 0.5
+shader_parameter/maxHeight = 9.0
+shader_parameter/minHeight = 0.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_h64rg"]
+size = Vector2(11, 4)
+subdivide_width = 20
+subdivide_depth = 6
+
+[sub_resource type="Image" id="Image_hdpq0"]
+data = {
+"data": PackedByteArray("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFuTFAOEnTP6qyvD82HaY/lMeHPwJbhz+Day0/dIb0PoDbOz/kBpE/4RjMPwAAAAAAAAAAAAAAAAAAAAAAAAAAFORWQG5yM0BhACZAVI4YQMjIC0D0dgFAjBTxPwRbhz8CW4c/AluHPwJbhz8CW4c/g2stP2Zhlz5mYZc+ZmGXPmZhlz4QTqQ+3PdGPwAAAAAAAAAAAAAAACRvUEAerzNAukAmQFrSGEBUDAxAhnABQD0N8T8CW4c/AluHPwJbhz8CW4c/BFuHP4NrLT9mYZc+ZmGXPmZhlz5mYZc+FE6kPrA38z04RIY/AAAAAAAAAAA6001AHq8zQL1AJkBY0hhAVgwMQIZwAUA+DfE/AluHPwNbhz8DW4c/A1uHPwNbhz+Day0/ZmGXPmZhlz5mYZc+ZmGXPhBOpD6QBls+Ci+RPwAAAAAAAAAAAAAAAHp7fUB+ZEVAzGgZQEQ7C0AtmAFA/UPxPwJbhz8CW4c/AluHPwJbhz8CW4c/g2stP45cvT6E074+QEnAPibMrD7s/aU+wW+2PwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADOfQhAaUTbP2jwwj84vsM/vOrhPwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="),
+"format": "RFloat",
+"height": 8,
+"mipmaps": false,
+"width": 22
+}
+
+[sub_resource type="ImageTexture" id="ImageTexture_rqha6"]
+image = SubResource("Image_hdpq0")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_8y2vh"]
+render_priority = 0
+shader = ExtResource("6_6swxi")
+shader_parameter/heightmap = SubResource("ImageTexture_rqha6")
+shader_parameter/color = Vector3(1, 0, 0)
+shader_parameter/detail = 0.5
+shader_parameter/maxHeight = 9.0
+shader_parameter/minHeight = 0.0
+
 [sub_resource type="CompositorEffect" id="CompositorEffect_inrog"]
 resource_local_to_scene = true
 resource_name = ""
@@ -51,7 +106,7 @@ effect_callback_type = 4
 needs_motion_vectors = false
 needs_normal_roughness = false
 script = ExtResource("5_452ld")
-blurRadius = 3.0
+blurRadius = 10.0
 blurStepAmount = 5
 blurCircleAmount = 2
 metadata/_custom_type_script = "uid://b7ts6l8438x3b"
@@ -109,8 +164,10 @@ roughness = 0.5
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fqfcy"]
 resource_name = "GlassTransmission"
 cull_mode = 2
+metallic = 0.62
 metallic_texture = ExtResource("12_gsjn4")
 metallic_texture_channel = 2
+roughness = 0.23
 roughness_texture = ExtResource("12_gsjn4")
 roughness_texture_channel = 1
 
@@ -1027,7 +1084,7 @@ shadow_mesh = SubResource("ArrayMesh_e4o1f")
 [node name="Water" type="Node3D" parent="." unique_id=864092496]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.78817534, -1.130865, 0)
 script = ExtResource("1_l2ude")
-detail = 0.025
+detail = 0.1
 timeScale = 4
 gridSize = Vector2(11, 4)
 maxHeight = 9.0
@@ -1082,11 +1139,24 @@ surface_material_override/0 = SubResource("ShaderMaterial_gsjn4")
 mesh = SubResource("PlaneMesh_cpjye")
 script = ExtResource("4_5f4hd")
 
+[node name="Hmaps" type="Node3D" parent="Water" unique_id=1238018777]
+visible = false
+script = ExtResource("5_cpjye")
+
+[node name="TopHmap" type="MeshInstance3D" parent="Water/Hmaps" unique_id=1312055962]
+extra_cull_margin = 16384.0
+mesh = SubResource("PlaneMesh_6swxi")
+surface_material_override/0 = SubResource("ShaderMaterial_h53yh")
+
+[node name="BottomHmap" type="MeshInstance3D" parent="Water/Hmaps" unique_id=1036707664]
+extra_cull_margin = 16384.0
+mesh = SubResource("PlaneMesh_h64rg")
+surface_material_override/0 = SubResource("ShaderMaterial_8y2vh")
+
 [node name="Camera3D2" type="Camera3D" parent="." unique_id=915867330]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.7868443, 4.83)
 compositor = SubResource("Compositor_6swxi")
 script = ExtResource("6_ir4rb")
-speed = 0.05
 
 [node name="SpotLight3D" type="SpotLight3D" parent="Camera3D2" unique_id=1028212413]
 visible = false
@@ -1129,13 +1199,13 @@ shape = SubResource("ConcavePolygonShape3D_gsjn4")
 
 [node name="Body" type="MeshInstance3D" parent="miniSub08" unique_id=894155914]
 transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0)
-visible = false
 mesh = SubResource("ArrayMesh_2c4v4")
 
 [node name="armorPlates" type="MeshInstance3D" parent="miniSub08/Body" unique_id=1544765971]
 mesh = SubResource("ArrayMesh_3lohh")
 
 [node name="Beds" type="MeshInstance3D" parent="miniSub08/Body" unique_id=1500033599]
+visible = false
 mesh = SubResource("ArrayMesh_338m4")
 
 [node name="cameraUnder" type="Node3D" parent="miniSub08/Body" unique_id=426373060]
