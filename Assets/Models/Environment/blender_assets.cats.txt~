@@ -1,0 +1,10 @@
+# This is an Asset Catalog Definition file for Blender.
+#
+# Empty lines and lines starting with `#` will be ignored.
+# The first non-ignored line should be the version indicator.
+# Other lines are of the format "UUID:catalog/path/for/assets:simple catalog name"
+
+VERSION 1
+
+945d6a71-28ca-4bc0-8b61-c16aa6a1fdc0:Structures:Structures
+956099d4-6e59-43d7-a123-65ca1d192876:Structures:Structures
