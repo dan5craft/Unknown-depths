@@ -1,7 +1,7 @@
 [gd_scene format=4 uid="uid://buy2s833dr1rd"]
 
 [ext_resource type="Script" uid="uid://dk6l3frjdom3i" path="res://Assets/Shaders/Compute shaders/Water/waterPhysics.gd" id="1_l2ude"]
-[ext_resource type="Script" uid="uid://bfcgspbjr47j1" path="res://Assets/Scripts/Misc/FpsCounter.gd" id="2_0hd75"]
+[ext_resource type="Script" path="res://Assets/Scripts/Misc/FpsCounter.gd" id="2_0hd75"]
 [ext_resource type="Shader" uid="uid://bkn0u34fvk1f2" path="res://Assets/Scenes/Test areas/waterGeometryShader.gdshader" id="3_cclrf"]
 [ext_resource type="Script" uid="uid://qa4smpcf01gd" path="res://Assets/Scripts/Water/waterSurface.gd" id="4_5f4hd"]
 [ext_resource type="Script" uid="uid://b7ts6l8438x3b" path="res://Assets/Shaders/Compositor effects/Underwater/underwaterPostProcessEffect.gd" id="5_452ld"]
