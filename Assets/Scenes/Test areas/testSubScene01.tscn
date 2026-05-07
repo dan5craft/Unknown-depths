@@ -152,7 +152,6 @@ bottom_radius = 0.1
 height = 0.5
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3p8w4"]
-emission_intensity = 1000.0
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_6f0nf"]
 _surfaces = [{
@@ -232,7 +231,6 @@ cull_mode = 2
 albedo_color = Color(0.2744712, 0.2744712, 0.2744712, 1)
 metallic = 0.5854546
 roughness = 0.9072727
-emission_intensity = 1000.0
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qsmfo"]
 resource_name = "wornRustedSteel.001"
@@ -240,7 +238,6 @@ cull_mode = 2
 albedo_texture = ExtResource("18_rqha6")
 metallic = 0.42545456
 roughness = 0.36
-emission_intensity = 1000.0
 normal_enabled = true
 normal_texture = ExtResource("19_feiyb")
 
@@ -249,7 +246,6 @@ resource_name = "Material"
 transparency = 4
 cull_mode = 2
 roughness = 0.5
-emission_intensity = 1000.0
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qoid8"]
 resource_name = "GlassTransmission"
@@ -258,7 +254,6 @@ metallic_texture = ExtResource("20_yj1fj")
 metallic_texture_channel = 2
 roughness_texture = ExtResource("20_yj1fj")
 roughness_texture_channel = 1
-emission_intensity = 1000.0
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_cxfno"]
 _surfaces = [{
@@ -372,7 +367,6 @@ metallic_texture = ExtResource("21_bxn36")
 metallic_texture_channel = 2
 roughness_texture = ExtResource("21_bxn36")
 roughness_texture_channel = 1
-emission_intensity = 1000.0
 normal_enabled = true
 normal_texture = ExtResource("22_f454t")
 
@@ -383,14 +377,12 @@ roughness = 0.0
 emission_enabled = true
 emission = Color(1, 1, 1, 1)
 emission_energy_multiplier = 1585.2999
-emission_intensity = 1000.0
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_eoh4y"]
 resource_name = "Decals"
 transparency = 4
 cull_mode = 2
 albedo_texture = ExtResource("23_tjfg6")
-emission_intensity = 1000.0
 texture_filter = 2
 texture_repeat = false
 
@@ -507,7 +499,6 @@ metallic_texture = ExtResource("25_urgyv")
 metallic_texture_channel = 2
 roughness_texture = ExtResource("25_urgyv")
 roughness_texture_channel = 1
-emission_intensity = 1000.0
 normal_enabled = true
 normal_texture = ExtResource("26_4uju8")
 texture_filter = 2
@@ -620,7 +611,6 @@ cull_mode = 2
 albedo_color = Color(0.14805129, 0.14805129, 0.14805129, 1)
 metallic = 1.0
 roughness = 0.71090907
-emission_intensity = 1000.0
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_b4rcq"]
 _surfaces = [{
@@ -686,7 +676,6 @@ cull_mode = 2
 albedo_color = Color(0.047646314, 0.0658435, 0.13455586, 1)
 metallic = 1.0
 roughness = 0.27636364
-emission_intensity = 1000.0
 normal_enabled = true
 normal_texture = ExtResource("27_t2i3m")
 
@@ -753,7 +742,6 @@ resource_name = "cameraLensGlass"
 cull_mode = 2
 metallic = 0.05818182
 roughness = 0.034454547
-emission_intensity = 1000.0
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_nslnt"]
 _surfaces = [{
@@ -794,7 +782,6 @@ resource_name = "Material.008"
 cull_mode = 2
 albedo_color = Color(0.180894, 0.180894, 0.180894, 1)
 roughness = 0.5
-emission_intensity = 1000.0
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_lsmss"]
 _surfaces = [{
@@ -835,7 +822,6 @@ resource_name = "cameraLensBody"
 cull_mode = 2
 albedo_color = Color(0.19196047, 0.19196047, 0.19196047, 1)
 metallic = 1.0
-emission_intensity = 1000.0
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_pydv4"]
 _surfaces = [{
@@ -899,7 +885,6 @@ shadow_mesh = SubResource("ArrayMesh_pydv4")
 resource_name = "VOID"
 cull_mode = 2
 albedo_color = Color(0, 0, 0, 1)
-emission_intensity = 1000.0
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_ml105"]
 _surfaces = [{
@@ -1032,7 +1017,6 @@ resource_name = "Material.002"
 cull_mode = 2
 metallic = 1.0
 roughness = 0.40545455
-emission_intensity = 1000.0
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_v5d0t"]
 _surfaces = [{
@@ -1107,13 +1091,11 @@ resource_name = "Material.005"
 cull_mode = 2
 albedo_color = Color(0.9076878, 0.91456836, 0.9049117, 1)
 roughness = 0.62995595
-emission_intensity = 1000.0
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qs2wo"]
 resource_name = "LEATHER"
 cull_mode = 2
 roughness = 0.5
-emission_intensity = 1000.0
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_b15i2"]
 _surfaces = [{
@@ -1251,8 +1233,6 @@ script = ExtResource("6_ir4rb")
 
 [node name="SpotLight3D" type="SpotLight3D" parent="Camera3D2" unique_id=1028212413]
 visible = false
-light_intensity_lumens = 1000.0
-light_temperature = 6500.0
 light_energy = 10.0
 spot_range = 80.0
 spot_angle = 20.0
@@ -1260,8 +1240,6 @@ spot_angle_attenuation = 2.0
 
 [node name="SpotLight3D2" type="SpotLight3D" parent="Camera3D2" unique_id=312918951]
 visible = false
-light_intensity_lumens = 1000.0
-light_temperature = 6500.0
 light_energy = 5.0
 spot_range = 120.0
 spot_angle = 30.0
@@ -1322,8 +1300,6 @@ shape = SubResource("ConcavePolygonShape3D_bxn36")
 
 [node name="OmniLight3D" type="OmniLight3D" parent="." unique_id=1264638526]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.0476123, 2.285517, 0.22770965)
-light_intensity_lumens = 1000.0
-light_temperature = 6500.0
 light_energy = 0.1
 light_cull_mask = 4294967294
 shadow_enabled = true
