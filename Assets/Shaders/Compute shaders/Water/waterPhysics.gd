@@ -76,12 +76,20 @@ func bakeHeightMaps():
 func getWaterHeight(x : int, y : int) -> float:
 	return waterHeightMap[x*size.y+y]
 
-func isUnderwater(pos : Vector3) -> bool:
+func globalToWaterCoord(pos:Vector3):
 	var diff := Vector2(pos.x-(global_position.x-size.x*detail/2.0), pos.z-(global_position.z-size.y*detail/2.0))
 	var x : int = round(diff.x/detail)-1
 	var y : int = round(diff.y/detail)-1
 	if x < 0.0 or x > size.x-1 or y < 0.0 or y > size.y-1:
 		return false
+	return Vector2i(x, y)
+
+func isUnderwater(pos : Vector3) -> bool:
+	var coord = globalToWaterCoord(pos)
+	if !coord:
+		return false
+	var x = coord.x
+	var y = coord.y
 	if(getWaterHeight(x, y)+global_position.y+minHeightMap[x*size.y+y] >= pos.y):
 		return true
 	else:
@@ -108,7 +116,7 @@ func addWaterArea(x:int, y:int, volume:float, area:float):
 		for X in range(radius*2):
 			for Y in range(radius*2):
 				var pos = Vector2i(x-radius+X, y-radius+Y)
-				if pos.x < 0 or pos.x > size.x-1 or pos.y < 0 or pos.y > size.y-1 or sqrt(pow(pos.x-x, 2.0)+pow(pos.y-y, 2.0)) > radius or cells.count(pos) > 0:
+				if pos.x < 0 or pos.x > size.x-1 or pos.y < 0 or pos.y > size.y-1 or minHeightMap[pos.x*size.y+pos.y] == 0.0 or sqrt(pow(pos.x-x, 2.0)+pow(pos.y-y, 2.0)) > radius or cells.count(pos) > 0:
 					continue
 				waterHeightMap[pos.x*size.y+pos.y] += waterAmount
 				cells.append(pos)
@@ -133,10 +141,10 @@ func _ready() -> void:
 	#get_viewport().debug_draw = Viewport.DEBUG_DRAW_WIREFRAME
 	size = gridSize/detail
 	rd = RenderingServer.get_rendering_device()
-	var shader_file := load("res://Assets/Shaders/Water shaders/waterPhysicsHeight.glsl")
+	var shader_file := load("res://Assets/Shaders/Compute shaders/Water/waterPhysicsHeight.glsl")
 	var shader_spirv: RDShaderSPIRV = shader_file.get_spirv()
 	height_shader = rd.shader_create_from_spirv(shader_spirv)
-	shader_file = load("res://Assets/Shaders/Water shaders/waterPhysicsVelocity.glsl")
+	shader_file = load("res://Assets/Shaders/Compute shaders/Water/waterPhysicsVelocity.glsl")
 	shader_spirv = shader_file.get_spirv()
 	velocity_shader = rd.shader_create_from_spirv(shader_spirv)
 	if velocityXMap == null:

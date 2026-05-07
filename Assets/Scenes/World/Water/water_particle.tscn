@@ -23,6 +23,7 @@ roughness = 0.19
 refraction_enabled = true
 
 [node name="Water particle" type="RigidBody3D" unique_id=435576836]
+collision_layer = 2
 mass = 0.1
 physics_material_override = SubResource("PhysicsMaterial_6swxi")
 continuous_cd = true

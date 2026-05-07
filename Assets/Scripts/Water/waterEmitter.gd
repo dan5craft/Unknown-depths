@@ -5,7 +5,9 @@ extends Node3D
 @export var emitter:Node3D
 @export var force:Vector3 = Vector3(0.0, 0.0, 0.0)
 @export var lifetime:float = 20.0
+@export var radius:float = 0.1
 @export var disabled:bool = false
+@export var water:Node3D
 var timer:float = 0.0
 
 # Called when the node enters the scene tree for the first time.
@@ -26,6 +28,8 @@ func _process(delta: float) -> void:
 		appliedForce = appliedForce.rotated(Vector3(0.0, 1.0, 0.0), rotation.y)
 		appliedForce = appliedForce.rotated(Vector3(0.0, 0.0, 1.0), rotation.z)
 		obj.lifetime = lifetime
+		obj.water = water
+		obj.radius = radius
 		emitter.add_child(obj)
 		obj.apply_force(appliedForce)
 	pass
