@@ -17,6 +17,14 @@ extends Node3D
 	set(v):
 		angle = v
 		generateMesh()
+@export var stepPlateHeight:float = 0.05:
+	set(v):
+		stepPlateHeight = v
+		generateMesh()
+@export var stepDepth:float = 0.2:
+	set(v):
+		stepDepth = v
+		generateMesh()
 @export_tool_button("Generate Stairs", "3D") var genButton = generateMesh
 
 func normal(v1:Vector3, v2:Vector3, v3:Vector3):
@@ -37,7 +45,7 @@ func generateMesh():
 	for i in range(vertexArray.size()):
 		vertexArray[i].x = vertexArray[i].x - width/2.0
 		vertexArray[i].y = vertexArray[i].y/0.25*h
-		vertexArray[i].z = vertexArray[i].z + tan(phi)*vertexArray[i].y
+		vertexArray[i].z = vertexArray[i].z/0.5*stepDepth + tan(phi)*vertexArray[i].y
 	var newVertexArray:PackedVector3Array = PackedVector3Array()
 	var newIndexArray:PackedInt32Array = PackedInt32Array()
 	var newNormalArray:PackedVector3Array = PackedVector3Array()
@@ -73,37 +81,37 @@ func generateMesh():
 	vertexArray = PackedVector3Array()
 	
 	for i in range(steps):
-		vertexArray.push_back(Vector3(0.0, (h*(i+1))-0.1, 0.25+tan(phi)*h*i))
-		vertexArray.push_back(Vector3(0.0, (h*(i+1)), 0.25+tan(phi)*h*i))
-		vertexArray.push_back(Vector3(width, (h*(i+1)), 0.25+tan(phi)*h*i))
+		vertexArray.push_back(Vector3(0.0, (h*(i+1))-stepPlateHeight, stepDepth/2.0+tan(phi)*h*i))
+		vertexArray.push_back(Vector3(0.0, (h*(i+1)), stepDepth/2.0+tan(phi)*h*i))
+		vertexArray.push_back(Vector3(width, (h*(i+1)), stepDepth/2.0+tan(phi)*h*i))
 		
-		vertexArray.push_back(Vector3(0.0, (h*(i+1))-0.1, 0.25+tan(phi)*h*i))
-		vertexArray.push_back(Vector3(width, (h*(i+1)), 0.25+tan(phi)*h*i))
-		vertexArray.push_back(Vector3(width, (h*(i+1))-0.1, 0.25+tan(phi)*h*i))
+		vertexArray.push_back(Vector3(0.0, (h*(i+1))-stepPlateHeight, stepDepth/2.0+tan(phi)*h*i))
+		vertexArray.push_back(Vector3(width, (h*(i+1)), stepDepth/2.0+tan(phi)*h*i))
+		vertexArray.push_back(Vector3(width, (h*(i+1))-stepPlateHeight, stepDepth/2.0+tan(phi)*h*i))
 		
-		vertexArray.push_back(Vector3(0.0, (h*(i+1))-0.1, -0.25+tan(phi)*h*i))
-		vertexArray.push_back(Vector3(width, (h*(i+1)), -0.25+tan(phi)*h*i))
-		vertexArray.push_back(Vector3(0.0, (h*(i+1)), -0.25+tan(phi)*h*i))
+		vertexArray.push_back(Vector3(0.0, (h*(i+1))-stepPlateHeight, -stepDepth/2.0+tan(phi)*h*i))
+		vertexArray.push_back(Vector3(width, (h*(i+1)), -stepDepth/2.0+tan(phi)*h*i))
+		vertexArray.push_back(Vector3(0.0, (h*(i+1)), -stepDepth/2.0+tan(phi)*h*i))
 		
-		vertexArray.push_back(Vector3(0.0, (h*(i+1))-0.1, -0.25+tan(phi)*h*i))
-		vertexArray.push_back(Vector3(width, (h*(i+1))-0.1, -0.25+tan(phi)*h*i))
-		vertexArray.push_back(Vector3(width, (h*(i+1)), -0.25+tan(phi)*h*i))
+		vertexArray.push_back(Vector3(0.0, (h*(i+1))-stepPlateHeight, -stepDepth/2.0+tan(phi)*h*i))
+		vertexArray.push_back(Vector3(width, (h*(i+1))-stepPlateHeight, -stepDepth/2.0+tan(phi)*h*i))
+		vertexArray.push_back(Vector3(width, (h*(i+1)), -stepDepth/2.0+tan(phi)*h*i))
 		
-		vertexArray.push_back(Vector3(0.0, (h*(i+1)), 0.25+tan(phi)*h*i))
-		vertexArray.push_back(Vector3(0.0, (h*(i+1)), -0.25+tan(phi)*h*i))
-		vertexArray.push_back(Vector3(width, (h*(i+1)), 0.25+tan(phi)*h*i))
+		vertexArray.push_back(Vector3(0.0, (h*(i+1)), stepDepth/2.0+tan(phi)*h*i))
+		vertexArray.push_back(Vector3(0.0, (h*(i+1)), -stepDepth/2.0+tan(phi)*h*i))
+		vertexArray.push_back(Vector3(width, (h*(i+1)), stepDepth/2.0+tan(phi)*h*i))
 		
-		vertexArray.push_back(Vector3(0.0, (h*(i+1)), -0.25+tan(phi)*h*i))
-		vertexArray.push_back(Vector3(width, (h*(i+1)), -0.25+tan(phi)*h*i))
-		vertexArray.push_back(Vector3(width, (h*(i+1)), 0.25+tan(phi)*h*i))
+		vertexArray.push_back(Vector3(0.0, (h*(i+1)), -stepDepth/2.0+tan(phi)*h*i))
+		vertexArray.push_back(Vector3(width, (h*(i+1)), -stepDepth/2.0+tan(phi)*h*i))
+		vertexArray.push_back(Vector3(width, (h*(i+1)), stepDepth/2.0+tan(phi)*h*i))
 		
-		vertexArray.push_back(Vector3(0.0, (h*(i+1))-0.1, 0.25-tan(phi)*0.15+tan(phi)*h*i))
-		vertexArray.push_back(Vector3(0.0, (h*(i+1)), 0.25+tan(phi)*h*i))
-		vertexArray.push_back(Vector3(0.0, (h*(i+1))-0.1, 0.25+tan(phi)*h*i))
+		vertexArray.push_back(Vector3(0.0, (h*(i+1))-stepPlateHeight, stepDepth/2.0-tan(phi)*stepPlateHeight+tan(phi)*h*i))
+		vertexArray.push_back(Vector3(0.0, (h*(i+1)), stepDepth/2.0+tan(phi)*h*i))
+		vertexArray.push_back(Vector3(0.0, (h*(i+1))-stepPlateHeight, stepDepth/2.0+tan(phi)*h*i))
 		
-		vertexArray.push_back(Vector3(width, (h*(i+1))-0.1, 0.25-tan(phi)*0.15+tan(phi)*h*i))
-		vertexArray.push_back(Vector3(width, (h*(i+1))-0.1, 0.25+tan(phi)*h*i))
-		vertexArray.push_back(Vector3(width, (h*(i+1)), 0.25+tan(phi)*h*i))
+		vertexArray.push_back(Vector3(width, (h*(i+1))-stepPlateHeight, stepDepth/2.0-tan(phi)*stepPlateHeight+tan(phi)*h*i))
+		vertexArray.push_back(Vector3(width, (h*(i+1))-stepPlateHeight, stepDepth/2.0+tan(phi)*h*i))
+		vertexArray.push_back(Vector3(width, (h*(i+1)), stepDepth/2.0+tan(phi)*h*i))
 	
 	arrays[Mesh.ARRAY_VERTEX] = vertexArray
 	normalArray = PackedVector3Array()
