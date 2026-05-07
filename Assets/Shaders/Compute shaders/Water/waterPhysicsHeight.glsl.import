@@ -1,0 +1,14 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://bmghsksl22qcv"
+path="res://.godot/imported/waterPhysicsHeight.glsl-f2d915e763d35d2ea7bf8dfd0d3dd3f7.res"
+
+[deps]
+
+source_file="res://Assets/Shaders/Compute shaders/Water/waterPhysicsHeight.glsl"
+dest_files=["res://.godot/imported/waterPhysicsHeight.glsl-f2d915e763d35d2ea7bf8dfd0d3dd3f7.res"]
+
+[params]
+

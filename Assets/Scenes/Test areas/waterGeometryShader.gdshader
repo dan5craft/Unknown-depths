@@ -116,7 +116,7 @@ void vertex() {
 			highest = Tcwh;
 			mult = vec2(0.0, -1.0);
 		}
-		/*if(D1wh > highestW){
+		if(D1wh > highestW){
 			highestW = D1wh;
 			highest = D1cwh;
 			mult = vec2(1.0/sqrt(2.0), -1.0/sqrt(2.0));
@@ -125,7 +125,7 @@ void vertex() {
 			highestW = D2wh;
 			highest = D2cwh;
 			mult = vec2(-1.0/sqrt(2.0), 1.0/sqrt(2.0));
-		}*/
+		}
 		float v = atan(detail/h.y);
 		float l = h.y-highest;
 		float d = tan(v)*l;
@@ -148,10 +148,8 @@ vec3 lerp_color(vec3 color1, vec3 color2, float p){
 void fragment() {
 	ivec2 size = textureSize(waterHeightmap, 0);
 	ivec2 texelCoords = ivec2(int(round(UV.x*float(size.x-1))), int(round(UV.y*float(size.y-1))));
-	//vec2 texel = 1.0 / vec2(textureSize(waterHeightmap, 0));
 	float wh = texelFetch(waterHeightmap, texelCoords, 0).x;
 	vec2 h = texelFetch(heightmap, texelCoords, 0).xy;
-	//vec2 h = texture(heightmap, UV, 0).xy;
 	float cwh = h.y+wh;
 	vec2 xTexel = 1.0 / vec2(textureSize(velXmap, 0));
 	vec2 yTexel = 1.0 / vec2(textureSize(velYmap, 0));
@@ -184,78 +182,12 @@ void fragment() {
 	vec2 Th = texelFetch(heightmap, Ttc, 0).xy;
 	vec2 D1h = texelFetch(heightmap, D1tc, 0).xy;
 	vec2 D2h = texelFetch(heightmap, D2tc, 0).xy;
-	/*vec2 RtcF = vec2(UV.x+texel.x, UV.y);
-	vec2 BtcF = vec2(UV.x, UV.y+texel.y);
-	vec2 LtcF = vec2(UV.x-texel.x, UV.y);
-	vec2 TtcF = vec2(UV.x, UV.y-texel.y);
-	vec2 D1tcF = vec2(RtcF.x, TtcF.y);
-	vec2 D2tcF = vec2(LtcF.x, BtcF.y);
-	float Rwh = texture(waterHeightmap, RtcF).r;
-	float Bwh = texture(waterHeightmap, BtcF).r;
-	float Lwh = texture(waterHeightmap, LtcF).r;
-	float Twh = texture(waterHeightmap, TtcF).r;
-	float D1wh = texture(waterHeightmap, D1tcF).r;
-	float D2wh = texture(waterHeightmap, D2tcF).r;
-	vec2 Rh = texture(heightmap, RtcF).xy;
-	vec2 Bh = texture(heightmap, BtcF).xy;
-	vec2 Lh = texture(heightmap, LtcF).xy;
-	vec2 Th = texture(heightmap, TtcF).xy;
-	vec2 D1h = texture(heightmap, D1tcF).xy;
-	vec2 D2h = texture(heightmap, D2tcF).xy;*/
 	float Rcwh = Rh.y+Rwh;
 	float Bcwh = Bh.y+Bwh;
 	float Lcwh = Lh.y+Lwh;
 	float Tcwh = Th.y+Twh;
 	float D1cwh = D1h.y+D1wh;
 	float D2cwh = D2h.y+D2wh;
-	/*if(Rcwh < h.y || Bcwh < h.y || Lcwh < h.y || Tcwh < h.y || D1cwh < h.y || D2cwh < h.y){
-		ALPHA = 0.0;
-	}*/
-	/*if(Rh.y == 0.0 || Bh.y == 0.0 || Lh.y == 0.0 || Th.y == 0.0 || D1h.y == 0.0 || D2h.y == 0.0){
-		ALPHA = 0.0;
-	}*/
-	/*if(
-	Rh.y == 0.0 && UV.x*float(size.x-1)-round(UV.x*float(size.x-1))+0.5 > 0.5||
-	Bh.y == 0.0 && UV.y*float(size.x-1)-round(UV.y*float(size.y-1))+0.5 > 0.5||
-	Lh.y == 0.0 && UV.x*float(size.x-1)-round(UV.x*float(size.x-1))+0.5 < 0.5||
-	Th.y == 0.0 && UV.y*float(size.x-1)-round(UV.y*float(size.y-1))+0.5 < 0.5||
-	D1h.y == 0.0 && UV.x*float(size.x-1)-round(UV.x*float(size.x-1))+0.5 > 0.5 && UV.y*float(size.x-1)-round(UV.y*float(size.y-1))+0.5 < 0.5||
-	D2h.y == 0.0 && UV.x*float(size.x-1)-round(UV.x*float(size.x-1))+0.5 < 0.5 && UV.y*float(size.x-1)-round(UV.y*float(size.y-1))+0.5 > 0.5){
-		ALPHA = 0.0;
-	}
-	if(
-	Rwh < 0.0005 && UV.x*float(size.x-1)-floor(UV.x*float(size.x-1)) > 0.5||
-	Bwh < 0.0005 && UV.y*float(size.y-1)-floor(UV.y*float(size.y-1)) > 0.5||
-	Lwh < 0.0005 && UV.x*float(size.x-1)-floor(UV.x*float(size.x-1)) < 0.5||
-	Twh < 0.0005 && UV.y*float(size.y-1)-floor(UV.y*float(size.y-1)) < 0.5||
-	D1wh < 0.0005 && UV.x*float(size.x-1)-floor(UV.x*float(size.x-1)) > 0.5 && UV.y*float(size.y-1)-floor(UV.y*float(size.y-1)) < 0.5||
-	D2wh < 0.0005 && UV.x*float(size.x-1)-floor(UV.x*float(size.x-1)) < 0.5 && UV.y*float(size.y-1)-floor(UV.y*float(size.y-1)) > 0.5){
-		ALPHA = 0.0;
-	}*/
-	/*float Rp = UV.x*float(size.x-1)-round(UV.x*float(size.x-1))+0.5;
-	float Rrh = Rp*(((Rh.y-h.y)*0.5+h.y)-h.y)+h.y;
-	float Bp = UV.y*float(size.y-1)-round(UV.y*float(size.y-1))+0.5;
-	float Brh = Bp*(((Bh.y-h.y)*0.5+h.y)-h.y)+h.y;
-	float Lp = 1.0-UV.x*float(size.x-1)+round(UV.x*float(size.x-1))-0.5;
-	float Lrh = Lp*(((Lh.y-h.y)*0.5+h.y)-h.y)+h.y;
-	float Tp = 1.0-UV.y*float(size.y-1)+round(UV.y*float(size.y-1))-0.5;
-	float Trh = Tp*(((Th.y-h.y)*0.5+h.y)-h.y)+h.y;
-	float D1p = 1.0-UV.y*float(size.y-1)+round(UV.x*float(size.y-1))-0.5;
-	float D1rh = Tp*(Th.y-h.y);
-	float D2p = 1.0-UV.y*float(size.y-1)+round(UV.x*float(size.y-1))-0.5;
-	float D2rh = Tp*(Th.y-h.y);
-	if(cwh < Rrh){
-		ALPHA = 0.0;
-	}
-	if(cwh < Brh){
-		ALPHA = 0.0;
-	}
-	if(cwh < Lrh){
-		ALPHA = 0.0;
-	}
-	if(cwh < Trh){
-		ALPHA = 0.0;
-	}*/
 	ROUGHNESS = 0.1;//+foamPercent*0.9;
 	SPECULAR = 0.2;
 	CLEARCOAT = 1.0;

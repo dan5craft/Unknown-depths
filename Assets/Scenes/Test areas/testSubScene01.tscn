@@ -1,15 +1,15 @@
 [gd_scene format=4 uid="uid://buy2s833dr1rd"]
 
-[ext_resource type="Script" uid="uid://dk6l3frjdom3i" path="res://Assets/Shaders/Water shaders/waterPhysics.gd" id="1_l2ude"]
-[ext_resource type="Script" uid="uid://bfcgspbjr47j1" path="res://Assets/Scenes/Test areas/FpsCounter.gd" id="2_0hd75"]
+[ext_resource type="Script" uid="uid://dk6l3frjdom3i" path="res://Assets/Shaders/Compute shaders/Water/waterPhysics.gd" id="1_l2ude"]
+[ext_resource type="Script" uid="uid://bfcgspbjr47j1" path="res://Assets/Scripts/Misc/FpsCounter.gd" id="2_0hd75"]
 [ext_resource type="Shader" uid="uid://bkn0u34fvk1f2" path="res://Assets/Scenes/Test areas/waterGeometryShader.gdshader" id="3_cclrf"]
-[ext_resource type="Script" uid="uid://qa4smpcf01gd" path="res://Assets/Scenes/Test areas/waterSurface.gd" id="4_5f4hd"]
+[ext_resource type="Script" uid="uid://qa4smpcf01gd" path="res://Assets/Scripts/Water/waterSurface.gd" id="4_5f4hd"]
 [ext_resource type="Script" uid="uid://b7ts6l8438x3b" path="res://Assets/Shaders/Compositor effects/Underwater/underwaterPostProcessEffect.gd" id="5_452ld"]
 [ext_resource type="Script" uid="uid://dncgdayggosm8" path="res://Assets/Scenes/Test areas/hmap_Baker.gd" id="5_cpjye"]
 [ext_resource type="Shader" uid="uid://b5bknxniico3j" path="res://Assets/Scenes/Test areas/hmapShader.gdshader" id="6_6swxi"]
 [ext_resource type="Script" uid="uid://1gwxs31o4gd2" path="res://Assets/Scripts/Misc/cameraMovement.gd" id="6_ir4rb"]
 [ext_resource type="Script" uid="uid://rod5bnxd463i" path="res://Assets/Scripts/Misc/setResolution.gd" id="7_qvy3q"]
-[ext_resource type="Script" uid="uid://ba2pn1o5o0tis" path="res://Assets/Scenes/Test areas/followCamera.gd" id="8_cvm0q"]
+[ext_resource type="Script" uid="uid://ba2pn1o5o0tis" path="res://Assets/Scripts/Misc/followCamera.gd" id="8_cvm0q"]
 [ext_resource type="Texture2D" uid="uid://dqr8dspdatqqx" path="res://Assets/Scenes/Test areas/autumn_field_puresky_4k.hdr" id="9_mxxs7"]
 [ext_resource type="Texture2D" uid="uid://d12thv17nqs5b" path="res://Assets/Models/Submarines/Mini Sub/miniSub08_used-stainless-steel2_albedo.webp" id="10_gsjn4"]
 [ext_resource type="Texture2D" uid="uid://b0xllh7820bpl" path="res://Assets/Models/Submarines/Mini Sub/miniSub08_used-stainless-steel2_normal-ogl.webp" id="11_cpjye"]
@@ -23,7 +23,7 @@
 [ext_resource type="Texture2D" uid="uid://b7gf0gp2n4ofg" path="res://Assets/Models/Submarines/Mini Sub/miniSub08_worn-rusted-painted_normal-ogl.webp" id="19_yj1fj"]
 [ext_resource type="Texture2D" uid="uid://ctgq8l2ihkwb" path="res://Assets/Models/Submarines/Mini Sub/miniSub08_armorPlatesNormal.webp" id="20_bxn36"]
 [ext_resource type="PackedScene" uid="uid://18af1500engn" path="res://Assets/Scenes/World/Water/water_particle.tscn" id="23_h53yh"]
-[ext_resource type="Script" uid="uid://c3adopd1gx78m" path="res://Assets/Scenes/Test areas/emitter.gd" id="24_h64rg"]
+[ext_resource type="Script" uid="uid://c3adopd1gx78m" path="res://Assets/Scripts/Water/waterEmitter.gd" id="24_h64rg"]
 
 [sub_resource type="Texture2DRD" id="Texture2DRD_7qx47"]
 
@@ -1264,10 +1264,11 @@ mesh = SubResource("ArrayMesh_b5cov")
 [node name="Faucet" type="Node3D" parent="." unique_id=2145388798 node_paths=PackedStringArray("emitter")]
 transform = Transform3D(1, 0, 0, 0, -0.75229996, 0.65882075, 0, -0.65882075, -0.75229996, 0, -0.0003118515, -1.152873)
 script = ExtResource("24_h64rg")
-spawnInterval = 0.01
+spawnInterval = 0.001
 emissionObject = ExtResource("23_h53yh")
 emitter = NodePath("Emitter")
 force = Vector3(0, -20, 0)
+lifetime = 1.0
 
 [node name="Mesh" type="MeshInstance3D" parent="Faucet" unique_id=2027899495]
 mesh = SubResource("CylinderMesh_hdpq0")

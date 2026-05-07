@@ -6,11 +6,11 @@
 bounce = 0.1
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_8y2vh"]
-radius = 0.05
+radius = 0.025
 
-[sub_resource type="SphereMesh" id="SphereMesh_h53yh"]
-radius = 0.05
-height = 0.1
+[sub_resource type="SphereMesh" id="SphereMesh_okk6j"]
+radius = 0.1
+height = 0.2
 radial_segments = 6
 rings = 3
 
@@ -32,5 +32,5 @@ script = ExtResource("1_okk6j")
 shape = SubResource("SphereShape3D_8y2vh")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1276951887]
-mesh = SubResource("SphereMesh_h53yh")
+mesh = SubResource("SphereMesh_okk6j")
 surface_material_override/0 = SubResource("StandardMaterial3D_vtfym")
