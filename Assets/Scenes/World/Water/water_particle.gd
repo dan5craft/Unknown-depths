@@ -23,7 +23,7 @@ func _process(delta: float) -> void:
 	timer += delta
 	if(timer > lifetime):
 		queue_free()
-	if(water.isUnderwater(Vector3(global_position.x, global_position.y-radius*1.05, global_position.z))):
+	if(water.isUnderwater(Vector3(global_position.x, global_position.y-radius*0.75, global_position.z))):
 		var coord = water.globalToWaterCoord(global_position)
 		var volume = 4.0/3.0*PI*pow(radius, 3.0)
 		var area = PI*pow(radius, 2.0)

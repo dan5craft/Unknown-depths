@@ -6,9 +6,11 @@
 bounce = 0.1
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_8y2vh"]
+resource_local_to_scene = true
 radius = 0.025
 
 [sub_resource type="SphereMesh" id="SphereMesh_okk6j"]
+resource_local_to_scene = true
 radius = 0.1
 height = 0.2
 radial_segments = 6

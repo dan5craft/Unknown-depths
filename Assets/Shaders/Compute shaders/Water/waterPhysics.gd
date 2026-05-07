@@ -108,7 +108,7 @@ func addWater(x:int, y:int, volume:float):
 	waterHeightMap[x*size.y+y] += volume/pow(detail, 2.0)
 
 func addWaterArea(x:int, y:int, volume:float, area:float):
-	var cellAmount:int= round(area/pow(detail, 2.0))
+	var cellAmount:int= max(round(area/pow(detail, 2.0)), 1)
 	var waterAmount:float = volume/pow(detail, 2.0)/cellAmount
 	var radius:float = sqrt(area/PI)
 	var cells = []
@@ -208,7 +208,7 @@ func _input(event):
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT && event.is_pressed():
 			for x in range(1):
-				addWaterArea(size.x/2, size.y/2, 5.0, 1.0)
+				addWaterArea(size.x/2, size.y/2, 50.0, 1.0)
 		if event.button_index == MOUSE_BUTTON_RIGHT && event.is_pressed():
 			for x in range(1):
 				addWaterArea(size.x/2, size.y/2, -1.0, 1.0)

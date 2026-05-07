@@ -134,14 +134,20 @@ void vertex() {
 			highestH = D2h;
 			mult = vec2(-1.0/sqrt(2.0), 1.0/sqrt(2.0));
 		}
-		float v = atan(detail/h.y);
-		float l = h.y-highest;
-		float d = tan(v)*l;
-		cwh = highest;
-		VERTEX.xz = UV*vec2(size)*vec2(detail)-vec2(size)*vec2(detail)*0.5+d*mult*2.0;
-		NORMAL = vec3(0.0, 1.0, 0.0);
-		whf = highestW;
-		hf = highestH;
+		if(highestH.y < h.y*0.99){
+			float v = atan(detail/h.y);
+			float l = h.y-highest;
+			float d = tan(v)*l;
+			cwh = highest;
+			VERTEX.xz = UV*vec2(size)*vec2(detail)-vec2(size)*vec2(detail)*0.5+d*mult*2.0;
+			NORMAL = vec3(0.0, 1.0, 0.0);
+			whf = highestW;
+			hf = highestH;
+		}else{
+			VERTEX.xz = UV*vec2(size)*vec2(detail)-vec2(size)*vec2(detail)*0.5;
+			whf = wh;
+			hf = h;
+		}
 	}else{
 		VERTEX.xz = UV*vec2(size)*vec2(detail)-vec2(size)*vec2(detail)*0.5;
 		whf = wh;
