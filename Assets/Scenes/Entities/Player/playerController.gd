@@ -43,7 +43,7 @@ func _process(delta: float) -> void:
 		sum += Vector2(leg.global_position.x, leg.global_position.z)
 		if lowest > leg.global_position.y:
 			lowest = leg.global_position.y
-	global_position.y = lerp(position.y, lowest-legLength*0.2, min(5.0*delta, 1.0))
+	global_position.y = lerp(position.y, lowest-legLength*0.2, min(10.0*delta, 1.0))
 	var center:Vector2 = sum/legs.size()
 	var radius:float = (Vector2(legs[0].position.x, legs[0].position.z)-center).length()*2.0
 	var dist = (Vector2(global_position.x, global_position.z)-center).length()
@@ -56,10 +56,13 @@ func _process(delta: float) -> void:
 				furthestLeg = leg
 				furthestLegIndex = i
 		var pos = legStartPositions[furthestLegIndex]+global_position
-		pos.y += stepHeight
-		var v = speed*walkRadius*delta*40.0
+		var v = min(speed*walkRadius*delta*80.0, legLength*0.5)
 		pos.x += cos(time+PI/2.0)*v
 		pos.z += sin(time+PI/2.0)*v
+		var result = castRay(Vector3(pos.x, global_position.y+legLength, pos.z), Vector3(pos.x, global_position.y-legLength, pos.z))
+		if result:
+			pos.y = result.position.y
+		pos.y += stepHeight
 		furthestLeg.global_position = pos
 	position.x = cos(time)*walkRadius
 	position.z = sin(time)*walkRadius

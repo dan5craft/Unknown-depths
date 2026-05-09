@@ -2,6 +2,8 @@ extends Camera3D
 
 @export var speed : float = 0.01;
 
+@export var water:Node3D
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
@@ -22,7 +24,7 @@ func _process(delta: float) -> void:
 		global_position += Vector3.LEFT*global_transform.basis.inverse()*speed;
 	if Input.is_action_pressed("Right"):
 		global_position -= Vector3.LEFT*global_transform.basis.inverse()*speed;
-	if $"../Water".isUnderwater(position):
+	if water.isUnderwater(position):
 		compositor.compositor_effects.get(0).enabled = true
 	else:
 		compositor.compositor_effects.get(0).enabled = false
