@@ -208,7 +208,7 @@ func _input(event):
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT && event.is_pressed():
 			for x in range(1):
-				addWaterArea(size.x/2, size.y/2, 50.0, 1.0)
+				addWaterArea(size.x/2, size.y/2, 1000.0, 100.0)
 		if event.button_index == MOUSE_BUTTON_RIGHT && event.is_pressed():
 			for x in range(1):
 				addWaterArea(size.x/2, size.y/2, -1.0, 1.0)
