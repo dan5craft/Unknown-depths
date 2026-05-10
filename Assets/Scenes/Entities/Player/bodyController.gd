@@ -1,16 +1,18 @@
 extends Node3D
 
 var time := 0.0
+@export_category("Body Controller")
 @export var legs:Array[Leg]
-@export var armMarkers:Array[Node3D]
 @export var body:Node3D
-@export var balanceRadius = 0.5
+@export_enum("Standing", "Walking") var state:String
+@export_category("Legs")
 @export var standingPercent = 0.9
-@export var stepLength:float = 0.5
-var speed = 1.0
-var walkRadius = 0.0
-var lastPos:Vector2
-var lastPosTime:int
+@export var stepLength:float = 0.4
+@export_subgroup("Movement")
+@export var moveDirection:Vector2 = Vector2(1.0, 0.0)
+@export var movementSpeed = 10.0
+var phi = 0.0
+
 
 func castRay(pos1:Vector3, pos2:Vector3) -> Dictionary:
 	var space_state = get_world_3d().direct_space_state
@@ -19,73 +21,56 @@ func castRay(pos1:Vector3, pos2:Vector3) -> Dictionary:
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	lastPosTime = Time.get_ticks_msec()
-	lastPos = Vector2(body.global_position.x, body.global_position.z)
+	enterStanding()
 	pass # Replace with function body.
 
+func enterStanding() -> void:
+	state = "Standing"
+	for leg in legs:
+		leg.step(leg.origin.rotated(Vector3.UP, phi)+body.global_position)
+
+func standing() -> void:
+	var planted = false
+	if not planted:
+		planted = true
+		for leg in legs:
+			if leg.stepping:
+				leg.move()
+				planted = false
+	if planted:
+		enterWalking()
+
+func enterWalking() -> void:
+	state = "Walking"
+	var delta = get_process_delta_time()
+	var velocity = Vector3(moveDirection.x*movementSpeed, 0.0, moveDirection.y*movementSpeed)
+	legs[0].step(legs[0].origin.rotated(Vector3.UP, phi)+body.global_position+velocity)
+
+func walking():
+	var delta = get_process_delta_time()
+	if moveDirection.length() > 1.0 or moveDirection.length() < 1.0:
+		moveDirection = moveDirection.normalized()
+	var velocity = Vector3(moveDirection.x*movementSpeed, 0.0, moveDirection.y*movementSpeed)
+	var stepOffset = Vector3(sin(phi), 0.0, cos(phi))*stepLength
+	var angle = atan(moveDirection.x/moveDirection.y)
+	if moveDirection.y < 0.0:
+		angle += PI
+	elif moveDirection.x < 0.0:
+		angle += 2.0*PI
+	phi = lerp(phi, angle, min(1.0*delta, 1.0))
+	for leg in legs:
+		if leg.tooFar() and not leg.stepping:
+			leg.step(leg.origin.rotated(Vector3.UP, phi)+body.global_position+velocity+stepOffset*leg.legLength)
+		leg.move()
+	body.global_position += velocity*delta
+	var targetBasis = Basis.IDENTITY.rotated(Vector3.UP, phi)
+	body.basis = body.basis.slerp(targetBasis, min(1.0*delta, 1.0))
+	pass
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
-	time += delta*speed
-	var currentPosTime = Time.get_ticks_msec()
-	var diffPosTime:float = float(currentPosTime-lastPosTime)/1000.0
-	lastPosTime = Time.get_ticks_msec()
-	var v:Vector2 = (Vector2(body.global_position.x, body.global_position.z)-lastPos)/diffPosTime
-	lastPos = Vector2(body.global_position.x, body.global_position.z)
-	var lowest:Leg
-	var furthest:Leg
-	for leg in legs:
-		if not leg.stepping:
-			lowest = leg
-			furthest = leg
-			break
-	var balanced = false
-	for leg in legs:
-		if leg.stepping:
-			continue
-		var dist1 = leg.dist2D()
-		var dist2 = furthest.dist2D()
-		var pos = body.global_position
-		if v.x > 0.0:
-			dist1.x += leg.legLength/2.0/v.x*standingPercent*stepLength
-			dist2.x += leg.legLength/2.0/v.x*standingPercent*stepLength
-			pos.x -= leg.legLength/2.0/v.x*standingPercent*stepLength
-		if v.y > 0.0:
-			dist1.y += leg.legLength/2.0/v.y*standingPercent*stepLength
-			dist2.y += leg.legLength/2.0/v.y*standingPercent*stepLength
-			pos.y -= leg.legLength/2.0/v.y*standingPercent*stepLength
-		if dist1.length() > dist2.length():
-			furthest = leg
-		if leg.global_position.y < lowest.global_position.y:
-			lowest = leg
-		var dist = (pos-leg.global_position).length()
-		if dist <= balanceRadius:
-			balanced = true
-	if furthest != null and furthest.tooFar() or not balanced and furthest != null:
-		var mult := Vector2(v.x/v.length(), v.y/v.length())
-		if v.length() == 0.0:
-			mult = Vector2(0.0, 0.0)
-		else:
-			furthest.stepTime = min(furthest.legLength/2.0/v.length(), furthest.maxStepTime)
-		var speedOffset := Vector3(v.x*furthest.stepTime+mult.x*furthest.legLength/2.0*standingPercent*stepLength, 0.0, v.y*furthest.stepTime+mult.y*furthest.legLength/2.0*standingPercent*stepLength)
-		var pos := furthest.origin+body.global_position+speedOffset
-		var start := Vector3(pos.x, pos.y+furthest.legLength*2.0, pos.z)
-		var end := Vector3(pos.x, pos.y-furthest.legLength*2.0, pos.z)
-		var result = castRay(start, end)
-		if result:
-			pos.y = result.position.y
-			furthest.step(pos)
-		#furthest.step(furthest.origin+body.global_position+Vector3(v.x*furthest.stepTime, 0.0, v.y*furthest.stepTime))
-	for leg in legs:
-		var pos := leg.origin+body.global_position
-		var start := Vector3(pos.x, pos.y+leg.legLength*2.0, pos.z)
-		var end := Vector3(pos.x, pos.y-leg.legLength*2.0, pos.z)
-		var result = castRay(start, end)
-		if not result:
-			leg.global_position = lerp(leg.global_position, pos, min(5.0*delta, 1.0))
-		else:
-			leg.move()
-	if lowest != null:
-		body.global_position.y = lerp(body.global_position.y, lowest.global_position.y-lowest.legLength*(1.0-standingPercent), min(5.0*delta, 1.0))
-	#body.global_position.y = lowest.global_position.y-lowest.legLength*0.2
+	if state == "Standing":
+		standing()
+	if state == "Walking":
+		walking()
 	pass

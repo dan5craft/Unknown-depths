@@ -3,6 +3,7 @@ class_name Leg extends Node3D
 @export var stepHeight = 0.5
 @export var legLength = 1.0
 @export var body:Node3D
+@export var bodyController:Node3D
 @export var maxStepTime:float = 0.5
 var stepTime:float = 1.0
 @export var isSymmetrical:bool = false
@@ -24,20 +25,21 @@ func castRay(pos1:Vector3, pos2:Vector3) -> Dictionary:
 	return space_state.intersect_ray(query)
 
 func dist() -> float:
-	var root = body.global_position+origin
+	var root = body.global_position+origin.rotated(Vector3.UP, bodyController.phi)
 	root.y = body.global_position.y+legLength
-	var dist = (root-global_position).length()
-	return dist
+	var Dist = (root-global_position).length()
+	print(Dist)
+	return Dist
 
 func dist2D() -> Vector2:
 	var root = body.global_position+origin
 	root.y = body.global_position.y+legLength
-	var dist = root-global_position
-	return Vector2(dist.x, dist.z)
+	var Dist = root-global_position
+	return Vector2(Dist.x, Dist.z)
 
 func tooFar() -> bool:
-	var dist = dist()
-	if dist > legLength:
+	var Dist = dist()
+	if Dist > legLength:
 		return true
 	else:
 		return false
@@ -49,8 +51,6 @@ func stepFunction(x:float, p1:Vector2, p2:Vector2, p3:Vector2) -> float:
 	return part1+part2+part3
 
 func move():
-	if not stepping:
-		return
 	var time = Time.get_ticks_msec()
 	var endTime = stepOriginTime+round(stepTime*1000)
 	if time > endTime:
@@ -64,8 +64,6 @@ func move():
 	global_position.y = stepFunction(p, Vector2(0.0, 0.0), Vector2(0.5, stepHeight-min(diff, 0.0)), Vector2(1.0, -diff))+stepOrigin.y
 
 func step(pos:Vector3):
-	if stepping or isSymmetrical and symmetricalEqual.stepping:
-		return
 	stepping = true
 	targetPos = pos
 	stepOrigin = global_position
