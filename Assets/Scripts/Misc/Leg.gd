@@ -3,7 +3,8 @@ class_name Leg extends Node3D
 @export var stepHeight = 0.5
 @export var legLength = 1.0
 @export var body:Node3D
-@export var stepTime:float = 1.0
+@export var maxStepTime:float = 0.5
+var stepTime:float = 1.0
 @export var isSymmetrical:bool = false
 @export var symmetricalEqual:Leg
 
