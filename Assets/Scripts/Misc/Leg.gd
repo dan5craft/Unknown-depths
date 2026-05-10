@@ -28,6 +28,12 @@ func dist() -> float:
 	var dist = (root-global_position).length()
 	return dist
 
+func dist2D() -> Vector2:
+	var root = body.global_position+origin
+	root.y = body.global_position.y+legLength
+	var dist = root-global_position
+	return Vector2(dist.x, dist.z)
+
 func tooFar() -> bool:
 	var dist = dist()
 	if dist > legLength:
@@ -60,9 +66,6 @@ func step(pos:Vector3):
 	if stepping or isSymmetrical and symmetricalEqual.stepping:
 		return
 	stepping = true
-	var result = castRay(Vector3(pos.x, pos.y+legLength*2.0, pos.z), Vector3(pos.x, pos.y-legLength*2.0, pos.z))
-	if result:
-		pos.y = result.position.y
 	targetPos = pos
 	stepOrigin = global_position
 	stepOriginTime = Time.get_ticks_msec()

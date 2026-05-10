@@ -227,7 +227,6 @@ bind/61/bone = -1
 bind/61/pose = Transform3D(0.9956219, -0.02781901, 0.08923531, -0.09346533, -0.30687922, 0.947148, 0.0010357089, -0.9513419, -0.30813557, 0.15968096, 0.031148676, 0.0656626)
 
 [node name="Player" type="Node3D" unique_id=535585784]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.102047324, 0)
 
 [node name="skeleton" type="Skeleton3D" parent="." unique_id=1469668017 node_paths=PackedStringArray("legs", "body")]
 animate_physical_bones = false
@@ -683,7 +682,7 @@ layers = 4
 mesh = SubResource("SphereMesh_hbw02")
 
 [node name="leftLegPole" type="Marker3D" parent="skeleton" unique_id=189278234]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.17775793, 1.1863735, 1.863232)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.178, 1.7154248, 1.863)
 
 [node name="skeletonIK" type="TwoBoneIK3D" parent="skeleton" unique_id=2073675435]
 setting_count = 4
@@ -789,7 +788,7 @@ layers = 4
 mesh = SubResource("SphereMesh_hbw02")
 
 [node name="rightLegPole" type="Marker3D" parent="skeleton" unique_id=1675960663]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.178, 1.186, 1.863)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.178, 1.7154248, 1.863)
 
 [node name="leftArmTarget" type="Marker3D" parent="skeleton" unique_id=416305031]
 transform = Transform3D(-1, -8.742278e-08, 0, 8.742278e-08, -1, 0, 0, 0, 1, 0.35, 1.05, 0.07453418)
