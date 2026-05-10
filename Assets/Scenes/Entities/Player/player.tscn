@@ -1,6 +1,7 @@
 [gd_scene format=4 uid="uid://bduu2t4jgkqul"]
 
-[ext_resource type="Script" uid="uid://b7og20p8b2ag7" path="res://Assets/Scenes/Entities/Player/playerController.gd" id="1_wn8mc"]
+[ext_resource type="Script" uid="uid://cp2eupkld2pru" path="res://Assets/Scenes/Entities/Player/bodyController.gd" id="1_wn8mc"]
+[ext_resource type="Script" uid="uid://d0e8fqdrstjb5" path="res://Assets/Scripts/Misc/Leg.gd" id="2_hbw02"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wn8mc"]
 albedo_color = Color(0, 1, 0, 1)
@@ -225,13 +226,10 @@ bind/61/name = &"ORG-foot.R"
 bind/61/bone = -1
 bind/61/pose = Transform3D(0.9956219, -0.02781901, 0.08923531, -0.09346533, -0.30687922, 0.947148, 0.0010357089, -0.9513419, -0.30813557, 0.15968096, 0.031148676, 0.0656626)
 
-[node name="Player" type="Node3D" unique_id=535585784 node_paths=PackedStringArray("legs", "arms")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.07134235, 0)
-script = ExtResource("1_wn8mc")
-legs = [NodePath("skeleton/leftLegTarget"), NodePath("skeleton/rightLegTarget")]
-arms = [NodePath("skeleton/leftArmTarget"), NodePath("skeleton/rightArmTarget")]
+[node name="Player" type="Node3D" unique_id=535585784]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.102047324, 0)
 
-[node name="skeleton" type="Skeleton3D" parent="." unique_id=1469668017]
+[node name="skeleton" type="Skeleton3D" parent="." unique_id=1469668017 node_paths=PackedStringArray("legs", "body")]
 animate_physical_bones = false
 bones/0/name = "ORG-spine"
 bones/0/parent = -1
@@ -667,13 +665,20 @@ bones/61/enabled = true
 bones/61/position = Vector3(-1.2805685e-09, 0.48647657, -5.798938e-09)
 bones/61/rotation = Quaternion(-0.62866586, 0.040102866, 0.023074098, 0.776298)
 bones/61/scale = Vector3(1, 1, 0.99999994)
+script = ExtResource("1_wn8mc")
+legs = [NodePath("leftLegTarget"), NodePath("rightLegTarget")]
+body = NodePath("..")
 
-[node name="leftLegTarget" type="Marker3D" parent="skeleton" unique_id=929734403]
+[node name="leftLegTarget" type="Marker3D" parent="skeleton" unique_id=929734403 node_paths=PackedStringArray("body", "symmetricalEqual")]
 transform = Transform3D(1, 0, 0, 0, -0.28031492, -0.9599082, 0, 0.9599082, -0.28031492, 0.15, 0, 0)
 top_level = true
+script = ExtResource("2_hbw02")
+stepHeight = 0.2
+body = NodePath("../..")
+isSymmetrical = true
+symmetricalEqual = NodePath("../rightLegTarget")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="skeleton/leftLegTarget" unique_id=1511303980]
-visible = false
 layers = 4
 mesh = SubResource("SphereMesh_hbw02")
 
@@ -770,12 +775,16 @@ settings/3/axes = 7
 settings/3/invert = 0
 settings/3/additive = false
 
-[node name="rightLegTarget" type="Marker3D" parent="skeleton" unique_id=236069915]
+[node name="rightLegTarget" type="Marker3D" parent="skeleton" unique_id=236069915 node_paths=PackedStringArray("body", "symmetricalEqual")]
 transform = Transform3D(1, 0, 0, 0, -0.28031498, -0.9599082, 0, 0.9599082, -0.28031498, -0.15, 0, 0)
 top_level = true
+script = ExtResource("2_hbw02")
+stepHeight = 0.2
+body = NodePath("../..")
+isSymmetrical = true
+symmetricalEqual = NodePath("../leftLegTarget")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="skeleton/rightLegTarget" unique_id=1787062449]
-visible = false
 layers = 4
 mesh = SubResource("SphereMesh_hbw02")
 
@@ -795,6 +804,7 @@ transform = Transform3D(-1, -8.742278e-08, 0, 8.742278e-08, -1, 0, 0, 0, 1, -0.3
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.373, 1.3816609, -0.6961692)
 
 [node name="LimitAngularVelocityModifier3D" type="LimitAngularVelocityModifier3D" parent="skeleton" unique_id=2064552791]
+active = false
 chain_count = 4
 joint_count = 12
 chains/0/root_bone_name = "ORG-thigh.L"

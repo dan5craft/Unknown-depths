@@ -1,0 +1,68 @@
+class_name Leg extends Node3D
+
+@export var stepHeight = 0.5
+@export var legLength = 1.0
+@export var body:Node3D
+@export var stepTime:float = 1.0
+@export var isSymmetrical:bool = false
+@export var symmetricalEqual:Leg
+
+var targetPos:Vector3
+var stepping := false
+var origin:Vector3
+var stepOrigin:Vector3
+var stepOriginTime:float
+
+func _ready() -> void:
+	targetPos = global_position
+	origin = global_position-body.global_position
+
+func castRay(pos1:Vector3, pos2:Vector3) -> Dictionary:
+	var space_state = get_world_3d().direct_space_state
+	var query := PhysicsRayQueryParameters3D.create(pos1, pos2)
+	return space_state.intersect_ray(query)
+
+func dist() -> float:
+	var root = body.global_position+origin
+	root.y = body.global_position.y+legLength
+	var dist = (root-global_position).length()
+	return dist
+
+func tooFar() -> bool:
+	var dist = dist()
+	if dist > legLength:
+		return true
+	else:
+		return false
+
+func stepFunction(x:float, p1:Vector2, p2:Vector2, p3:Vector2) -> float:
+	var part1:float = (x-p2.x)*(x-p3.x)/((p1.x-p2.x)*(p1.x-p3.x))*p1.y
+	var part2:float = (x-p1.x)*(x-p3.x)/((p2.x-p1.x)*(p2.x-p3.x))*p2.y
+	var part3:float = (x-p1.x)*(x-p2.x)/((p3.x-p1.x)*(p3.x-p2.x))*p3.y
+	return part1+part2+part3
+
+func move():
+	if not stepping:
+		return
+	var time = Time.get_ticks_msec()
+	var endTime = stepOriginTime+round(stepTime*1000)
+	if time > endTime:
+		stepping = false
+		global_position = targetPos
+		return
+	var p = (time-stepOriginTime)/(endTime-stepOriginTime)
+	global_position.x = stepOrigin.x+(targetPos.x-stepOrigin.x)*p
+	global_position.z = stepOrigin.z+(targetPos.z-stepOrigin.z)*p
+	var diff = stepOrigin.y-targetPos.y
+	global_position.y = stepFunction(p, Vector2(0.0, 0.0), Vector2(0.5, stepHeight-min(diff, 0.0)), Vector2(1.0, -diff))+stepOrigin.y
+
+func step(pos:Vector3):
+	if stepping or isSymmetrical and symmetricalEqual.stepping:
+		return
+	stepping = true
+	var result = castRay(Vector3(pos.x, pos.y+legLength*2.0, pos.z), Vector3(pos.x, pos.y-legLength*2.0, pos.z))
+	if result:
+		pos.y = result.position.y
+	targetPos = pos
+	stepOrigin = global_position
+	stepOriginTime = Time.get_ticks_msec()
