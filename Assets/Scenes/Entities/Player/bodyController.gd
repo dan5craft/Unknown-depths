@@ -1,11 +1,14 @@
-extends Node3D
+class_name bodyController extends Node3D
 
 var time := 0.0
 @export_category("Body Controller")
 @export var legs:Array[Leg]
 @export var body:Node3D
 @export var mass:float = 80.0
-var velocity:Vector3 = Vector3.ZERO
+@export var simFPS:int = 60
+@export var smoothFPS:bool = true
+@export var timeScale = 0.1
+var velocity:Vector3 = Vector3(0.0, -2.0, 0.0)
 @export_enum("Standing", "Walking") var state:String
 @export_category("Legs")
 @export var standingPercent = 0.9
@@ -15,15 +18,28 @@ var velocity:Vector3 = Vector3.ZERO
 @export var movementSpeed = 0.5
 var phi = 0.0
 
+var oldPos:Vector3 = Vector3(0.0, 0.0, 0.0)
+var newPos:Vector3 = Vector3(0.0, 0.0, 0.0)
+var timer:float = -3.0
+
 
 func castRay(pos1:Vector3, pos2:Vector3) -> Dictionary:
 	var space_state = get_world_3d().direct_space_state
 	var query := PhysicsRayQueryParameters3D.create(pos1, pos2)
 	return space_state.intersect_ray(query)
 
+func getGroundedLegCount() -> int:
+	var sum:int = 0
+	for leg in legs:
+		if leg.grounded:
+			sum+=1
+	return sum
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	enterStanding()
+	oldPos = body.global_position
+	newPos = body.global_position
+	enterWalking()
 	pass # Replace with function body.
 
 func enterStanding() -> void:
@@ -39,44 +55,37 @@ func standing() -> void:
 			if leg.stepping:
 				leg.move()
 				planted = false
-	if planted:
-		enterWalking()
 
 func enterWalking() -> void:
 	state = "Walking"
-	var delta = get_process_delta_time()
-	var velocity = Vector3(moveDirection.x*movementSpeed, 0.0, moveDirection.y*movementSpeed)
-	var stepOffset = Vector3(sin(phi), 0.0, cos(phi))*stepLength
-	legs[0].step(legs[0].origin.rotated(Vector3.UP, phi)+body.global_position+velocity*legs[0].stepTime+stepOffset*legs[0].legLength)
+	for leg in legs:
+		leg.step(leg.origin+newPos)
 
 func walking():
-	var delta = get_process_delta_time()
-	if moveDirection.length() > 1.0 or moveDirection.length() < 1.0:
-		moveDirection = moveDirection.normalized()
-	var velocity = Vector3(moveDirection.x*movementSpeed, 0.0, moveDirection.y*movementSpeed)
-	var stepOffset = Vector3(sin(phi), 0.0, cos(phi))*stepLength
-	var angle = atan(moveDirection.x/moveDirection.y)
-	if moveDirection.y < 0.0:
-		angle += PI
-	elif moveDirection.x < 0.0:
-		angle += 2.0*PI
-	phi = lerp(phi, angle, min(1.0*delta, 1.0))
 	for leg in legs:
-		if leg.tooFar() and not leg.stepping:
-			leg.step(leg.origin.rotated(Vector3.UP, phi)+body.global_position)#+velocity*leg.stepTime+stepOffset*leg.legLength)
 		leg.move()
-	body.global_position += velocity*delta
-	var targetBasis = Basis.IDENTITY.rotated(Vector3.UP, phi)
-	body.basis = body.basis.slerp(targetBasis, min(1.0*delta, 1.0))
 	pass
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
-	var a:Vector3 = Vector3.UP*Globals.gravity
-	velocity += a*delta
-	body.global_position += velocity*delta
-	if state == "Standing":
-		standing()
-	if state == "Walking":
-		walking()
-	pass
+	timer += delta
+	var timeStep = 1.0/simFPS
+	while timer > timeStep/timeScale:
+		timer -= timeStep/timeScale
+		oldPos = newPos
+		var a:Vector3 = Vector3.UP*Globals.gravity
+		velocity += a*timeStep
+		newPos = oldPos+velocity*timeStep
+		if state == "Standing":
+			standing()
+		if state == "Walking":
+			walking()
+	if smoothFPS:
+		var timePercent = timer/(timeStep/timeScale)
+		body.global_position = lerp(oldPos, newPos, timePercent)
+		for leg in legs:
+			leg.global_position = lerp(leg.oldPos, leg.newPos, timePercent)
+	else:
+		body.global_position = newPos
+		for leg in legs:
+			leg.global_position = leg.newPos
