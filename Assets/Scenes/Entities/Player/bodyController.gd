@@ -8,7 +8,7 @@ var time := 0.0
 @export var simFPS:int = 60
 @export var smoothFPS:bool = true
 @export var timeScale = 0.1
-var velocity:Vector3 = Vector3(0.0, -2.0, 0.0)
+var velocity:Vector3 = Vector3(0.0, 0.0, 0.0)
 @export_enum("Standing", "Walking") var state:String
 @export_category("Legs")
 @export var standingPercent = 0.9
@@ -27,6 +27,9 @@ func castRay(pos1:Vector3, pos2:Vector3) -> Dictionary:
 	var space_state = get_world_3d().direct_space_state
 	var query := PhysicsRayQueryParameters3D.create(pos1, pos2)
 	return space_state.intersect_ray(query)
+
+func getLegCount() -> int:
+	return legs.size()
 
 func getGroundedLegCount() -> int:
 	var sum:int = 0
@@ -59,7 +62,7 @@ func standing() -> void:
 func enterWalking() -> void:
 	state = "Walking"
 	for leg in legs:
-		leg.step(leg.origin+newPos)
+		leg.step(leg.origin+newPos+Vector3(0.0, 0.0, 2.0))
 
 func walking():
 	for leg in legs:

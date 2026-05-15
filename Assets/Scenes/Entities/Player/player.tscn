@@ -714,7 +714,6 @@ body = NodePath("../..")
 bodyController = NodePath("..")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="skeleton/leftLegTarget" unique_id=1511303980]
-visible = false
 layers = 4
 mesh = SubResource("SphereMesh_hbw02")
 surface_material_override/0 = SubResource("StandardMaterial3D_8ic5h")
@@ -821,7 +820,6 @@ body = NodePath("../..")
 bodyController = NodePath("..")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="skeleton/rightLegTarget" unique_id=1787062449]
-visible = false
 layers = 4
 mesh = SubResource("SphereMesh_hbw02")
 surface_material_override/0 = SubResource("StandardMaterial3D_givc0")
