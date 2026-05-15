@@ -76,7 +76,6 @@ func calcForce() -> Vector3:
 	var mass = legMass
 	var vel = velocity
 	var forceReq = -Globals.gravity*mass
-	var isClose := sqrt(pow(targetPos.x-newPos.x, 2.0)+pow(targetPos.z-newPos.z, 2.0)) <= 0.1
 	if distance.y < 0.0:
 		forceReq = 0.0
 	forceNormalized.y = min(1.0, forceReq/maxLegForce)
@@ -87,23 +86,11 @@ func calcForce() -> Vector3:
 		var Dist = root-newPos
 		distance.y = targetPos.y-bodyController.newPos.y-legLength*(1.0-bodyController.standingPercent)-legLength*bodyController.standingPercent+sqrt(pow(legLength*bodyController.standingPercent, 2.0)-(pow(Dist.x, 2.0)+pow(Dist.z, 2.0)))
 		forceReq = Globals.gravity*mass
-		var angle = rad_to_deg(asin(sqrt(pow(Dist.x, 2.0)+pow(Dist.z, 2.0))/sqrt(pow(root.x, 2.0)+pow(root.y+legLength, 2.0)+pow(root.z, 2.0))))
-		if not isClose and getMagnitude(angle) < 10.0:
-			if vel.y < 0.0:
-				distance.y = newPos.y-legLength-bodyController.newPos.y
-			else:
-				distance.y *= 1000.0
-			if legLength-newPos.y+bodyController.newPos.y > legLength*0.5 and vel.y > 0.0 or legLength-newPos.y+bodyController.newPos.y < legLength*0.5:
-				forceNormalized.y = max(forceReq*1.5, -1.0)
-			else:
-				forceNormalized.y = 0.0
-		else:
-			if distance.y < 0.0:
-				forceReq = 0.0
-			forceNormalized.y = min(1.0, getMagnitude(forceReq)/maxLegForce)*getSign(forceReq)
+		if distance.y < 0.0:
+			forceReq = 0.0
+		forceNormalized.y = min(1.0, getMagnitude(forceReq)/maxLegForce)*getSign(forceReq)
 	var forceLeft = sqrt(1.0-pow(forceNormalized.y, 2.0))
-	if getMagnitude(forceNormalized.y) > 0.0:
-		forceNormalized.y = min(1.0, getMagnitude(forceNormalized.y)+forceLeft/3)*getSign(forceNormalized.y)
+	forceNormalized.y = min(1.0, getMagnitude(forceNormalized.y)+forceLeft/3)*getSign(forceNormalized.y)
 	$MeshInstance3D.get_surface_override_material(0).albedo_color = Color(0.0, 1.0, 0.0)
 	if getSign(vel.y) == getSign(distance.y) and distance.y != 0.0:
 		var brakeAY = -pow(vel.y, 2.0)/(2.0*distance.y)-Globals.gravity
@@ -140,35 +127,26 @@ func calcForce() -> Vector3:
 			forceNormalized.z = weightZ*forceLeft
 	if getSign(vel.x) == getSign(distance.x) and distance.x != 0.0:
 		var brakeAX = -pow(vel.x, 2.0)/(2.0*distance.x)
+		if grounded:
+			brakeAX *= -1.0
+		elif grounded and not moveTo:
+			brakeAX = 0.0
 		var brakeForceX = brakeAX*mass
-		if getMagnitude(brakeForceX)/maxLegForce > getMagnitude(forceNormalized.x)-0.1  or distance.x < 0.1:
-			if grounded:
-				brakeForceX *= -1.0
-			elif grounded and not moveTo:
-				brakeForceX = 0.0
+		if getMagnitude(brakeForceX)/maxLegForce > getMagnitude(forceNormalized.x)-0.1  or getMagnitude(distance.x) < 0.1:
 			$MeshInstance3D.get_surface_override_material(0).albedo_color = Color(1.0, 0.0, 0.0)
 			forceNormalized.x = min(1.0, getMagnitude(brakeForceX)/maxLegForce)*getSign(brakeForceX)
 	if getSign(vel.z) == getSign(distance.z) and distance.z != 0.0:
 		var brakeAZ = -pow(vel.z, 2.0)/(2.0*distance.z)
+		if grounded:
+			brakeAZ *= -1.0
+		elif grounded and not moveTo:
+			brakeAZ = 0.0
 		var brakeForceZ = brakeAZ*mass
-		if getMagnitude(brakeForceZ)/maxLegForce > getMagnitude(forceNormalized.z)-0.1  or distance.z < 0.1:
-			if grounded:
-				brakeForceZ *= -1.0
-			elif grounded and not moveTo:
-				brakeForceZ = 0.0
+		if getMagnitude(brakeForceZ)/maxLegForce > getMagnitude(forceNormalized.z)-0.1  or getMagnitude(distance.z) < 0.1:
 			$MeshInstance3D.get_surface_override_material(0).albedo_color = Color(1.0, 0.0, 0.0)
 			forceNormalized.z = min(1.0, getMagnitude(brakeForceZ)/maxLegForce)*getSign(brakeForceZ)
-	#var forceLeft = sqrt(1.0-pow(forceP, 2.0))
-	#forceNormalized.y = forceP*getSign(distance.y)
-	#if forceNormalized.x > 0.0 or forceNormalized.z > 0.0:
-		#var forceXZ = sqrt(pow(forceNormalized.x, 2.0))+sqrt(pow(forceNormalized.z, 2.0))
-		#var weightX = sqrt(pow(forceNormalized.x, 2.0))/(forceXZ)
-		#var weightZ = sqrt(pow(forceNormalized.z, 2.0))/(forceXZ)
-		#forceNormalized.x = forceLeft*weightX*getSign(distance.x)
-		#forceNormalized.z = forceLeft*weightZ*getSign(distance.z)
-	#forceNormalized = forceNormalized.normalized()
-	#print(forceNormalized)
-	#return forceNormalized*maxLegForce
+	if forceNormalized.length() > 1.0:
+		forceNormalized = forceNormalized.normalized()
 	return forceNormalized*maxLegForce
 
 func move():
@@ -177,10 +155,6 @@ func move():
 	if moving:
 		force = calcForce()
 	var appliedForce:Vector3 = force+Vector3(0.0, Globals.gravity*legMass, 0.0)
-	if newPos.y-bodyController.newPos.y > legLength*0.8:
-		#bodyController.velocity.y = max(bodyController.velocity.y, 0.0)
-		bodyController.newPos.y = newPos.y-legLength*0.8
-		appliedForce.y += Globals.gravity*bodyController.mass
 	var a:Vector3 = appliedForce/legMass
 	velocity += a*timeStep
 	newPos += velocity*timeStep
@@ -190,13 +164,18 @@ func move():
 	if Dist.length() > legLength:
 		var diff = root-Dist*legLength/Dist.length()
 		newPos = diff
+	if newPos.y-bodyController.newPos.y > legLength*0.8:
+		if grounded:
+			bodyController.velocity.y = max(bodyController.velocity.y, 0.0)
+		velocity.y = bodyController.velocity.y
+		newPos.y = bodyController.newPos.y+legLength*0.8
 	var start = oldPos
 	var end = newPos
 	start.y += 0.1
 	end.y -= 0.1
 	var result = castRay(start, end)
 	if result:
-		if result.position.y > newPos.y:
+		if result.position.y >= newPos.y:
 			grounded = true
 			newPos.y = result.position.y
 			bodyController.velocity += -(appliedForce-Vector3(0.0, Globals.gravity*legMass, 0.0))/(bodyController.mass)*timeStep
