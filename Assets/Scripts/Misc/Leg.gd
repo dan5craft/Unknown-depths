@@ -87,7 +87,8 @@ func calcForce() -> Vector3:
 		var Dist = root-newPos
 		distance.y = targetPos.y-bodyController.newPos.y-legLength*(1.0-bodyController.standingPercent)-legLength*bodyController.standingPercent+sqrt(pow(legLength*bodyController.standingPercent, 2.0)-(pow(Dist.x, 2.0)+pow(Dist.z, 2.0)))
 		forceReq = Globals.gravity*mass
-		if not isClose:
+		var angle = rad_to_deg(asin(sqrt(pow(Dist.x, 2.0)+pow(Dist.z, 2.0))/sqrt(pow(root.x, 2.0)+pow(root.y+legLength, 2.0)+pow(root.z, 2.0))))
+		if not isClose and getMagnitude(angle) < 10.0:
 			if vel.y < 0.0:
 				distance.y = newPos.y-legLength-bodyController.newPos.y
 			else:
