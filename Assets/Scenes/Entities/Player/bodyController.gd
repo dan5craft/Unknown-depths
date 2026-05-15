@@ -8,7 +8,7 @@ var time := 0.0
 @export var simFPS:int = 60
 @export var smoothFPS:bool = true
 @export var timeScale = 0.1
-var velocity:Vector3 = Vector3(0.0, -0.1, 0.0)
+var velocity:Vector3 = Vector3(0.0, 0.0, 0.0)
 @export_enum("Standing", "Walking") var state:String
 @export_category("Legs")
 @export var standingPercent = 0.9
@@ -62,7 +62,7 @@ func standing() -> void:
 func enterWalking() -> void:
 	state = "Walking"
 	for leg in legs:
-		leg.step(leg.origin+newPos+Vector3(0.0, 0.0, 2.0))
+		leg.step(leg.origin+newPos+Vector3(0.0, 0.0, 0.5))
 
 func walking():
 	for leg in legs:

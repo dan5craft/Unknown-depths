@@ -109,8 +109,8 @@ func calcForce() -> Vector3:
 			vel.x = bodyController.velocity.x
 			vel.z = bodyController.velocity.z
 			var root = bodyController.newPos+origin.rotated(Vector3.UP, bodyController.phi)
-			distance.x = newPos.x-root.x
-			distance.z = newPos.z-root.z
+			distance.x = targetPos.x-root.x
+			distance.z = targetPos.z-root.z
 			var distSum = getMagnitude(distance.x)+getMagnitude(distance.z)
 			if distSum > 0.001:
 				var weightX = getMagnitude(distance.x)/distSum*getSign(distance.x)
@@ -127,22 +127,22 @@ func calcForce() -> Vector3:
 			forceNormalized.z = weightZ*forceLeft
 	if getSign(vel.x) == getSign(distance.x) and distance.x != 0.0:
 		var brakeAX = -pow(vel.x, 2.0)/(2.0*distance.x)
-		if grounded:
-			brakeAX *= -1.0
-		elif grounded and not moveTo:
-			brakeAX = 0.0
 		var brakeForceX = brakeAX*mass
-		if getMagnitude(brakeForceX)/maxLegForce > getMagnitude(forceNormalized.x)-0.1  or getMagnitude(distance.x) < 0.1:
+		if getMagnitude(brakeForceX)/maxLegForce > getMagnitude(forceNormalized.x)-0.1:
+			if grounded:
+				brakeForceX *= -1.0
+			elif grounded and not moveTo:
+				brakeForceX = 0.0
 			$MeshInstance3D.get_surface_override_material(0).albedo_color = Color(1.0, 0.0, 0.0)
 			forceNormalized.x = min(1.0, getMagnitude(brakeForceX)/maxLegForce)*getSign(brakeForceX)
 	if getSign(vel.z) == getSign(distance.z) and distance.z != 0.0:
 		var brakeAZ = -pow(vel.z, 2.0)/(2.0*distance.z)
-		if grounded:
-			brakeAZ *= -1.0
-		elif grounded and not moveTo:
-			brakeAZ = 0.0
 		var brakeForceZ = brakeAZ*mass
-		if getMagnitude(brakeForceZ)/maxLegForce > getMagnitude(forceNormalized.z)-0.1  or getMagnitude(distance.z) < 0.1:
+		if getMagnitude(brakeForceZ)/maxLegForce > getMagnitude(forceNormalized.z)-0.1:
+			if grounded:
+				brakeForceZ *= -1.0
+			elif grounded and not moveTo:
+				brakeForceZ = 0.0
 			$MeshInstance3D.get_surface_override_material(0).albedo_color = Color(1.0, 0.0, 0.0)
 			forceNormalized.z = min(1.0, getMagnitude(brakeForceZ)/maxLegForce)*getSign(brakeForceZ)
 	if forceNormalized.length() > 1.0:

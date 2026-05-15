@@ -4,7 +4,7 @@ var waterColor : Color = Color("#007ba7", 1.0);
 #var waterColor : Color = Color(0.5, 0.2, 0.0);
 var waterAbsorption : float = 0.05
 
-var gravity = -1.3
+var gravity = -9.8
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
