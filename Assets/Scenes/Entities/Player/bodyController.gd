@@ -48,7 +48,7 @@ func _ready() -> void:
 func enterStanding() -> void:
 	state = "Standing"
 	for leg in legs:
-		leg.step(leg.origin.rotated(Vector3.UP, phi)+body.global_position)
+		leg.step(leg.origin.rotated(Vector3.UP, phi)+body.global_position, Vector3.ZERO)
 
 func standing() -> void:
 	var planted = false
@@ -62,7 +62,7 @@ func standing() -> void:
 func enterWalking() -> void:
 	state = "Walking"
 	for leg in legs:
-		leg.step(leg.origin+newPos+Vector3(0.0, 0.0, 0.5))
+		leg.step(leg.origin.rotated(Vector3.UP, phi)+newPos+Vector3(0.0, 0.0, 0.5), Vector3.ZERO)
 
 func walking():
 	for leg in legs:
