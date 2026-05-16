@@ -8,19 +8,20 @@ var time := 0.0
 @export var simFPS:int = 60
 @export var smoothFPS:bool = true
 @export var timeScale = 0.1
-var velocity:Vector3 = Vector3(0.0, 0.5, 0.0)
+var velocity:Vector3 = Vector3(0.0, 0.0, 0.0)
 @export_enum("Standing", "Walking") var state:String
 @export_category("Legs")
 @export var standingPercent = 0.9
 @export var stepLength:float = 0.4
 @export_subgroup("Movement")
-@export var moveDirection:Vector2 = Vector2(1.0, 0.0)
+@export var moveDirection:Vector2 = Vector2(0.0, 1.0)
 @export var movementSpeed = 0.5
 var phi = 0.0
 
 var oldPos:Vector3 = Vector3(0.0, 0.0, 0.0)
 var newPos:Vector3 = Vector3(0.0, 0.0, 0.0)
 var timer:float = -3.0
+var targetSpeed:Vector2 = Vector2.ZERO
 
 
 func castRay(pos1:Vector3, pos2:Vector3) -> Dictionary:
@@ -42,30 +43,32 @@ func getGroundedLegCount() -> int:
 func _ready() -> void:
 	oldPos = body.global_position
 	newPos = body.global_position
-	enterWalking()
+	enterStanding()
 	pass # Replace with function body.
 
 func enterStanding() -> void:
 	state = "Standing"
 	for leg in legs:
-		leg.step(leg.origin.rotated(Vector3.UP, phi)+body.global_position, Vector3.ZERO)
+		leg.setTarget(leg.origin.rotated(Vector3.UP, phi)+newPos, Vector3.ZERO)
 
 func standing() -> void:
-	var planted = false
-	if not planted:
-		planted = true
-		for leg in legs:
-			if leg.stepping:
-				leg.move()
-				planted = false
+	for leg in legs:
+		leg.move()
 
 func enterWalking() -> void:
 	state = "Walking"
-	for leg in legs:
-		leg.step(leg.origin.rotated(Vector3.UP, phi)+newPos+Vector3(0.0, 0.0, 0.5), Vector3.ZERO)
+	var pos = legs[0].origin.rotated(Vector3.UP, phi)+newPos+Vector3(0.0, 0.0, 0.2)
+	var start = pos+Vector3.UP
+	var end = pos-Vector3.UP
+	var result = castRay(start, end)
+	if result:
+		pos.y = result.position.y
+	legs[0].step(pos, Vector3.ZERO)
 
 func walking():
+	targetSpeed = moveDirection*movementSpeed
 	for leg in legs:
+		leg.targetSpeed = Vector3(moveDirection.x*movementSpeed, 0.0, moveDirection.y*movementSpeed)
 		leg.move()
 	pass
 

@@ -3,7 +3,7 @@ extends Node3D
 @export var legLength = 1.0
 @export var legStepHeight = 0.2
 @export var legMass = 5.0
-@export var maxLegForce = 400.0
+@export var maxLegForce = 588.0
 @export var body:Node3D
 @export var bodyController:bodyController
 @export var maxStepTime:float = 0.5
@@ -12,9 +12,13 @@ var stepTime:float = 2.0
 @export var symmetricalEqual:Leg
 
 var targetPos:Vector3
-var moving := false
+var targetSpeed:Vector3
+var maxHorizontalSpeed:Vector2 = Vector2(0.1, 0.1)
+var stepping := false
 var grounded := true
 var moveTo := true
+var brakeToGround := false
+var targetBodySpeed := true
 var origin:Vector3
 var stepOrigin:Vector3
 var stepOriginTime:float
@@ -70,57 +74,82 @@ func getSign(val:float) -> float:
 func getMagnitude(val:float) -> float:
 	return sqrt(pow(val, 2.0))
 
+func bodyAtTargetSpeed(margin:float = 0.05) -> bool:
+	var BOOL = true
+	if bodyController.velocity.x > bodyController.targetSpeed.x+margin or  bodyController.velocity.x < bodyController.targetSpeed.x-margin:
+		BOOL = false
+	if bodyController.velocity.z > bodyController.targetSpeed.y+margin or  bodyController.velocity.z < bodyController.targetSpeed.y-margin:
+		BOOL = false
+	return BOOL
+
 func calcForce() -> Vector3:
-	var distance = targetPos-newPos
+	var target = targetPos
+	if newPos.y >= targetPos.y+legStepHeight-0.001 and stepping:
+		stepping = false
+	if stepping:
+		target.y = targetPos.y+legStepHeight
+	var distance = target-newPos
 	var forceNormalized = distance.normalized()
 	var mass = legMass
 	var vel = velocity
 	var forceReq = -Globals.gravity*mass
-	var isClose := sqrt(pow(targetPos.x-newPos.x, 2.0)+pow(targetPos.z-newPos.z, 2.0)) <= 0.1
+	var targetAtGround = false
+	var start = target
+	var end = target
+	start.y += 0.1
+	end.y -= 0.1
+	var result = castRay(start, end)
+	if result:
+		if result.position.y >= target.y-0.05:
+			targetAtGround = true
 	if distance.y < 0.0:
 		forceReq = 0.0
 	forceNormalized.y = min(1.0, forceReq/maxLegForce)
-	if grounded:
+	var root = bodyController.newPos+origin.rotated(Vector3.UP, bodyController.phi)
+	var Dist = root-newPos
+	var standingOffset = legLength*(1.0-bodyController.standingPercent)+legLength*bodyController.standingPercent-sqrt(pow(legLength*bodyController.standingPercent, 2.0)-(pow(Dist.x, 2.0)+pow(Dist.z, 2.0)))
+	if grounded and target.y <= newPos.y or grounded and target.y-bodyController.newPos.y-standingOffset <= 0.05:
 		mass = bodyController.mass/bodyController.getGroundedLegCount()
 		vel.y = bodyController.velocity.y
-		var root = bodyController.newPos+origin.rotated(Vector3.UP, bodyController.phi)
-		var Dist = root-newPos
-		distance.y = targetPos.y-bodyController.newPos.y-legLength*(1.0-bodyController.standingPercent)-legLength*bodyController.standingPercent+sqrt(pow(legLength*bodyController.standingPercent, 2.0)-(pow(Dist.x, 2.0)+pow(Dist.z, 2.0)))
+		distance.y = target.y-bodyController.newPos.y-standingOffset
 		forceReq = Globals.gravity*mass
-		if not isClose:
-			if vel.y < 0.0:
-				distance.y = newPos.y-legLength-bodyController.newPos.y
-			else:
-				distance.y *= 1000.0
-			if legLength-newPos.y+bodyController.newPos.y > legLength*0.5 and vel.y > 0.0 or legLength-newPos.y+bodyController.newPos.y < legLength*0.5:
-				forceNormalized.y = max(forceReq*1.5, -1.0)
-			else:
-				forceNormalized.y = 0.0
-		else:
-			if distance.y < 0.0:
-				forceReq = 0.0
-			forceNormalized.y = min(1.0, getMagnitude(forceReq)/maxLegForce)*getSign(forceReq)
+		if distance.y < 0.0:
+			forceReq = 0.0
+		forceNormalized.y = min(1.0, getMagnitude(forceReq)/maxLegForce)*getSign(forceReq)
 	var forceLeft = sqrt(1.0-pow(forceNormalized.y, 2.0))
 	if getMagnitude(forceNormalized.y) > 0.0:
-		forceNormalized.y = min(1.0, getMagnitude(forceNormalized.y)+forceLeft/3)*getSign(forceNormalized.y)
-	$MeshInstance3D.get_surface_override_material(0).albedo_color = Color(0.0, 1.0, 0.0)
+		var upwardsForce = min(forceLeft/3, distance.y)
+		forceNormalized.y = min(1.0, getMagnitude(forceNormalized.y)+upwardsForce)*getSign(forceNormalized.y)
 	if getSign(vel.y) == getSign(distance.y) and distance.y != 0.0:
-		var brakeAY = -pow(vel.y, 2.0)/(2.0*distance.y)-Globals.gravity
+		var brakeAY = pow(targetSpeed.y, 2.0)-pow(vel.y, 2.0)/(2.0*distance.y)-Globals.gravity
 		if grounded:
 			brakeAY *= -1.0
 		var brakeForceY = brakeAY*mass
 		if getMagnitude(brakeForceY) > maxLegForce or distance.y > 0.0 and brakeAY > -1.0 and grounded or getMagnitude(distance.y) < 0.1:
-			$MeshInstance3D.get_surface_override_material(0).albedo_color = Color(1.0, 0.0, 0.0)
-			forceNormalized.y = min(1.0, getMagnitude(brakeForceY)/maxLegForce)*getSign(brakeForceY)
-	if grounded:
-		forceNormalized.y = min(0.0, forceNormalized.y)
+			if grounded or not targetAtGround or brakeToGround:
+				forceNormalized.y = min(1.0, getMagnitude(brakeForceY)/maxLegForce)*getSign(brakeForceY)
+				if grounded:
+					forceNormalized.y = min(0.0, forceNormalized.y)
+	if grounded and not bodyAtTargetSpeed() and targetBodySpeed:
+		mass = bodyController.mass/bodyController.getGroundedLegCount()
+		vel = bodyController.velocity
+		forceReq = Globals.gravity*mass
+		var velDiff = Vector2.ZERO
+		velDiff.x = bodyController.velocity.x-bodyController.targetSpeed.x
+		velDiff.y = bodyController.velocity.z-bodyController.targetSpeed.y
+		var sumXZ = getMagnitude(velDiff.x)+getMagnitude(velDiff.y)
+		var weightX = velDiff.x/sumXZ
+		var weightZ = velDiff.y/sumXZ
+		forceNormalized.x = min(getMagnitude(weightX), getMagnitude(velDiff.x))*getSign(velDiff.x)
+		forceNormalized.z = min(getMagnitude(weightZ), getMagnitude(velDiff.y))*getSign(velDiff.y)
+		return forceNormalized*maxLegForce
 	if forceNormalized.x != 0.0 or forceNormalized.z != 0.0:
 		forceLeft = sqrt(1.0-pow(forceNormalized.y, 2.0))
 		var sumXZ = getMagnitude(forceNormalized.x)+getMagnitude(forceNormalized.z)
-		if grounded and moveTo:
+		if grounded and moveTo and not targetBodySpeed:
 			vel.x = bodyController.velocity.x
 			vel.z = bodyController.velocity.z
-			var root = bodyController.newPos+origin.rotated(Vector3.UP, bodyController.phi)
+			root = bodyController.newPos+origin.rotated(Vector3.UP, bodyController.phi)
 			distance.x = newPos.x-root.x
 			distance.z = newPos.z-root.z
 			var distSum = getMagnitude(distance.x)+getMagnitude(distance.z)
@@ -129,7 +158,7 @@ func calcForce() -> Vector3:
 				var weightZ = getMagnitude(distance.z)/distSum*getSign(distance.z)
 				forceNormalized.x = -weightX*forceLeft
 				forceNormalized.z = -weightZ*forceLeft
-		elif grounded and not moveTo:
+		elif grounded and not moveTo or grounded and targetBodySpeed:
 			forceNormalized.x = 0.0
 			forceNormalized.z = 0.0
 		elif sumXZ > 0.001:
@@ -137,52 +166,49 @@ func calcForce() -> Vector3:
 			var weightZ = getMagnitude(forceNormalized.z)/sumXZ*getSign(forceNormalized.z)
 			forceNormalized.x = weightX*forceLeft
 			forceNormalized.z = weightZ*forceLeft
+	forceNormalized.x = min(getMagnitude(distance.x), getMagnitude(forceNormalized.x))*getSign(forceNormalized.x)
+	forceNormalized.z = min(getMagnitude(distance.z), getMagnitude(forceNormalized.z))*getSign(forceNormalized.z)
 	if getSign(vel.x) == getSign(distance.x) and distance.x != 0.0:
-		var brakeAX = -pow(vel.x, 2.0)/(2.0*distance.x)
+		var brakeAX = pow(targetSpeed.x, 2.0)-pow(vel.x, 2.0)/(2.0*distance.x)
 		var brakeForceX = brakeAX*mass
-		if getMagnitude(brakeForceX)/maxLegForce > getMagnitude(forceNormalized.x)-0.1  or distance.x < 0.1:
+		if getMagnitude(brakeForceX)/maxLegForce > getMagnitude(forceNormalized.x)-0.1:
 			if grounded:
 				brakeForceX *= -1.0
 			elif grounded and not moveTo:
 				brakeForceX = 0.0
-			$MeshInstance3D.get_surface_override_material(0).albedo_color = Color(1.0, 0.0, 0.0)
 			forceNormalized.x = min(1.0, getMagnitude(brakeForceX)/maxLegForce)*getSign(brakeForceX)
 	if getSign(vel.z) == getSign(distance.z) and distance.z != 0.0:
-		var brakeAZ = -pow(vel.z, 2.0)/(2.0*distance.z)
+		var brakeAZ = pow(targetSpeed.z, 2.0)-pow(vel.z, 2.0)/(2.0*distance.z)
 		var brakeForceZ = brakeAZ*mass
-		if getMagnitude(brakeForceZ)/maxLegForce > getMagnitude(forceNormalized.z)-0.1  or distance.z < 0.1:
+		if getMagnitude(brakeForceZ)/maxLegForce > getMagnitude(forceNormalized.z)-0.1:
 			if grounded:
 				brakeForceZ *= -1.0
 			elif grounded and not moveTo:
 				brakeForceZ = 0.0
-			$MeshInstance3D.get_surface_override_material(0).albedo_color = Color(1.0, 0.0, 0.0)
 			forceNormalized.z = min(1.0, getMagnitude(brakeForceZ)/maxLegForce)*getSign(brakeForceZ)
-	#var forceLeft = sqrt(1.0-pow(forceP, 2.0))
-	#forceNormalized.y = forceP*getSign(distance.y)
-	#if forceNormalized.x > 0.0 or forceNormalized.z > 0.0:
-		#var forceXZ = sqrt(pow(forceNormalized.x, 2.0))+sqrt(pow(forceNormalized.z, 2.0))
-		#var weightX = sqrt(pow(forceNormalized.x, 2.0))/(forceXZ)
-		#var weightZ = sqrt(pow(forceNormalized.z, 2.0))/(forceXZ)
-		#forceNormalized.x = forceLeft*weightX*getSign(distance.x)
-		#forceNormalized.z = forceLeft*weightZ*getSign(distance.z)
-	#forceNormalized = forceNormalized.normalized()
-	#print(forceNormalized)
-	#return forceNormalized*maxLegForce
+	if velocity.x >= maxHorizontalSpeed.x:
+		forceNormalized.x = min(forceNormalized.x, 0.0)
+	elif velocity.x <= -maxHorizontalSpeed.x:
+		forceNormalized.x = max(forceNormalized.x, 0.0)
+
+	if velocity.z >= maxHorizontalSpeed.y:
+		forceNormalized.z = min(forceNormalized.z, 0.0)
+	elif velocity.z <= -maxHorizontalSpeed.y:
+		forceNormalized.z = max(forceNormalized.z, 0.0)
 	return forceNormalized*maxLegForce
 
 func move():
 	var timeStep = 1.0/bodyController.simFPS
 	oldPos = newPos
-	if moving:
-		force = calcForce()
+	force = calcForce()
 	var appliedForce:Vector3 = force+Vector3(0.0, Globals.gravity*legMass, 0.0)
 	if newPos.y-bodyController.newPos.y > legLength*0.8:
-		#bodyController.velocity.y = max(bodyController.velocity.y, 0.0)
-		bodyController.newPos.y = newPos.y-legLength*0.8
-		appliedForce.y += Globals.gravity*bodyController.mass
+		if grounded:
+			bodyController.velocity.y = max(bodyController.velocity.y, 0.0)
+		velocity.y = bodyController.velocity.y
+		newPos.y = bodyController.newPos.y+legLength*0.8
 	var a:Vector3 = appliedForce/legMass
 	velocity += a*timeStep
-	newPos += velocity*timeStep
 	var root = bodyController.newPos+origin.rotated(Vector3.UP, bodyController.phi)
 	root.y = bodyController.newPos.y+legLength
 	var Dist = (root-newPos)
@@ -194,17 +220,23 @@ func move():
 	start.y += 0.1
 	end.y -= 0.1
 	var result = castRay(start, end)
+	$MeshInstance3D.get_surface_override_material(0).albedo_color = Color(0.0, 1.0, 0.0)
 	if result:
-		if result.position.y > newPos.y:
+		if result.position.y >= newPos.y:
+			$MeshInstance3D.get_surface_override_material(0).albedo_color = Color(1.0, 0.0, 0.0)
 			grounded = true
 			newPos.y = result.position.y
 			bodyController.velocity += -(appliedForce-Vector3(0.0, Globals.gravity*legMass, 0.0))/(bodyController.mass)*timeStep
-			velocity = Vector3(0.0, 0.0, 0.0)
+			velocity = Vector3(0.0, max(velocity.y, 0.0), 0.0)
 		else:
 			grounded = false
 	else:
 		grounded = false
+	newPos += velocity*timeStep
 
-func step(pos:Vector3):
-	moving = true
+func setTarget(pos:Vector3, speed:Vector3):
 	targetPos = pos
+	targetSpeed = speed
+func step(pos:Vector3, speed:Vector3):
+	stepping = true
+	setTarget(pos, speed)

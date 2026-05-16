@@ -9,6 +9,5 @@ func _input(event: InputEvent) -> void:
 
 func _process(delta: float) -> void:
 	if Input.is_action_just_pressed("Jump"):
-		bodyControl.legs[0].targetPos.y += 0.1
-		print("Jumped")
+		bodyControl.enterWalking()
 	pass
