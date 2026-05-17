@@ -100,7 +100,8 @@ func calcForce() -> Vector3:
 	var target = targetPos
 	var standingOffset = legLength*(1.0-bodyController.standingPercent)#+legLength*bodyController.standingPercent-sqrt(pow(legLength*bodyController.standingPercent, 2.0)-(pow(Dist.x, 2.0)+pow(Dist.z, 2.0)))
 	$MeshInstance3D.get_surface_override_material(0).albedo_color = Color(1.0, 0.0, 0.0)
-	if newPos.y >= targetPos.y+legStepHeight-0.001 and stepping or newPos.y-bodyController.newPos.y-standingOffset >= -0.05:
+	print(newPos.y-bodyController.newPos.y-standingOffset)
+	if newPos.y >= targetPos.y+legStepHeight-0.001 and stepping or newPos.y-bodyController.newPos.y-standingOffset >= 0.05:
 		stepping = false
 	if stepping:
 		$MeshInstance3D.get_surface_override_material(0).albedo_color = Color(0.0, 1.0, 0.0)
