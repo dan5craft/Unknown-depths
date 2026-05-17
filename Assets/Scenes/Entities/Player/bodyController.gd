@@ -35,7 +35,7 @@ func getLegCount() -> int:
 func getGroundedLegCount() -> int:
 	var sum:int = 0
 	for leg in legs:
-		if leg.grounded:
+		if leg.grounded and not leg.stepping:
 			sum+=1
 	return sum
 
@@ -63,6 +63,7 @@ func enterWalking() -> void:
 	var result = castRay(start, end)
 	if result:
 		pos.y = result.position.y
+	legs[0].jump(0.1)
 	legs[0].step(pos, Vector3.ZERO)
 
 func walking():

@@ -13,12 +13,14 @@ var stepTime:float = 2.0
 
 var targetPos:Vector3
 var targetSpeed:Vector3
-var maxHorizontalSpeed:Vector2 = Vector2(0.1, 0.1)
+var maxHorizontalSpeed:Vector2 = Vector2(100.0, 100.0)
 var stepping := false
 var grounded := true
 var moveTo := true
 var brakeToGround := false
 var targetBodySpeed := true
+var jumping := false
+var jumpSpeed:float = 1.0
 var origin:Vector3
 var stepOrigin:Vector3
 var stepOriginTime:float
@@ -26,6 +28,8 @@ var velocity:Vector3 = Vector3(0.0, 0.0, 0.0)
 var force:Vector3 = Vector3(0.0, 0.0, 0.0)
 var oldPos:Vector3 = Vector3(0.0, 0.0, 0.0)
 var newPos:Vector3 = Vector3(0.0, 0.0, 0.0)
+var effectiveMass:float
+var appliedMass:float
 
 func _ready() -> void:
 	var pos = Vector3(body.global_position.x+position.x, body.global_position.y+position.y, body.global_position.z+position.z)
@@ -82,6 +86,16 @@ func bodyAtTargetSpeed(margin:float = 0.05) -> bool:
 		BOOL = false
 	return BOOL
 
+func jump(speed:float):
+	jumping = true
+	jumpSpeed = speed
+	var bend = (newPos.y-bodyController.newPos.y)/legLength
+	var mass = bodyController.mass*bend
+	var forceReq = -Globals.gravity*mass
+	if forceReq > maxLegForce:
+		symmetricalEqual.jumping = true
+		symmetricalEqual.jumpSpeed = speed
+
 func calcForce() -> Vector3:
 	var target = targetPos
 	if newPos.y >= targetPos.y+legStepHeight-0.001 and stepping:
@@ -90,7 +104,7 @@ func calcForce() -> Vector3:
 		target.y = targetPos.y+legStepHeight
 	var distance = target-newPos
 	var forceNormalized = distance.normalized()
-	var mass = legMass
+	var mass = effectiveMass
 	var vel = velocity
 	var forceReq = -Globals.gravity*mass
 	var targetAtGround = false
@@ -107,16 +121,16 @@ func calcForce() -> Vector3:
 	forceNormalized.y = min(1.0, forceReq/maxLegForce)
 	var root = bodyController.newPos+origin.rotated(Vector3.UP, bodyController.phi)
 	var Dist = root-newPos
-	var standingOffset = legLength*(1.0-bodyController.standingPercent)+legLength*bodyController.standingPercent-sqrt(pow(legLength*bodyController.standingPercent, 2.0)-(pow(Dist.x, 2.0)+pow(Dist.z, 2.0)))
-	if grounded and target.y <= newPos.y or grounded and target.y-bodyController.newPos.y-standingOffset <= 0.05:
-		mass = bodyController.mass/bodyController.getGroundedLegCount()
+	var standingOffset = legLength*(1.0-bodyController.standingPercent)#+legLength*bodyController.standingPercent-sqrt(pow(legLength*bodyController.standingPercent, 2.0)-(pow(Dist.x, 2.0)+pow(Dist.z, 2.0)))
+	if grounded and target.y <= newPos.y+0.05 or grounded and target.y-bodyController.newPos.y-standingOffset <= 0.05:
 		vel.y = bodyController.velocity.y
 		distance.y = target.y-bodyController.newPos.y-standingOffset
 		forceReq = Globals.gravity*mass
 		if distance.y < 0.0:
 			forceReq = 0.0
 		forceNormalized.y = min(1.0, getMagnitude(forceReq)/maxLegForce)*getSign(forceReq)
-	else:
+	elif grounded:
+		mass = legMass
 		grounded = false
 	var forceLeft = sqrt(1.0-pow(forceNormalized.y, 2.0))
 	if getMagnitude(forceNormalized.y) > 0.0:
@@ -133,7 +147,6 @@ func calcForce() -> Vector3:
 				if grounded:
 					forceNormalized.y = min(0.0, forceNormalized.y)
 	if grounded and not bodyAtTargetSpeed() and targetBodySpeed:
-		mass = bodyController.mass/bodyController.getGroundedLegCount()
 		vel = bodyController.velocity
 		forceReq = Globals.gravity*mass
 		var velDiff = Vector2.ZERO
@@ -213,8 +226,25 @@ func move():
 	if Dist.length() > legLength:
 		var diff = root-Dist*legLength/Dist.length()
 		newPos = diff
-	force = calcForce()
-	var appliedForce:Vector3 = force+Vector3(0.0, Globals.gravity*legMass, 0.0)
+	if grounded and not stepping:
+		var bend = (newPos.y-bodyController.newPos.y)/legLength
+		effectiveMass = bodyController.mass*bend/bodyController.getGroundedLegCount()
+		appliedMass = bodyController.mass*(1.0-bend)/bodyController.getGroundedLegCount()
+	else:
+		effectiveMass = legMass
+		appliedMass = legMass
+	if not jumping or not grounded:
+		force = calcForce()
+	if jumping and grounded:
+		force = Vector3.DOWN*maxLegForce
+	if jumping and not grounded or jumping and bodyController.velocity.y > jumpSpeed:
+		jumping = false
+		if symmetricalEqual.jumping:
+			symmetricalEqual.jumping = false
+	if bodyController.legs.get(0) == self:
+		print(appliedMass)
+	#print(force)
+	var appliedForce:Vector3 = force+Vector3(0.0, Globals.gravity*appliedMass, 0.0)
 	var a:Vector3 = appliedForce/legMass
 	velocity += a*timeStep
 	newPos += velocity*timeStep
@@ -229,7 +259,7 @@ func move():
 			$MeshInstance3D.get_surface_override_material(0).albedo_color = Color(1.0, 0.0, 0.0)
 			grounded = true
 			velocity = Vector3(0.0, max(velocity.y, 0.0), 0.0)
-			bodyController.velocity += -(appliedForce-Vector3(0.0, Globals.gravity*legMass, 0.0))/(bodyController.mass)*timeStep
+			bodyController.velocity += -(appliedForce)/(bodyController.mass)*timeStep
 			newPos.y = result.position.y
 		else:
 			grounded = false
