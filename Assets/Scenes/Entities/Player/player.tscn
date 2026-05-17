@@ -705,7 +705,7 @@ body = NodePath("..")
 simFPS = 144
 timeScale = 1.0
 state = "Walking"
-stepLength = 0.0
+stepLength = 0.2
 
 [node name="leftLegTarget" type="Marker3D" parent="skeleton" unique_id=929734403 node_paths=PackedStringArray("body", "bodyController", "symmetricalEqual")]
 transform = Transform3D(1, 0, 0, 0, -0.28031492, -0.9599082, 0, 0.9599082, -0.28031492, 0.15, 0, 0)
@@ -716,6 +716,7 @@ bodyController = NodePath("..")
 symmetricalEqual = NodePath("../rightLegTarget")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="skeleton/leftLegTarget" unique_id=1511303980]
+visible = false
 layers = 4
 mesh = SubResource("SphereMesh_hbw02")
 surface_material_override/0 = SubResource("StandardMaterial3D_8ic5h")
@@ -822,6 +823,7 @@ bodyController = NodePath("..")
 symmetricalEqual = NodePath("../leftLegTarget")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="skeleton/rightLegTarget" unique_id=1787062449]
+visible = false
 layers = 4
 mesh = SubResource("SphereMesh_hbw02")
 surface_material_override/0 = SubResource("StandardMaterial3D_givc0")

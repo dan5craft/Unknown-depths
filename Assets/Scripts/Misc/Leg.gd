@@ -98,9 +98,12 @@ func jump(speed:float):
 
 func calcForce() -> Vector3:
 	var target = targetPos
-	if newPos.y >= targetPos.y+legStepHeight-0.001 and stepping:
+	var standingOffset = legLength*(1.0-bodyController.standingPercent)#+legLength*bodyController.standingPercent-sqrt(pow(legLength*bodyController.standingPercent, 2.0)-(pow(Dist.x, 2.0)+pow(Dist.z, 2.0)))
+	$MeshInstance3D.get_surface_override_material(0).albedo_color = Color(1.0, 0.0, 0.0)
+	if newPos.y >= targetPos.y+legStepHeight-0.001 and stepping or newPos.y-bodyController.newPos.y-standingOffset >= -0.05:
 		stepping = false
 	if stepping:
+		$MeshInstance3D.get_surface_override_material(0).albedo_color = Color(0.0, 1.0, 0.0)
 		target.y = targetPos.y+legStepHeight
 	var distance = target-newPos
 	var forceNormalized = distance.normalized()
@@ -121,7 +124,6 @@ func calcForce() -> Vector3:
 	forceNormalized.y = min(1.0, forceReq/maxLegForce)
 	var root = bodyController.newPos+origin.rotated(Vector3.UP, bodyController.phi)
 	var Dist = root-newPos
-	var standingOffset = legLength*(1.0-bodyController.standingPercent)#+legLength*bodyController.standingPercent-sqrt(pow(legLength*bodyController.standingPercent, 2.0)-(pow(Dist.x, 2.0)+pow(Dist.z, 2.0)))
 	if grounded and target.y <= newPos.y+0.05 or grounded and target.y-bodyController.newPos.y-standingOffset <= 0.05:
 		vel.y = bodyController.velocity.y
 		distance.y = target.y-bodyController.newPos.y-standingOffset
@@ -141,7 +143,7 @@ func calcForce() -> Vector3:
 		if grounded:
 			brakeAY *= -1.0
 		var brakeForceY = brakeAY*mass
-		if getMagnitude(brakeForceY) > maxLegForce or distance.y > 0.0 and brakeAY > -1.0 and grounded or getMagnitude(distance.y) < 0.1:
+		if getMagnitude(brakeForceY) > maxLegForce or distance.y > 0.0 and brakeAY > -1.0 and grounded or not stepping and getMagnitude(distance.y) < 0.1:
 			if grounded or not targetAtGround or brakeToGround:
 				forceNormalized.y = min(1.0, getMagnitude(brakeForceY)/maxLegForce)*getSign(brakeForceY)
 				if grounded:
@@ -241,9 +243,6 @@ func move():
 		jumping = false
 		if symmetricalEqual.jumping:
 			symmetricalEqual.jumping = false
-	if bodyController.legs.get(0) == self:
-		print(appliedMass)
-	#print(force)
 	var appliedForce:Vector3 = force+Vector3(0.0, Globals.gravity*appliedMass, 0.0)
 	var a:Vector3 = appliedForce/legMass
 	velocity += a*timeStep
@@ -253,10 +252,8 @@ func move():
 	start.y += 0.1
 	end.y -= 0.1
 	var result = castRay(start, end)
-	$MeshInstance3D.get_surface_override_material(0).albedo_color = Color(0.0, 1.0, 0.0)
 	if result:
 		if result.position.y >= newPos.y:
-			$MeshInstance3D.get_surface_override_material(0).albedo_color = Color(1.0, 0.0, 0.0)
 			grounded = true
 			velocity = Vector3(0.0, max(velocity.y, 0.0), 0.0)
 			bodyController.velocity += -(appliedForce)/(bodyController.mass)*timeStep

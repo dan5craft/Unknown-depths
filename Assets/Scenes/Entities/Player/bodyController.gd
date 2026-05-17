@@ -13,6 +13,7 @@ var velocity:Vector3 = Vector3(0.0, 0.0, 0.0)
 @export_category("Legs")
 @export var standingPercent = 0.9
 @export var stepLength:float = 0.4
+@export var maxLegAngle:float = 15.0
 @export_subgroup("Movement")
 @export var moveDirection:Vector2 = Vector2(0.0, 1.0)
 @export var movementSpeed = 0.5
@@ -57,7 +58,7 @@ func standing() -> void:
 
 func enterWalking() -> void:
 	state = "Walking"
-	var pos = legs[0].origin.rotated(Vector3.UP, phi)+newPos+Vector3(0.0, 0.0, 0.2)
+	var pos = legs[0].origin.rotated(Vector3.UP, phi)+newPos+Vector3(moveDirection.x*stepLength, 0.0, moveDirection.y*stepLength)
 	var start = pos+Vector3.UP
 	var end = pos-Vector3.UP
 	var result = castRay(start, end)
@@ -68,9 +69,31 @@ func enterWalking() -> void:
 
 func walking():
 	targetSpeed = moveDirection*movementSpeed
+	var maxAngle = 0.0
+	var furthest:Leg
+	var legTargetSpeed = Vector3(moveDirection.x*movementSpeed, 0.1, moveDirection.y*movementSpeed)
 	for leg in legs:
-		leg.targetSpeed = Vector3(moveDirection.x*movementSpeed, 0.0, moveDirection.y*movementSpeed)
+		leg.maxHorizontalSpeed = Vector2(sqrt(pow(moveDirection.x, 2.0))*movementSpeed*4.0, sqrt(pow(moveDirection.y, 2.0))*movementSpeed*4.0)
+		var pos = leg.origin.rotated(Vector3.UP, phi)+newPos+Vector3(moveDirection.x*stepLength, 0.0, moveDirection.y*stepLength)
+		var start = pos+Vector3.UP
+		var end = pos-Vector3.UP
+		var result = castRay(start, end)
+		if result:
+			pos.y = result.position.y
+		if leg.stepping:
+			leg.targetPos = pos
+		var root = newPos+leg.origin.rotated(Vector3.UP, phi)
+		root.y = newPos.y+leg.legLength
+		var Dist = root-leg.newPos
+		var angle = rad_to_deg(atan(sqrt(pow(Dist.x, 2.0)+pow(Dist.z, 2.0))/Dist.y))
+		if sqrt(pow(angle, 2.0)) > maxAngle and not leg.stepping:
+			maxAngle = angle
+			furthest = leg
 		leg.move()
+	if maxAngle > maxLegAngle and not furthest.symmetricalEqual.stepping:
+		furthest.jump(0.1)
+		var pos = furthest.origin.rotated(Vector3.UP, phi)+newPos+Vector3(moveDirection.x*stepLength, 0.0, moveDirection.y*stepLength)
+		furthest.step(pos, legTargetSpeed)
 	pass
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
