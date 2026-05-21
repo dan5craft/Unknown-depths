@@ -40,6 +40,21 @@ func getGroundedLegCount() -> int:
 			sum+=1
 	return sum
 
+func getAppliedAcceleration() -> float:
+	var sum = 0.0
+	for leg in legs:
+		var bend = (leg.newPos.y-newPos.y)/leg.legLength
+		var appliedA = -Globals.gravity*(1.0-bend)/getGroundedLegCount()
+		sum += appliedA
+	return sum
+
+func getLowestLeg() -> Leg:
+	var lowest:Leg = legs[0]
+	for leg in legs:
+		if leg.newPos.y < lowest.newPos.y:
+			lowest = leg
+	return lowest
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	oldPos = body.global_position
@@ -58,49 +73,12 @@ func standing() -> void:
 
 func enterWalking() -> void:
 	state = "Walking"
-	var pos = legs[0].origin.rotated(Vector3.UP, phi)+newPos+Vector3(moveDirection.x*stepLength, 0.0, moveDirection.y*stepLength)
-	var start = pos+Vector3.UP
-	var end = pos-Vector3.UP
-	var result = castRay(start, end)
-	if result:
-		pos.y = result.position.y
-	legs[0].jump(0.1)
-	legs[0].step(pos, Vector3.ZERO)
+	for leg in legs:
+		leg.step(leg.origin.rotated(Vector3.UP, phi)+newPos, Vector3.ZERO)
 
 func walking():
-	targetSpeed = moveDirection*movementSpeed
-	var maxAngle = 0.0
-	var furthest:Leg
-	var legTargetSpeed = Vector3(moveDirection.x*movementSpeed, 0.0, moveDirection.y*movementSpeed)
 	for leg in legs:
-		leg.maxHorizontalSpeed = Vector2(sqrt(pow(moveDirection.x, 2.0))*movementSpeed*4.0, sqrt(pow(moveDirection.y, 2.0))*movementSpeed*4.0)
-		var pos = leg.origin.rotated(Vector3.UP, phi)+newPos+Vector3(moveDirection.x*stepLength, 0.0, moveDirection.y*stepLength)
-		var start = pos+Vector3.UP
-		var end = pos-Vector3.UP
-		var result = castRay(start, end)
-		if result:
-			pos.y = result.position.y
-		if not leg.grounded:
-			leg.targetPos = pos
-		var root = newPos+leg.origin.rotated(Vector3.UP, phi)
-		root.y = newPos.y+leg.legLength
-		var Dist = root-leg.newPos
-		var angle = rad_to_deg(atan(sqrt(pow(Dist.x, 2.0)+pow(Dist.z, 2.0))/Dist.y))
-		if Vector2(Dist.x, Dist.z).dot(moveDirection) < 0.0:
-			angle *= -1.0
-		var symPos = leg.symmetricalEqual.newPos
-		var diff = symPos-newPos
-		Dist = diff.length()
-		if not leg.symmetricalEqual.stepping and leg.symmetricalEqual.grounded and not leg.stepping and leg.grounded and Dist < 0.1:
-			leg.step(pos, legTargetSpeed)
-		if angle > maxAngle and not leg.stepping and leg.grounded:
-			maxAngle = angle
-			furthest = leg
 		leg.move()
-	if maxAngle > maxLegAngle and not furthest.symmetricalEqual.stepping and furthest.symmetricalEqual.grounded:
-		furthest.jump(0.05)
-		var pos = furthest.origin.rotated(Vector3.UP, phi)+newPos+Vector3(moveDirection.x*stepLength, 0.0, moveDirection.y*stepLength)
-		furthest.step(pos, legTargetSpeed)
 	pass
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.

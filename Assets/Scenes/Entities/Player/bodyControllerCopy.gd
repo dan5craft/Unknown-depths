@@ -12,7 +12,7 @@ var velocity:Vector3 = Vector3(0.0, 0.0, 0.0)
 @export_enum("Standing", "Walking") var state:String
 @export_category("Legs")
 @export var standingPercent = 0.9
-@export var stepLength:float = 0.5
+@export var stepLength:float = 0.4
 @export var maxLegAngle:float = 15.0
 @export_subgroup("Movement")
 @export var moveDirection:Vector2 = Vector2(0.0, 1.0)
@@ -80,20 +80,25 @@ func walking():
 		var result = castRay(start, end)
 		if result:
 			pos.y = result.position.y
-		#if leg.stepping:
-			#leg.targetPos = pos
+		if not leg.grounded:
+			leg.targetPos = pos
 		var root = newPos+leg.origin.rotated(Vector3.UP, phi)
 		root.y = newPos.y+leg.legLength
 		var Dist = root-leg.newPos
 		var angle = rad_to_deg(atan(sqrt(pow(Dist.x, 2.0)+pow(Dist.z, 2.0))/Dist.y))
-		if sqrt(pow(angle, 2.0)) > maxAngle and not leg.stepping:
+		if Vector2(Dist.x, Dist.z).dot(moveDirection) < 0.0:
+			angle *= -1.0
+		var symPos = leg.symmetricalEqual.newPos
+		var diff = symPos-newPos
+		Dist = diff.length()
+		if not leg.symmetricalEqual.stepping and leg.symmetricalEqual.grounded and not leg.stepping and leg.grounded and Dist < 0.1:
+			leg.step(pos, legTargetSpeed)
+		if angle > maxAngle and not leg.stepping and leg.grounded:
 			maxAngle = angle
 			furthest = leg
 		leg.move()
-	if maxAngle > maxLegAngle and getGroundedLegCount() > 1 and not furthest.symmetricalEqual.stepping:
-		furthest.jump(0.1)
-		furthest.velocity.y = -1.0
-		furthest.grounded = true
+	if maxAngle > maxLegAngle and not furthest.symmetricalEqual.stepping and furthest.symmetricalEqual.grounded:
+		furthest.jump(0.05)
 		var pos = furthest.origin.rotated(Vector3.UP, phi)+newPos+Vector3(moveDirection.x*stepLength, 0.0, moveDirection.y*stepLength)
 		furthest.step(pos, legTargetSpeed)
 	pass
@@ -108,8 +113,6 @@ func _process(delta: float) -> void:
 		var a:Vector3 = Vector3.UP*Globals.gravity
 		velocity += a*timeStep
 		newPos = oldPos+velocity*timeStep
-		phi += timeStep*0.1
-		moveDirection = Vector2(cos(phi), sin(phi))
 		if state == "Standing":
 			standing()
 		if state == "Walking":

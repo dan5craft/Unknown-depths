@@ -13,10 +13,12 @@ var stepTime:float = 2.0
 
 var targetPos:Vector3
 var targetSpeed:Vector3
+var bodyTargetPos:Vector3 = Vector3(0.0, -0.2, 0.0)
 var maxHorizontalSpeed:Vector2 = Vector2(100.0, 100.0)
 var stepping := false
+var lifting := false
 var grounded := true
-var moveTo := true
+var moveTo := false
 var brakeToGround := false
 var targetBodySpeed := true
 var jumping := false
@@ -89,173 +91,119 @@ func bodyAtTargetSpeed(margin:float = 0.05) -> bool:
 func jump(speed:float):
 	jumping = true
 	jumpSpeed = speed
-	var bend = (newPos.y-bodyController.newPos.y)/legLength
-	var mass = bodyController.mass*bend
-	var forceReq = -Globals.gravity*mass
-	if forceReq > maxLegForce:
-		symmetricalEqual.jumping = true
-		symmetricalEqual.jumpSpeed = speed
+
+func calcBreakAcceleration(distance:float, currentSpeed:float, targetedSpeed:float, targetsSpeed:float, constantAcceleration:float):
+	var v = (pow(targetedSpeed, 2.0)-pow(currentSpeed, 2.0) - 2*targetsSpeed*(targetedSpeed-currentSpeed)) / (2*distance) - constantAcceleration
+	#print("d: "+str(distance)+" v: "+str(currentSpeed)+" i: "+str(targetedSpeed)+" k: "+str(targetsSpeed)+" g: "+str(constantAcceleration)+"\na: "+str(v))
+	return v
+
+func distFromStandPos():
+	return newPos.y-bodyController.newPos.y-legLength*(1.0-bodyController.standingPercent)
+
+func distFromTargetBodyPos():
+	return bodyTargetPos-bodyController.newPos
 
 func calcForce() -> Vector3:
+	# jumping
+	if velocity.y > jumpSpeed or not grounded:
+		jumping = false
+	if jumping:
+		return Vector3.UP * maxLegForce
+	# setup values
 	var target = targetPos
-	var standingOffset = legLength*(1.0-bodyController.standingPercent)#+legLength*bodyController.standingPercent-sqrt(pow(legLength*bodyController.standingPercent, 2.0)-(pow(Dist.x, 2.0)+pow(Dist.z, 2.0)))
-	$MeshInstance3D.get_surface_override_material(0).albedo_color = Color(1.0, 0.0, 0.0)
-	if newPos.y >= targetPos.y+legStepHeight-0.001 and stepping or newPos.y-bodyController.newPos.y-standingOffset >= 0.05:
-		stepping = false
-	if stepping:
-		$MeshInstance3D.get_surface_override_material(0).albedo_color = Color(0.0, 1.0, 0.0)
-		target.y = targetPos.y+legStepHeight
 	var distance = target-newPos
-	var forceNormalized = distance.normalized()
+	var newForce = distance
 	var mass = effectiveMass
 	var vel = velocity
-	var forceReq = -Globals.gravity*mass
-	var targetAtGround = false
-	var start = target
-	var end = target
-	start.y += 0.1
-	end.y -= 0.1
-	var result = castRay(start, end)
-	if result:
-		if result.position.y >= target.y-0.05:
-			targetAtGround = true
-	if distance.y < 0.0:
-		forceReq = 0.0
-	forceNormalized.y = min(1.0, forceReq/maxLegForce)
-	var root = bodyController.newPos+origin.rotated(Vector3.UP, bodyController.phi)
-	var Dist = root-newPos
-	if grounded and target.y <= newPos.y+0.05 or grounded and target.y-bodyController.newPos.y-standingOffset <= 0.05:
-		vel.y = bodyController.velocity.y
-		distance.y = target.y-bodyController.newPos.y-standingOffset
-		forceReq = Globals.gravity*mass
+	# lifting
+	if lifting and stepOrigin.y <= targetPos.y:
+		target.y = targetPos.y + legStepHeight
+	if lifting and stepOrigin.y > targetPos.y:
+		target.y = stepOrigin.y + legStepHeight
+	if newPos.y >= target.y and lifting:
+		lifting = false
+	# is moving body or foot
+	var forceReq = Globals.gravity*mass
+	if grounded and target.y > newPos.y+0.001 or not grounded:
+		mass = legMass
 		if distance.y < 0.0:
 			forceReq = 0.0
-		forceNormalized.y = min(1.0, getMagnitude(forceReq)/maxLegForce)*getSign(forceReq)
+		else:
+			forceReq = -Globals.gravity*mass
 	elif grounded:
-		mass = legMass
-		grounded = false
-	var forceLeft = sqrt(1.0-pow(forceNormalized.y, 2.0))
-	if getMagnitude(forceNormalized.y) > 0.0:
-		var upwardsForce = min(forceLeft/3, distance.y)
-		forceNormalized.y = min(1.0, getMagnitude(forceNormalized.y)+upwardsForce)*getSign(forceNormalized.y)
-	if getSign(vel.y) == getSign(distance.y) and distance.y != 0.0:
-		var brakeAY = pow(targetSpeed.y, 2.0)-pow(vel.y, 2.0)/(2.0*distance.y)-Globals.gravity
-		if grounded:
-			brakeAY *= -1.0
-		var brakeForceY = brakeAY*mass
-		if getMagnitude(brakeForceY) > maxLegForce or distance.y > 0.0 and brakeAY > -1.0 and grounded or not stepping and getMagnitude(distance.y) < 0.1:
-			if grounded or not targetAtGround or brakeToGround:
-				forceNormalized.y = min(1.0, getMagnitude(brakeForceY)/maxLegForce)*getSign(brakeForceY)
-				if grounded:
-					forceNormalized.y = min(0.0, forceNormalized.y)
-	if grounded and not bodyAtTargetSpeed() and targetBodySpeed:
+		var DFTBP = distFromTargetBodyPos()
+		if moveTo:
+			distance = DFTBP
+			newForce.x = DFTBP.x
+			newForce.z *= DFTBP.z
+		else:
+			distance.y = DFTBP.y
+			newForce.x = 0.0
+			newForce.z = 0.0
+		if distance.y < 0.0:
+			forceReq = 0.0
 		vel = bodyController.velocity
-		forceReq = Globals.gravity*mass
-		var velDiff = Vector2.ZERO
-		velDiff.x = bodyController.velocity.x-bodyController.targetSpeed.x
-		velDiff.y = bodyController.velocity.z-bodyController.targetSpeed.y
-		var sumXZ = getMagnitude(velDiff.x)+getMagnitude(velDiff.y)
-		var weightX = velDiff.x/sumXZ
-		var weightZ = velDiff.y/sumXZ
-		forceNormalized.x = min(getMagnitude(weightX), getMagnitude(velDiff.x))*getSign(velDiff.x)
-		forceNormalized.z = min(getMagnitude(weightZ), getMagnitude(velDiff.y))*getSign(velDiff.y)
-		return forceNormalized*maxLegForce
-	if forceNormalized.x != 0.0 or forceNormalized.z != 0.0:
-		forceLeft = sqrt(1.0-pow(forceNormalized.y, 2.0))
-		var sumXZ = getMagnitude(forceNormalized.x)+getMagnitude(forceNormalized.z)
-		if grounded and moveTo and not targetBodySpeed:
-			vel.x = bodyController.velocity.x
-			vel.z = bodyController.velocity.z
-			root = bodyController.newPos+origin.rotated(Vector3.UP, bodyController.phi)
-			distance.x = newPos.x-root.x
-			distance.z = newPos.z-root.z
-			var distSum = getMagnitude(distance.x)+getMagnitude(distance.z)
-			if distSum > 0.001:
-				var weightX = getMagnitude(distance.x)/distSum*getSign(distance.x)
-				var weightZ = getMagnitude(distance.z)/distSum*getSign(distance.z)
-				forceNormalized.x = -weightX*forceLeft
-				forceNormalized.z = -weightZ*forceLeft
-		elif grounded and not moveTo or grounded and targetBodySpeed:
-			forceNormalized.x = 0.0
-			forceNormalized.z = 0.0
-		elif sumXZ > 0.001:
-			var weightX = getMagnitude(forceNormalized.x)/sumXZ*getSign(forceNormalized.x)
-			var weightZ = getMagnitude(forceNormalized.z)/sumXZ*getSign(forceNormalized.z)
-			forceNormalized.x = weightX*forceLeft
-			forceNormalized.z = weightZ*forceLeft
-	forceNormalized.x = min(getMagnitude(distance.x), getMagnitude(forceNormalized.x))*getSign(forceNormalized.x)
-	forceNormalized.z = min(getMagnitude(distance.z), getMagnitude(forceNormalized.z))*getSign(forceNormalized.z)
-	if getSign(vel.x) == getSign(distance.x) and distance.x != 0.0:
-		var brakeAX = pow(targetSpeed.x, 2.0)-pow(vel.x, 2.0)/(2.0*distance.x)
-		var brakeForceX = brakeAX*mass
-		if getMagnitude(brakeForceX)/maxLegForce > getMagnitude(forceNormalized.x)-0.1:
+	newForce.y = forceReq*1.1
+	if getSign(distance.y) == getSign(vel.y):
+		var brakeA
+		if not grounded:
+			brakeA = calcBreakAcceleration(distance.y, vel.y, 0.0, 0.0, Globals.gravity)
+		if grounded:
+			brakeA = -calcBreakAcceleration(distance.y, vel.y, 0.0, 0.0, Globals.gravity+bodyController.getAppliedAcceleration())
+		var brakeForce = clamp(brakeA*mass, -maxLegForce, maxLegForce)
+		if getMagnitude(brakeForce) > maxLegForce*0.5 or grounded and brakeA > -0.5:
 			if grounded:
-				brakeForceX *= -1.0
-			elif grounded and not moveTo:
-				brakeForceX = 0.0
-			forceNormalized.x = min(1.0, getMagnitude(brakeForceX)/maxLegForce)*getSign(brakeForceX)
-	if getSign(vel.z) == getSign(distance.z) and distance.z != 0.0:
-		var brakeAZ = pow(targetSpeed.z, 2.0)-pow(vel.z, 2.0)/(2.0*distance.z)
-		var brakeForceZ = brakeAZ*mass
-		if getMagnitude(brakeForceZ)/maxLegForce > getMagnitude(forceNormalized.z)-0.1:
-			if grounded:
-				brakeForceZ *= -1.0
-			elif grounded and not moveTo:
-				brakeForceZ = 0.0
-			forceNormalized.z = min(1.0, getMagnitude(brakeForceZ)/maxLegForce)*getSign(brakeForceZ)
-	if velocity.x >= maxHorizontalSpeed.x:
-		forceNormalized.x = min(forceNormalized.x, 0.0)
-	elif velocity.x <= -maxHorizontalSpeed.x:
-		forceNormalized.x = max(forceNormalized.x, 0.0)
-
-	if velocity.z >= maxHorizontalSpeed.y:
-		forceNormalized.z = min(forceNormalized.z, 0.0)
-	elif velocity.z <= -maxHorizontalSpeed.y:
-		forceNormalized.z = max(forceNormalized.z, 0.0)
-	return forceNormalized*maxLegForce
+				brakeForce = min(brakeForce, 0.0)
+			#print("is braking with force "+str(brakeForce))
+			newForce.y = brakeForce
+	return newForce
 
 func move():
-	var timeStep = 1.0/bodyController.simFPS
+	# setup
 	oldPos = newPos
-	if newPos.y-bodyController.newPos.y > legLength*0.8:
-		if grounded:
-			bodyController.velocity.y = max(bodyController.velocity.y, 0.0)
-		velocity.y = bodyController.velocity.y
-		newPos.y = bodyController.newPos.y+legLength*0.8
+	var timeStep = 1.0/bodyController.simFPS
+	if grounded:
+		var bend = (newPos.y-bodyController.newPos.y)/legLength
+		appliedMass = bodyController.mass*(1.0-bend)/bodyController.getGroundedLegCount()
+		effectiveMass = bodyController.mass/bodyController.getGroundedLegCount()
+	else:
+		effectiveMass = legMass
+		appliedMass = legMass
+	if grounded:
+		force = calcForce()
+	else:
+		force = calcForce()
+	# Forces and physics:
+	var appliedForce:Vector3 = force+Vector3(0.0, Globals.gravity*appliedMass, 0.0)
+	#print(appliedForce.y/bodyController.mass*2.0-Globals.gravity)
+	var a:Vector3 = appliedForce/legMass
+	velocity += a*timeStep
+	newPos += velocity*timeStep
+	# correction
+	## move foot if it's further away than the leg length
 	var root = bodyController.newPos+origin.rotated(Vector3.UP, bodyController.phi)
 	root.y = bodyController.newPos.y+legLength
 	var Dist = (root-newPos)
 	if Dist.length() > legLength:
 		var diff = root-Dist*legLength/Dist.length()
 		newPos = diff
-	if grounded and not stepping:
-		var bend = (newPos.y-bodyController.newPos.y)/legLength
-		effectiveMass = bodyController.mass*bend/bodyController.getGroundedLegCount()
-		appliedMass = bodyController.mass*(1.0-bend)/bodyController.getGroundedLegCount()
-	else:
-		effectiveMass = legMass
-		appliedMass = legMass
-	if not jumping or not grounded:
-		force = calcForce()
-	if jumping and grounded:
-		force = Vector3.DOWN*maxLegForce
-	if jumping and not grounded or jumping and bodyController.velocity.y > jumpSpeed:
-		jumping = false
-		if symmetricalEqual.jumping:
-			symmetricalEqual.jumping = false
-	var appliedForce:Vector3 = force+Vector3(0.0, Globals.gravity*appliedMass, 0.0)
-	var a:Vector3 = appliedForce/legMass
-	velocity += a*timeStep
-	newPos += velocity*timeStep
+	## make sure the foot isn't unaturally high compared to the body right now it's 0.8*leglength
+	if newPos.y-bodyController.newPos.y > legLength*0.8:
+		if grounded:
+			bodyController.velocity.y = max(bodyController.velocity.y, 0.0)
+			bodyController.newPos.y = newPos.y-legLength*0.8
+		velocity.y = bodyController.velocity.y
+		newPos.y = bodyController.newPos.y+legLength*0.8
+	# check grounded
 	var start = oldPos
 	var end = newPos
 	start.y += 0.1
 	end.y -= 0.1
 	var result = castRay(start, end)
 	if result:
-		if result.position.y >= newPos.y:
+		if result.position.y >= newPos.y and velocity.y < 0.0:
 			grounded = true
-			velocity = Vector3(0.0, max(velocity.y, 0.0), 0.0)
+			velocity = Vector3(0.0, 0.0, 0.0)
 			bodyController.velocity += -(appliedForce)/(bodyController.mass)*timeStep
 			newPos.y = result.position.y
 		else:
@@ -267,5 +215,7 @@ func setTarget(pos:Vector3, speed:Vector3):
 	targetPos = pos
 	targetSpeed = speed
 func step(pos:Vector3, speed:Vector3):
-	stepping = true
+	#stepping = true
+	#lifting = true
+	stepOrigin = newPos
 	setTarget(pos, speed)

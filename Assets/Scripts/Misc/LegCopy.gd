@@ -98,10 +98,17 @@ func jump(speed:float):
 
 func calcForce() -> Vector3:
 	var target = targetPos
-	if newPos.y >= targetPos.y+legStepHeight-0.001 and stepping:
+	var standingOffset = legLength*(1.0-bodyController.standingPercent)#+legLength*bodyController.standingPercent-sqrt(pow(legLength*bodyController.standingPercent, 2.0)-(pow(Dist.x, 2.0)+pow(Dist.z, 2.0)))
+	$MeshInstance3D.get_surface_override_material(0).albedo_color = Color(1.0, 0.0, 0.0)
+	if newPos.y >= targetPos.y+legStepHeight-0.001 and stepping or newPos.y-bodyController.newPos.y-standingOffset >= 0.05:
 		stepping = false
 	if stepping:
-		target.y = targetPos.y+legStepHeight
+		$MeshInstance3D.get_surface_override_material(0).albedo_color = Color(0.0, 1.0, 0.0)
+		var diff = target-stepOrigin
+		if diff.y > 0.0:
+			target.y = targetPos.y+legStepHeight
+		else:
+			target.y = stepOrigin.y+legStepHeight
 	var distance = target-newPos
 	var forceNormalized = distance.normalized()
 	var mass = effectiveMass
@@ -121,8 +128,7 @@ func calcForce() -> Vector3:
 	forceNormalized.y = min(1.0, forceReq/maxLegForce)
 	var root = bodyController.newPos+origin.rotated(Vector3.UP, bodyController.phi)
 	var Dist = root-newPos
-	var standingOffset = legLength*(1.0-bodyController.standingPercent)#+legLength*bodyController.standingPercent-sqrt(pow(legLength*bodyController.standingPercent, 2.0)-(pow(Dist.x, 2.0)+pow(Dist.z, 2.0)))
-	if grounded and not stepping:
+	if grounded and target.y <= newPos.y+0.05 or grounded and newPos.y-bodyController.newPos.y-standingOffset >= 0.05:
 		vel.y = bodyController.velocity.y
 		distance.y = target.y-bodyController.newPos.y-standingOffset
 		forceReq = Globals.gravity*mass
@@ -141,7 +147,7 @@ func calcForce() -> Vector3:
 		if grounded:
 			brakeAY *= -1.0
 		var brakeForceY = brakeAY*mass
-		if getMagnitude(brakeForceY) > maxLegForce or distance.y > 0.0 and brakeAY > -1.0 and grounded or getMagnitude(distance.y) < 0.1:
+		if getMagnitude(brakeForceY) > maxLegForce or distance.y > 0.0 and brakeAY > -1.0 and grounded or not stepping and getMagnitude(distance.y) < 0.1:
 			if grounded or not targetAtGround or brakeToGround:
 				forceNormalized.y = min(1.0, getMagnitude(brakeForceY)/maxLegForce)*getSign(brakeForceY)
 				if grounded:
@@ -250,10 +256,8 @@ func move():
 	start.y += 0.1
 	end.y -= 0.1
 	var result = castRay(start, end)
-	$MeshInstance3D.get_surface_override_material(0).albedo_color = Color(0.0, 1.0, 0.0)
 	if result:
 		if result.position.y >= newPos.y:
-			$MeshInstance3D.get_surface_override_material(0).albedo_color = Color(1.0, 0.0, 0.0)
 			grounded = true
 			velocity = Vector3(0.0, max(velocity.y, 0.0), 0.0)
 			bodyController.velocity += -(appliedForce)/(bodyController.mass)*timeStep
@@ -268,4 +272,5 @@ func setTarget(pos:Vector3, speed:Vector3):
 	targetSpeed = speed
 func step(pos:Vector3, speed:Vector3):
 	stepping = true
+	stepOrigin = newPos
 	setTarget(pos, speed)
