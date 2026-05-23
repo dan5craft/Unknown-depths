@@ -1,28 +1,26 @@
 class_name bodyController extends Node3D
 
-var time := 0.0
 @export_category("Body Controller")
 @export var legs:Array[Leg]
 @export var body:Node3D
 @export var mass:float = 80.0
-@export var simFPS:int = 60
+@export var simFPS:int = 15
 @export var smoothFPS:bool = true
-@export var timeScale = 0.1
+@export var timeScale = 1.0
 var velocity:Vector3 = Vector3(0.0, 0.0, 0.0)
 @export_enum("Standing", "Walking") var state:String
 @export_category("Legs")
 @export var standingPercent = 0.9
 @export var stepLength:float = 0.4
-@export var maxLegAngle:float = 15.0
 @export_subgroup("Movement")
-@export var moveDirection:Vector2 = Vector2(0.0, 1.0)
-@export var movementSpeed = 0.5
+@export var moveDirection:Vector3 = Vector3(0.0, 0.0, 1.0)
+@export var movementSpeed = 1.0
+@export var movementAcceleration = 2.0
 var phi = 0.0
 
 var oldPos:Vector3 = Vector3(0.0, 0.0, 0.0)
 var newPos:Vector3 = Vector3(0.0, 0.0, 0.0)
 var timer:float = -3.0
-var targetSpeed:Vector2 = Vector2.ZERO
 
 
 func castRay(pos1:Vector3, pos2:Vector3) -> Dictionary:
@@ -38,14 +36,6 @@ func getGroundedLegCount() -> int:
 	for leg in legs:
 		if leg.grounded and not leg.stepping:
 			sum+=1
-	return sum
-
-func getAppliedAcceleration() -> float:
-	var sum = 0.0
-	for leg in legs:
-		var bend = (leg.newPos.y-newPos.y)/leg.legLength
-		var appliedA = -Globals.gravity*(1.0-bend)/getGroundedLegCount()
-		sum += appliedA
 	return sum
 
 func getLowestLeg() -> Leg:
@@ -64,20 +54,68 @@ func _ready() -> void:
 
 func enterStanding() -> void:
 	state = "Standing"
-	for leg in legs:
-		leg.setTarget(leg.origin.rotated(Vector3.UP, phi)+newPos, Vector3.ZERO)
 
 func standing() -> void:
+	var timeStep = 1.0/simFPS
+	var a = -velocity.normalized()*movementAcceleration*timeStep
+	if velocity.x > 0.0:
+		velocity.x = max(velocity.x+a.x, 0.0)
+	if velocity.x < 0.0:
+		velocity.x = min(velocity.x+a.x, 0.0)
+	if velocity.z > 0.0:
+		velocity.z = max(velocity.z+a.z, 0.0)
+	if velocity.z < 0.0:
+		velocity.z = min(velocity.z+a.z, 0.0)
 	for leg in legs:
+		var root = leg.origin.rotated(Vector3.UP, phi)+newPos
+		root.y = newPos.y+leg.legLength
+		var Dist = leg.newPos - root
+		var Dist2D = Vector3(Dist.x, 0.0, Dist.z)
+		var angle = rad_to_deg(atan(sqrt(pow(Dist.x, 2.0)+pow(Dist.z, 2.0))/-Dist.y))
+		if Dist2D.length() > 0.1 and velocity.length() == 0.0 and not leg.stepping:
+			if leg.isSymmetrical and not leg.symmetricalEqual.stepping or not leg.isSymmetrical:
+				var stepTime = 0.5
+				leg.step(leg.origin.rotated(Vector3.UP, phi)+newPos, stepTime)
+				leg.move()
+				continue
+		if Dist.dot(velocity) > 0.0:
+			angle *= -1.0
+		if angle > leg.maxAngle and not leg.stepping and velocity.length() > 0.0:
+			if leg.isSymmetrical and not leg.symmetricalEqual.stepping or not leg.isSymmetrical:
+				var stepTime = clamp(Dist2D.length()/velocity.length(), 0.1, 0.5)
+				leg.step(leg.origin.rotated(Vector3.UP, phi)+newPos+velocity*stepTime+velocity/2.0, stepTime)
 		leg.move()
 
 func enterWalking() -> void:
 	state = "Walking"
-	for leg in legs:
-		leg.step(leg.origin.rotated(Vector3.UP, phi)+newPos, Vector3.ZERO)
+	#legs[0].step(legs[0].origin.rotated(Vector3.UP, phi)+newPos+moveDirection*stepLength, 0.5)
 
 func walking():
+	var timeStep = 1.0/simFPS
+	var a = moveDirection*movementAcceleration*timeStep
+	var maxVel = moveDirection*movementSpeed
+	if velocity.x < maxVel.x and maxVel.x > 0.0:
+		velocity.x = min(velocity.x+a.x, maxVel.x)
+	elif velocity.x > maxVel.x and maxVel.x < 0.0:
+		velocity.x = max(velocity.x+a.x, maxVel.x)
+	if velocity.z < maxVel.z and maxVel.z > 0.0:
+		velocity.z = min(velocity.z+a.z, maxVel.z)
+	elif velocity.z > maxVel.z and maxVel.z < 0.0:
+		velocity.z = max(velocity.z+a.z, maxVel.z)
 	for leg in legs:
+		var root = leg.origin.rotated(Vector3.UP, phi)+newPos
+		root.y = newPos.y+leg.legLength
+		var Dist = leg.newPos - root
+		var Dist2D = Vector3(Dist.x, 0.0, Dist.z)
+		var angle = rad_to_deg(atan(sqrt(pow(Dist.x, 2.0)+pow(Dist.z, 2.0))/-Dist.y))
+		if Dist.dot(velocity) > 0.0:
+			angle *= -1.0
+		if angle > leg.maxAngle and not leg.stepping:
+			if leg.isSymmetrical and not leg.symmetricalEqual.stepping or not leg.isSymmetrical:
+				var stepTime = 0.1
+				if velocity.length() > 0.0:
+					stepTime = clamp(Dist2D.length()/velocity.length(), 0.1, 0.5)
+				leg.step(leg.origin.rotated(Vector3.UP, phi)+newPos+velocity*stepTime+velocity/2.0, stepTime)
 		leg.move()
 	pass
 
@@ -87,10 +125,12 @@ func _process(delta: float) -> void:
 	var timeStep = 1.0/simFPS
 	while timer > timeStep/timeScale:
 		timer -= timeStep/timeScale
+		for leg in legs:
+			leg.timer += timeStep
 		oldPos = newPos
-		var a:Vector3 = Vector3.UP*Globals.gravity
-		velocity += a*timeStep
-		newPos = oldPos+velocity*timeStep
+		newPos += velocity*timeStep
+		var lowest:Leg = getLowestLeg()
+		newPos.y = lerp(newPos.y, lowest.newPos.y-lowest.legLength*(1.0-standingPercent), min(5.0*timeStep, 1.0))
 		if state == "Standing":
 			standing()
 		if state == "Walking":

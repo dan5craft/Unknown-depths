@@ -14,9 +14,7 @@ roughness = 0.875
 resource_name = "head"
 transparency = 1
 depth_draw_mode = 1
-albedo_color = Color(0.728822, 0.728822, 0.728822, 1)
-metallic = 1.0
-roughness = 0.1
+albedo_color = Color(1, 1, 1, 0)
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_8ic5h"]
 resource_name = "testHumanRig_Male2_lambert1_0"
@@ -702,9 +700,6 @@ bones/61/scale = Vector3(1, 1, 0.99999994)
 script = ExtResource("2_ghiyp")
 legs = [NodePath("leftLegTarget"), NodePath("rightLegTarget")]
 body = NodePath("..")
-simFPS = 144
-timeScale = 1.0
-state = "Walking"
 
 [node name="leftLegTarget" type="Marker3D" parent="skeleton" unique_id=929734403 node_paths=PackedStringArray("body", "bodyController", "symmetricalEqual")]
 transform = Transform3D(1, 0, 0, 0, -0.28031492, -0.9599082, 0, 0.9599082, -0.28031492, 0.15, 0, 0)
@@ -712,9 +707,11 @@ top_level = true
 script = ExtResource("2_hbw02")
 body = NodePath("../..")
 bodyController = NodePath("..")
+isSymmetrical = true
 symmetricalEqual = NodePath("../rightLegTarget")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="skeleton/leftLegTarget" unique_id=1511303980]
+visible = false
 layers = 4
 mesh = SubResource("SphereMesh_hbw02")
 surface_material_override/0 = SubResource("StandardMaterial3D_8ic5h")
@@ -818,9 +815,11 @@ top_level = true
 script = ExtResource("2_hbw02")
 body = NodePath("../..")
 bodyController = NodePath("..")
+isSymmetrical = true
 symmetricalEqual = NodePath("../leftLegTarget")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="skeleton/rightLegTarget" unique_id=1787062449]
+visible = false
 layers = 4
 mesh = SubResource("SphereMesh_hbw02")
 surface_material_override/0 = SubResource("StandardMaterial3D_givc0")
