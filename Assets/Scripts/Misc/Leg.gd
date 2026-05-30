@@ -7,7 +7,7 @@ class_name Leg extends Node3D
 @export var maxAngle:float = 20.0
 @export var isSymmetrical:bool = false
 @export var symmetricalEqual:Leg
-@export var legAcceleration:float = 2.0
+@export var legAcceleration:float = 5.0
 @export var legMinStepSpeed:float = 0.1
 var timer:float
 var velocity:Vector3 = Vector3.ZERO
@@ -90,9 +90,9 @@ func calcAcceleration():
 		var breakAcceleration = calcBreakAcceleration(horizontalDistance.y, velocity.z, 0.0, 0.0, 0.0)
 		if abs(breakAcceleration) >= legAcceleration or abs(horizontalDistance.y) < 0.1:
 			horizontalAcceleration.y = min(abs(breakAcceleration), legAcceleration)*sign(breakAcceleration)
-	print(targetHeight)
+	print(horizontalDistance)
 	print(newPos.y)
-	print(yAcceleration)
+	print(velocity.y)
 	return Vector3(horizontalAcceleration.x, yAcceleration, horizontalAcceleration.y)
 
 #func stepFunction(t:float) -> float:
@@ -108,6 +108,14 @@ func move():
 	var a:Vector3 = calcAcceleration()
 	velocity += a*timeStep
 	newPos += velocity*timeStep
+	var travelDist = newPos-oldPos
+	var targetDist = targetPos-newPos
+	if sign(travelDist.y) != sign(targetDist.y) and sign(travelDist.y) == -1.0:
+		newPos.y = targetPos.y
+	if sign(travelDist.x) != sign(targetDist.x):
+		newPos.x = targetPos.x
+	if sign(travelDist.z) != sign(targetDist.z):
+		newPos.z = targetPos.z
 	if (targetPos-newPos).length() < 0.05:
 		newPos = targetPos
 		velocity = Vector3.ZERO

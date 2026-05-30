@@ -700,6 +700,7 @@ bones/61/scale = Vector3(1, 1, 0.99999994)
 script = ExtResource("2_ghiyp")
 legs = [NodePath("leftLegTarget"), NodePath("rightLegTarget")]
 body = NodePath("..")
+smoothFPS = false
 
 [node name="leftLegTarget" type="Marker3D" parent="skeleton" unique_id=929734403 node_paths=PackedStringArray("body", "bodyControl", "symmetricalEqual")]
 transform = Transform3D(1, 0, 0, 0, -0.28031492, -0.9599082, 0, 0.9599082, -0.28031492, 0.15, 0, 0)
