@@ -3,13 +3,14 @@ class_name Leg extends Node3D
 @export var legLength = 1.0
 @export var stepHeight = 0.3
 @export var body:Node3D
-@export var bodyController:bodyController
-@export var maxStepTime:float = 0.5
+@export var bodyControl:bodyController
 @export var maxAngle:float = 20.0
-var stepTime:float = 0.5
 @export var isSymmetrical:bool = false
 @export var symmetricalEqual:Leg
+@export var legAcceleration:float = 2.0
+@export var legMinStepSpeed:float = 0.1
 var timer:float
+var velocity:Vector3 = Vector3.ZERO
 
 var targetPos:Vector3
 var stepping := false
@@ -56,27 +57,65 @@ func sigmoid(t:float, time:float, h:float):
 		val = pow(1.0+pow(e, (-2.0*x+1.0)/(x-pow(x, 2.0))), -1.0)*h
 	return val
 
-func stepFunction(t:float) -> float:
-	var val = targetPos.y-stepOrigin.y
-	if t < stepTime:
-		var offset = sigmoid(t, stepTime, targetPos.y-stepOrigin.y)
-		val = sin(t*2.0*PI/stepTime-PI/2.0)*stepHeight/2.0+stepHeight/2.0 + offset
-	return val
+func calcBreakAcceleration(distance:float, currentSpeed:float, targetedSpeed:float, targetsSpeed:float, constantAcceleration:float):
+	var v = (pow(targetedSpeed, 2.0)-pow(currentSpeed, 2.0) - 2*targetsSpeed*(targetedSpeed-currentSpeed)) / (2*distance) - constantAcceleration
+	#print("d: "+str(distance)+" v: "+str(currentSpeed)+" i: "+str(targetedSpeed)+" k: "+str(targetsSpeed)+" g: "+str(constantAcceleration)+"\na: "+str(v))
+	return v
+
+func calcAcceleration():
+	var start:Vector3 = newPos
+	var end:Vector3 = newPos+Vector3.DOWN*stepHeight
+	var result:Dictionary = castRay(start, end)
+	var horizontalDistance:Vector2 = Vector2(targetPos.x-newPos.x, targetPos.z-newPos.z)
+	var targetHeight:float = targetPos.y + min(stepHeight, horizontalDistance.length())
+	if result:
+		targetHeight = result.position.y + min(stepHeight, horizontalDistance.length())
+	var verticalDistance:float = targetHeight - newPos.y
+	#var yAcceleration:float = min(legAcceleration*2.0, abs(verticalDistance))*sign(verticalDistance)
+	var yAcceleration:float = legAcceleration*2.0*sign(verticalDistance)
+	if abs(verticalDistance) > 0.0 and sign(velocity.y) == sign(verticalDistance):
+		var breakAcceleration = calcBreakAcceleration(verticalDistance, velocity.y, 0.0, 0.0, 0.0)
+		if abs(breakAcceleration) >= legAcceleration*2.0 or abs(verticalDistance) < 0.1:
+			yAcceleration = min(abs(breakAcceleration), legAcceleration*2.0)*sign(breakAcceleration)
+	var horizontalAcceleration:Vector2
+	#horizontalAcceleration.x = min(legAcceleration, abs(horizontalDistance.x))*sign(horizontalDistance.x)
+	#horizontalAcceleration.y = min(legAcceleration, abs(horizontalDistance.y))*sign(horizontalDistance.y)
+	horizontalAcceleration.x = legAcceleration*sign(horizontalDistance.x)
+	horizontalAcceleration.y = legAcceleration*sign(horizontalDistance.y)
+	if abs(horizontalDistance.x) > 0.0 and sign(velocity.x) == sign(horizontalDistance.x):
+		var breakAcceleration = calcBreakAcceleration(horizontalDistance.x, velocity.x, 0.0, 0.0, 0.0)
+		if abs(breakAcceleration) >= legAcceleration or abs(horizontalDistance.x) < 0.1:
+			horizontalAcceleration.x = min(abs(breakAcceleration), legAcceleration)*sign(breakAcceleration)
+	if abs(horizontalDistance.y) > 0.0 and sign(velocity.z) == sign(horizontalDistance.y):
+		var breakAcceleration = calcBreakAcceleration(horizontalDistance.y, velocity.z, 0.0, 0.0, 0.0)
+		if abs(breakAcceleration) >= legAcceleration or abs(horizontalDistance.y) < 0.1:
+			horizontalAcceleration.y = min(abs(breakAcceleration), legAcceleration)*sign(breakAcceleration)
+	print(targetHeight)
+	print(newPos.y)
+	print(yAcceleration)
+	return Vector3(horizontalAcceleration.x, yAcceleration, horizontalAcceleration.y)
+
+#func stepFunction(t:float) -> float:
+	#var val = targetPos.y-stepOrigin.y
+	#if t < stepTime:
+		#var offset = sigmoid(t, stepTime, targetPos.y-stepOrigin.y)
+		#val = sin(t*2.0*PI/stepTime-PI/2.0)*stepHeight/2.0+stepHeight/2.0 + offset
+	#return val
 
 func move():
 	oldPos = newPos
-	if stepping:
-		var t = timer-stepOriginTime
-		if t >= stepTime:
-			stepping = false
-		newPos.y = stepOrigin.y + stepFunction(t)
-		newPos.x = stepOrigin.x + sigmoid(t, stepTime, targetPos.x-stepOrigin.x)
-		newPos.z = stepOrigin.z + sigmoid(t, stepTime, targetPos.z-stepOrigin.z)
-
+	var timeStep = 1.0/bodyControl.simFPS
+	var a:Vector3 = calcAcceleration()
+	velocity += a*timeStep
+	newPos += velocity*timeStep
+	if (targetPos-newPos).length() < 0.05:
+		newPos = targetPos
+		velocity = Vector3.ZERO
 func step(pos:Vector3, time:float):
 	stepping = true
 	stepOrigin = newPos
 	stepOriginTime = timer
+	#var positions = []
 	var start = pos + Vector3.UP*legLength
 	var end = pos + Vector3.DOWN*legLength/2.0
 	var result = castRay(start, end)
@@ -86,4 +125,3 @@ func step(pos:Vector3, time:float):
 	else:
 		grounded = false
 	targetPos = pos
-	stepTime = time

@@ -701,17 +701,16 @@ script = ExtResource("2_ghiyp")
 legs = [NodePath("leftLegTarget"), NodePath("rightLegTarget")]
 body = NodePath("..")
 
-[node name="leftLegTarget" type="Marker3D" parent="skeleton" unique_id=929734403 node_paths=PackedStringArray("body", "bodyController", "symmetricalEqual")]
+[node name="leftLegTarget" type="Marker3D" parent="skeleton" unique_id=929734403 node_paths=PackedStringArray("body", "bodyControl", "symmetricalEqual")]
 transform = Transform3D(1, 0, 0, 0, -0.28031492, -0.9599082, 0, 0.9599082, -0.28031492, 0.15, 0, 0)
 top_level = true
 script = ExtResource("2_hbw02")
 body = NodePath("../..")
-bodyController = NodePath("..")
+bodyControl = NodePath("..")
 isSymmetrical = true
 symmetricalEqual = NodePath("../rightLegTarget")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="skeleton/leftLegTarget" unique_id=1511303980]
-visible = false
 layers = 4
 mesh = SubResource("SphereMesh_hbw02")
 surface_material_override/0 = SubResource("StandardMaterial3D_8ic5h")
@@ -809,17 +808,16 @@ settings/3/axes = 7
 settings/3/invert = 0
 settings/3/additive = false
 
-[node name="rightLegTarget" type="Marker3D" parent="skeleton" unique_id=236069915 node_paths=PackedStringArray("body", "bodyController", "symmetricalEqual")]
+[node name="rightLegTarget" type="Marker3D" parent="skeleton" unique_id=236069915 node_paths=PackedStringArray("body", "bodyControl", "symmetricalEqual")]
 transform = Transform3D(1, 0, 0, 0, -0.28031498, -0.9599082, 0, 0.9599082, -0.28031498, -0.15, 0, 0)
 top_level = true
 script = ExtResource("2_hbw02")
 body = NodePath("../..")
-bodyController = NodePath("..")
+bodyControl = NodePath("..")
 isSymmetrical = true
 symmetricalEqual = NodePath("../leftLegTarget")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="skeleton/rightLegTarget" unique_id=1787062449]
-visible = false
 layers = 4
 mesh = SubResource("SphereMesh_hbw02")
 surface_material_override/0 = SubResource("StandardMaterial3D_givc0")
