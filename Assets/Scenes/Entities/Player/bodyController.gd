@@ -134,13 +134,13 @@ func walking():
 		return
 	for leg in legs:
 		var maxAngle = leg.maxAngle*velocity.length()/maxMovementSpeed
-		var moveAngle = rad_to_deg(atan(moveDirection.x/moveDirection.z))
-		if moveDirection.z == 0.0:
-			moveAngle = 90*sign(moveDirection.x)
+		var moveAngle = rad_to_deg(atan(velocity.x/velocity.z))
+		if velocity.z == 0.0:
+			moveAngle = 90*sign(velocity.x)
 		#print("Max angle: "+str(maxAngle)+" Move angle: "+str(moveAngle))
-		if moveDirection.z < 0.0:
+		if velocity.z < 0.0:
 			moveAngle += 180
-		elif moveDirection.x < 0.0:
+		elif velocity.x < 0.0:
 			moveAngle += 360
 		if not leg.stepping:
 			var root = leg.origin.rotated(Vector3.UP, phi)+newPos

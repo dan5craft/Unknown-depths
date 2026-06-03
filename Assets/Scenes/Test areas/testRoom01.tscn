@@ -1355,7 +1355,7 @@ script = ExtResource("9_ygll1")
 transform = Transform3D(1, 0, 0, 0, 0.99999994, 0, 0, 0, 1, 0, 0, 0)
 cull_mask = 1048573
 script = ExtResource("10_bkwds")
-target = NodePath("../../Player/Camera3D2")
+target = NodePath("../../Camera3D2")
 
 [node name="Water" type="Node3D" parent="." unique_id=208793667]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
@@ -1663,28 +1663,28 @@ mesh = SubResource("ArrayMesh_yxa0w")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="proceduralStairs3/stairs/StaticBody3D" unique_id=1195487105]
 shape = SubResource("ConcavePolygonShape3D_72du7")
 
-[node name="Player" parent="." unique_id=535585784 instance=ExtResource("45_3rkok")]
-
-[node name="Camera3D2" type="Camera3D" parent="Player" unique_id=847311682 node_paths=PackedStringArray("water")]
-transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 1.830496, 0.13083744)
+[node name="Camera3D2" type="Camera3D" parent="." unique_id=847311682 node_paths=PackedStringArray("water")]
+transform = Transform3D(-0.74992645, 0, 0.66152126, 0, 1, 0, -0.66152126, 0, -0.74992645, 2.5436409, 1.830496, 0.13083744)
 compositor = SubResource("Compositor_o75sy")
 fov = 90.0
 script = ExtResource("45_myjja")
-water = NodePath("../../Water")
+water = NodePath("../Water")
 
-[node name="SpotLight3D" type="SpotLight3D" parent="Player/Camera3D2" unique_id=2016041929]
+[node name="SpotLight3D" type="SpotLight3D" parent="Camera3D2" unique_id=2016041929]
 visible = false
 light_energy = 10.0
 spot_range = 80.0
 spot_angle = 20.0
 spot_angle_attenuation = 2.0
 
-[node name="SpotLight3D2" type="SpotLight3D" parent="Player/Camera3D2" unique_id=2138884723]
+[node name="SpotLight3D2" type="SpotLight3D" parent="Camera3D2" unique_id=2138884723]
 visible = false
 light_energy = 5.0
 spot_range = 120.0
 spot_angle = 30.0
 spot_angle_attenuation = 4.0
+
+[node name="Player" parent="." unique_id=535585784 instance=ExtResource("45_3rkok")]
 
 [node name="TestAI" type="Node3D" parent="." unique_id=1398750965 node_paths=PackedStringArray("manager")]
 script = ExtResource("46_myjja")

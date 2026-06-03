@@ -86,19 +86,19 @@ func calcAcceleration():
 	var yAcceleration:float = legAcceleration*2.0*sign(verticalDistance)
 	if abs(verticalDistance) > 0.0 and sign(velocity.y) == sign(verticalDistance):
 		var breakAcceleration = calcBreakAcceleration(verticalDistance, velocity.y, 0.0, 0.0, 0.0)
-		if abs(breakAcceleration) >= legAcceleration*2.0 or abs(verticalDistance) < 0.1:
+		if abs(breakAcceleration) >= legAcceleration*2.0 or abs(velocity.y) > 0.1 and abs(verticalDistance) < 0.1:
 			yAcceleration = min(abs(breakAcceleration), legAcceleration*2.0)*sign(breakAcceleration)
 	var horizontalAcceleration:Vector2
 	#horizontalAcceleration.x = min(legAcceleration, abs(horizontalDistance.x))*sign(horizontalDistance.x)
 	#horizontalAcceleration.y = min(legAcceleration, abs(horizontalDistance.y))*sign(horizontalDistance.y)
 	horizontalAcceleration = horizontalDistance.normalized()*legAcceleration
 	if abs(horizontalDistance.x) > 0.0 and sign(velocity.x) == sign(horizontalDistance.x):
-		var breakAcceleration = calcBreakAcceleration(horizontalDistance.x, velocity.x, bodyControl.velocity.x, bodyControl.velocity.x, 0.0)
-		if abs(breakAcceleration) >= legAcceleration or abs(horizontalDistance.x) < 0.1:
+		var breakAcceleration = calcBreakAcceleration(horizontalDistance.x, velocity.x, bodyControl.velocity.x*1.05, bodyControl.velocity.x*1.05, 0.0)
+		if abs(breakAcceleration) >= legAcceleration or abs(velocity.x) > 0.1 and abs(horizontalDistance.x) < 0.1:
 			horizontalAcceleration.x = min(abs(breakAcceleration), legAcceleration)*sign(breakAcceleration)
 	if abs(horizontalDistance.y) > 0.0 and sign(velocity.z) == sign(horizontalDistance.y):
-		var breakAcceleration = calcBreakAcceleration(horizontalDistance.y, velocity.z, bodyControl.velocity.z, bodyControl.velocity.z, 0.0)
-		if abs(breakAcceleration) >= legAcceleration or abs(horizontalDistance.y) < 0.1:
+		var breakAcceleration = calcBreakAcceleration(horizontalDistance.y, velocity.z, bodyControl.velocity.z*1.05, bodyControl.velocity.z*1.05, 0.0)
+		if abs(breakAcceleration) >= legAcceleration or abs(velocity.z) > 0.1 and abs(horizontalDistance.y) < 0.1:
 			horizontalAcceleration.y = min(abs(breakAcceleration), legAcceleration)*sign(breakAcceleration)
 	return Vector3(horizontalAcceleration.x, yAcceleration, horizontalAcceleration.y)
 
@@ -110,7 +110,11 @@ func calcAcceleration():
 	#return val
 
 func move():
-	$MeshInstance3D2.global_position = targetPos
+	#$MeshInstance3D2.global_position = targetPos
+	#if stepping:
+		#$MeshInstance3D2.visible = true
+	#else:
+		#$MeshInstance3D2.visible = false
 	oldPos = newPos
 	var timeStep = 1.0/bodyControl.simFPS
 	var a:Vector3 = calcAcceleration()
@@ -143,7 +147,6 @@ func setStepTarget(DirectionalAngle:float, stepAngle:float) -> bool:
 		end.z = cos(DirectionalAngle)*legLength*2.0
 		var rotationAxis = Vector3(sin(DirectionalAngle+PI/2.0), 0.0, cos(DirectionalAngle+PI/2.0))
 		end = end.rotated(rotationAxis, PI/2.0-angle)+root
-		targetPos = end
 		var result = castRay(start, end)
 		if result:
 			var distance = sqrt(pow(result.position.x-root.x, 2.0)+pow(result.position.z-root.z, 2.0))
