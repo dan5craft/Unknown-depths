@@ -7,8 +7,9 @@ class_name Leg extends Node3D
 @export var maxAngle:float = 30.0
 @export var isSymmetrical:bool = false
 @export var symmetricalEqual:Leg
-@export var legAcceleration:float = 5.0
+@export var legAcceleration:float = 20.0
 @export var legMinStepSpeed:float = 0.1
+@export var debug:bool = false
 var timer:float
 var velocity:Vector3 = Vector3.ZERO
 
@@ -76,11 +77,14 @@ func calcBreakAcceleration(distance:float, currentSpeed:float, targetedSpeed:flo
 func calcAcceleration():
 	var start:Vector3 = newPos
 	var end:Vector3 = newPos+Vector3.DOWN*stepHeight
-	var result:Dictionary = castRay(start, end)
 	var horizontalDistance:Vector2 = Vector2(targetPos.x-newPos.x, targetPos.z-newPos.z)
-	var targetHeight:float = targetPos.y + min(stepHeight, horizontalDistance.length())
-	if result and newPos.y > targetPos.y:
-		targetHeight = result.position.y + min(stepHeight, horizontalDistance.length())
+	var targetHeight:float = targetPos.y
+	if stepping and horizontalDistance.length() > bodyControl.velocity.length()/4.0:
+		var result:Dictionary = castRay(start, end)
+		if result and newPos.y > targetPos.y:
+			targetHeight = result.position.y + min(stepHeight, horizontalDistance.length())
+		else:
+			targetHeight += min(stepHeight, horizontalDistance.length())
 	var verticalDistance:float = targetHeight - newPos.y
 	#var yAcceleration:float = min(legAcceleration*2.0, abs(verticalDistance))*sign(verticalDistance)
 	var yAcceleration:float = legAcceleration*2.0*sign(verticalDistance)
@@ -93,11 +97,11 @@ func calcAcceleration():
 	#horizontalAcceleration.y = min(legAcceleration, abs(horizontalDistance.y))*sign(horizontalDistance.y)
 	horizontalAcceleration = horizontalDistance.normalized()*legAcceleration
 	if abs(horizontalDistance.x) > 0.0 and sign(velocity.x) == sign(horizontalDistance.x):
-		var breakAcceleration = calcBreakAcceleration(horizontalDistance.x, velocity.x, bodyControl.velocity.x*1.05, bodyControl.velocity.x*1.05, 0.0)
+		var breakAcceleration = calcBreakAcceleration(horizontalDistance.x, velocity.x, bodyControl.velocity.x*1.5, bodyControl.velocity.x*1.5, 0.0)
 		if abs(breakAcceleration) >= legAcceleration or abs(velocity.x) > 0.1 and abs(horizontalDistance.x) < 0.1:
 			horizontalAcceleration.x = min(abs(breakAcceleration), legAcceleration)*sign(breakAcceleration)
 	if abs(horizontalDistance.y) > 0.0 and sign(velocity.z) == sign(horizontalDistance.y):
-		var breakAcceleration = calcBreakAcceleration(horizontalDistance.y, velocity.z, bodyControl.velocity.z*1.05, bodyControl.velocity.z*1.05, 0.0)
+		var breakAcceleration = calcBreakAcceleration(horizontalDistance.y, velocity.z, bodyControl.velocity.z*1.5, bodyControl.velocity.z*1.5, 0.0)
 		if abs(breakAcceleration) >= legAcceleration or abs(velocity.z) > 0.1 and abs(horizontalDistance.y) < 0.1:
 			horizontalAcceleration.y = min(abs(breakAcceleration), legAcceleration)*sign(breakAcceleration)
 	return Vector3(horizontalAcceleration.x, yAcceleration, horizontalAcceleration.y)
@@ -110,11 +114,16 @@ func calcAcceleration():
 	#return val
 
 func move():
-	#$MeshInstance3D2.global_position = targetPos
-	#if stepping:
-		#$MeshInstance3D2.visible = true
-	#else:
-		#$MeshInstance3D2.visible = false
+	if debug:
+		$MeshInstance3D.visible = true
+		$MeshInstance3D2.global_position = targetPos
+		if stepping:
+			$MeshInstance3D2.visible = true
+		else:
+			$MeshInstance3D2.visible = false
+	else:
+		$MeshInstance3D.visible = false
+		$MeshInstance3D2.visible = false
 	oldPos = newPos
 	var timeStep = 1.0/bodyControl.simFPS
 	var a:Vector3 = calcAcceleration()
@@ -133,19 +142,18 @@ func move():
 		stepping = false
 		velocity = Vector3.ZERO
 
-func setStepTarget(DirectionalAngle:float, stepAngle:float) -> bool:
-	DirectionalAngle = DirectionalAngle*PI/180 + bodyControl.phi
+func getStepTarget(directionalAngle:float, stepAngle:float):
+	directionalAngle = directionalAngle*PI/180 + bodyControl.phi
 	stepAngle *= PI/180
 	var root = bodyControl.newPos+origin.rotated(Vector3.UP, bodyControl.phi)
 	root.y = root.y + legLength
 	var angle = stepAngle
-	var foundTarget = false
-	while not foundTarget:
+	while true:
 		var start = root
 		var end = Vector3.ZERO
-		end.x = sin(DirectionalAngle)*legLength*2.0
-		end.z = cos(DirectionalAngle)*legLength*2.0
-		var rotationAxis = Vector3(sin(DirectionalAngle+PI/2.0), 0.0, cos(DirectionalAngle+PI/2.0))
+		end.x = sin(directionalAngle)*legLength*1.5
+		end.z = cos(directionalAngle)*legLength*1.5
+		var rotationAxis = Vector3(sin(directionalAngle+PI/2.0), 0.0, cos(directionalAngle+PI/2.0))
 		end = end.rotated(rotationAxis, PI/2.0-angle)+root
 		var result = castRay(start, end)
 		if result:
@@ -153,21 +161,32 @@ func setStepTarget(DirectionalAngle:float, stepAngle:float) -> bool:
 			if distance > legLength:
 				angle -= PI*0.01
 				if angle < 0.0:
-					break
+					return false
 				continue
-			foundTarget = true
-			targetPos = result.position
+			return result.position
 		else:
 			angle -= PI*0.01
 			#print(angle)
 			if angle < 0.0:
-				break
-	return foundTarget
+				return false
 
-func step(DirectionalAngle:float, stepAngle:float):
+func setStepTarget(directionalAngle:float, stepAngle:float) -> bool:
+	var target = getStepTarget(directionalAngle, stepAngle)
+	if target:
+		targetPos = target
+		return true
+	else:
+		return false
+
+func setTarget(pos:Vector3):
+	targetPos = pos
+	if stepping:
+		stepping = false
+
+func step(directionalAngle:float, stepAngle:float):
 	if stepping:
 		print("Leg is already stepping dumbass! >:(")
 		return
-	var foundTarget = setStepTarget(DirectionalAngle, stepAngle)
+	var foundTarget = setStepTarget(directionalAngle, stepAngle)
 	if foundTarget:
 		stepping = true

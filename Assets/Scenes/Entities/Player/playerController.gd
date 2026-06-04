@@ -20,12 +20,16 @@ func _process(delta: float) -> void:
 	if Input.is_action_pressed("Right"):
 		moveDirection.x -= 1.0
 	if Input.is_action_pressed("Sprint"):
-		bodyControl.movementSpeed = 3.0
+		bodyControl.movementSpeed = sprintSpeed
+		for leg in bodyControl.legs:
+			leg.legAcceleration = sprintSpeed*20
 	else:
-		bodyControl.movementSpeed = 1.0
+		bodyControl.movementSpeed = walkSpeed
+		for leg in bodyControl.legs:
+			leg.legAcceleration = walkSpeed*20
 	moveDirection = moveDirection.normalized()
 	bodyControl.moveDirection = moveDirection
 	if moveDirection.length() > 0.0:
-		if bodyControl.state != "Walking":
+		if bodyControl.state == "Standing":
 			bodyControl.enterWalking()
 	pass

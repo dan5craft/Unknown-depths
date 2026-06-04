@@ -14,7 +14,6 @@ roughness = 0.875
 resource_name = "head"
 transparency = 1
 depth_draw_mode = 1
-albedo_color = Color(1, 1, 1, 0)
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_8ic5h"]
 resource_name = "testHumanRig_Male2_lambert1_0"
@@ -714,12 +713,15 @@ isSymmetrical = true
 symmetricalEqual = NodePath("../rightLegTarget")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="skeleton/leftLegTarget" unique_id=1511303980]
+transform = Transform3D(1, 0, 0, 0, 0.9999999, 2.9802322e-08, 0, -2.9802322e-08, 0.9999999, 0, 0, 0)
 visible = false
 layers = 4
 mesh = SubResource("SphereMesh_hbw02")
 surface_material_override/0 = SubResource("StandardMaterial3D_8ic5h")
 
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="skeleton/leftLegTarget" unique_id=580339448]
+transform = Transform3D(1, 0, 0, 0, -0.28031492, -0.9599082, 0, 0.9599082, -0.28031492, 0.15, 0, 0)
+top_level = true
 visible = false
 layers = 4
 mesh = SubResource("SphereMesh_hbw02")
@@ -834,6 +836,8 @@ mesh = SubResource("SphereMesh_hbw02")
 surface_material_override/0 = SubResource("StandardMaterial3D_givc0")
 
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="skeleton/rightLegTarget" unique_id=639928111]
+transform = Transform3D(1, 0, 0, 0, -0.28031498, -0.9599082, 0, 0.9599082, -0.28031498, -0.15, 0, 0)
+top_level = true
 visible = false
 layers = 4
 mesh = SubResource("SphereMesh_hbw02")
