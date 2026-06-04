@@ -4,7 +4,7 @@ class_name Leg extends Node3D
 @export var stepHeight = 0.2
 @export var body:Node3D
 @export var bodyControl:bodyController
-@export var maxAngle:float = 30.0
+@export var maxAngle:float = 40.0
 @export var isSymmetrical:bool = false
 @export var symmetricalEqual:Leg
 @export var legAcceleration:float = 20.0

@@ -711,6 +711,7 @@ body = NodePath("../..")
 bodyControl = NodePath("..")
 isSymmetrical = true
 symmetricalEqual = NodePath("../rightLegTarget")
+debug = true
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="skeleton/leftLegTarget" unique_id=1511303980]
 transform = Transform3D(1, 0, 0, 0, 0.9999999, 2.9802322e-08, 0, -2.9802322e-08, 0.9999999, 0, 0, 0)
@@ -828,6 +829,7 @@ body = NodePath("../..")
 bodyControl = NodePath("..")
 isSymmetrical = true
 symmetricalEqual = NodePath("../leftLegTarget")
+debug = true
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="skeleton/rightLegTarget" unique_id=1787062449]
 visible = false

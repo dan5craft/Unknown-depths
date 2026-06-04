@@ -16,7 +16,7 @@ var velocity:Vector3 = Vector3(0.0, 0.0, 0.0)
 @export_category("Movement")
 @export var moveDirection:Vector3 = Vector3(0.0, 0.0, 1.0)
 @export var movementSpeed = 1.0
-@export var maxMovementSpeed = 2.0
+@export var maxMovementSpeed = 5.0
 @export var movementAcceleration = 5.0
 @export var maxGroundDistance = 0.5
 var phi = 0.0
@@ -133,6 +133,7 @@ func standing() -> void:
 					leg.step(0.0, 0.0)
 		else:
 			leg.setStepTarget(0.0, 0.0)
+		leg.legAcceleration = max(velocity.length()*20.0, 10.0)
 		leg.move()
 
 func enterWalking() -> void:
@@ -166,15 +167,18 @@ func walking():
 	if moveDirection.length() == 0.0 and velocity.length() < 0.1:
 		enterStanding()
 		return
+	var biggestAngle := 0.0
+	var biggestAngleLeg:Leg = null
+	var moveAngle = rad_to_deg(atan(velocity.x/velocity.z))
+	if velocity.z == 0.0:
+		moveAngle = 90*sign(velocity.x)
+	if velocity.z < 0.0:
+		moveAngle += 180
+	elif velocity.x < 0.0:
+		moveAngle += 360
 	for leg in legs:
 		var maxAngle = min(leg.maxAngle*velocity.length()/maxMovementSpeed, leg.maxAngle)
-		var moveAngle = rad_to_deg(atan(velocity.x/velocity.z))
-		if velocity.z == 0.0:
-			moveAngle = 90*sign(velocity.x)
-		if velocity.z < 0.0:
-			moveAngle += 180
-		elif velocity.x < 0.0:
-			moveAngle += 360
+		#print("Move Angle: "+str(moveAngle)+" Max Angle: "+str(maxAngle))
 		if not leg.stepping:
 			var root = leg.origin.rotated(Vector3.UP, phi)+newPos
 			root.y = newPos.y+leg.legLength
@@ -182,26 +186,35 @@ func walking():
 			var angle = rad_to_deg(atan(sqrt(pow(Dist.x, 2.0)+pow(Dist.z, 2.0))/-Dist.y))
 			if Dist.dot(velocity) > 0.0:
 				angle *= -1.0
-			print(maxAngle)
 			var target = leg.getStepTarget(moveAngle, maxAngle)
-			if angle > maxAngle or target and abs(target.y-leg.newPos.y) > 0.1:
+			if angle > maxAngle and angle > biggestAngle:
+				biggestAngle = angle
+				biggestAngleLeg = leg
+			if target and abs(target.y-leg.newPos.y) > 0.1:
 				if leg.isSymmetrical and not leg.symmetricalEqual.stepping or not leg.isSymmetrical:
 					leg.step(moveAngle, maxAngle)
 		else:
 			leg.setStepTarget(moveAngle, maxAngle)
+		leg.legAcceleration = max(velocity.length()*20.0, 10.0)
 		leg.move()
+	if biggestAngleLeg != null:
+		if biggestAngleLeg.isSymmetrical and not biggestAngleLeg.symmetricalEqual.stepping or not biggestAngleLeg.isSymmetrical:
+			var maxAngle = min(biggestAngleLeg.maxAngle*velocity.length()/maxMovementSpeed, biggestAngleLeg.maxAngle)
+			biggestAngleLeg.step(moveAngle, maxAngle)
 	pass
 
 func enterFalling():
 	state = "Falling"
 	for leg in legs:
 		leg.setTarget(newPos+leg.origin)
+		leg.legAcceleration = max(velocity.length()*20.0, 10.0)
 		leg.move()
 
 func falling():
 	velocity.y += Globals.gravity*timeStep
 	for leg in legs:
 		leg.setTarget(newPos+leg.origin)
+		leg.legAcceleration = max(velocity.length()*20.0, 10.0)
 		leg.move()
 		var result = castRay(leg.oldPos, leg.newPos)
 		if result:
