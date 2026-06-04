@@ -79,7 +79,7 @@ func calcAcceleration():
 	var end:Vector3 = newPos+Vector3.DOWN*stepHeight
 	var horizontalDistance:Vector2 = Vector2(targetPos.x-newPos.x, targetPos.z-newPos.z)
 	var targetHeight:float = targetPos.y
-	if stepping and horizontalDistance.length() > bodyControl.velocity.length()/4.0:
+	if stepping and horizontalDistance.length() > bodyControl.velocity.length()/8.0:
 		var result:Dictionary = castRay(start, end)
 		if result and newPos.y > targetPos.y:
 			targetHeight = result.position.y + min(stepHeight, horizontalDistance.length())
