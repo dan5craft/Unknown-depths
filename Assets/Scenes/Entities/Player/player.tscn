@@ -711,7 +711,6 @@ body = NodePath("../..")
 bodyControl = NodePath("..")
 isSymmetrical = true
 symmetricalEqual = NodePath("../rightLegTarget")
-debug = true
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="skeleton/leftLegTarget" unique_id=1511303980]
 transform = Transform3D(1, 0, 0, 0, 0.9999999, 2.9802322e-08, 0, -2.9802322e-08, 0.9999999, 0, 0, 0)
@@ -729,7 +728,7 @@ mesh = SubResource("SphereMesh_hbw02")
 surface_material_override/0 = SubResource("StandardMaterial3D_ea8aj")
 
 [node name="leftLegPole" type="Marker3D" parent="skeleton" unique_id=189278234]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.178, 1.7154248, 1.863)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.178, 1.1516113, 1.863)
 
 [node name="skeletonIK" type="TwoBoneIK3D" parent="skeleton" unique_id=2073675435]
 setting_count = 4
@@ -829,7 +828,6 @@ body = NodePath("../..")
 bodyControl = NodePath("..")
 isSymmetrical = true
 symmetricalEqual = NodePath("../leftLegTarget")
-debug = true
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="skeleton/rightLegTarget" unique_id=1787062449]
 visible = false
@@ -846,7 +844,7 @@ mesh = SubResource("SphereMesh_hbw02")
 surface_material_override/0 = SubResource("StandardMaterial3D_ea8aj")
 
 [node name="rightLegPole" type="Marker3D" parent="skeleton" unique_id=1675960663]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.178, 1.7154248, 1.863)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.178, 1.1516113, 1.863)
 
 [node name="leftArmTarget" type="Marker3D" parent="skeleton" unique_id=416305031]
 transform = Transform3D(-1, -8.742278e-08, 0, 8.742278e-08, -1, 0, 0, 0, 1, 0.35, 1.0051126, 0.011039346)

@@ -134,6 +134,7 @@ func standing() -> void:
 		else:
 			leg.setStepTarget(0.0, 0.0)
 		leg.legAcceleration = max(velocity.length()*20.0, 10.0)
+		leg.stepHeight = leg.maxStepHeight*min(velocity.length()/maxMovementSpeed, 1.0)
 		leg.move()
 
 func enterWalking() -> void:
@@ -196,6 +197,7 @@ func walking():
 		else:
 			leg.setStepTarget(moveAngle, maxAngle)
 		leg.legAcceleration = max(velocity.length()*20.0, 10.0)
+		leg.stepHeight = leg.maxStepHeight*min(velocity.length()/maxMovementSpeed, 1.0)
 		leg.move()
 	if biggestAngleLeg != null:
 		if biggestAngleLeg.isSymmetrical and not biggestAngleLeg.symmetricalEqual.stepping or not biggestAngleLeg.isSymmetrical:
@@ -207,14 +209,14 @@ func enterFalling():
 	state = "Falling"
 	for leg in legs:
 		leg.setTarget(newPos+leg.origin)
-		leg.legAcceleration = max(velocity.length()*20.0, 10.0)
+		leg.legAcceleration = 10.0
 		leg.move()
 
 func falling():
 	velocity.y += Globals.gravity*timeStep
 	for leg in legs:
 		leg.setTarget(newPos+leg.origin)
-		leg.legAcceleration = max(velocity.length()*20.0, 10.0)
+		leg.legAcceleration = 10.0
 		leg.move()
 		var result = castRay(leg.oldPos, leg.newPos)
 		if result:

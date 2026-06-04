@@ -1,7 +1,7 @@
 extends Node3D
 @export var bodyControl:bodyController
 @export var sprintSpeed:float = 5.0
-@export var walkSpeed:float = 1.0
+@export var walkSpeed:float = 2.0
 @export var standingPercent:float = 1.0
 @export var crouchingPercent:float = 0.5
 

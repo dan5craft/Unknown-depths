@@ -1,7 +1,8 @@
 class_name Leg extends Node3D
 
 @export var legLength = 1.0
-@export var stepHeight = 0.2
+@export var maxStepHeight = 0.3
+var stepHeight = 0.3
 @export var body:Node3D
 @export var bodyControl:bodyController
 @export var maxAngle:float = 40.0
