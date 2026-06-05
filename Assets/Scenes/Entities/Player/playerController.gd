@@ -19,9 +19,20 @@ func _input(event: InputEvent) -> void:
 		bodyControl.phi += -event.relative.x*0.001
 		camYRot = clamp(camYRot + event.relative.y*0.001, -PI/2.0, PI/2.0)
 
+func castRay(pos1:Vector3, pos2:Vector3) -> Dictionary:
+	var space_state = get_world_3d().direct_space_state
+	var query := PhysicsRayQueryParameters3D.create(pos1, pos2)
+	return space_state.intersect_ray(query)
+
 func _process(delta: float) -> void:
 	$Camera3D.basis = $Camera3D.basis.slerp(Basis.IDENTITY.rotated(Vector3.UP, PI).rotated(Vector3.RIGHT, camYRot), min(15.0*delta, 1.0))
-	$Camera3D.position.z = sin(camYRot)*neckLength+camPos.z
+	var camGlobal = global_position+camPos
+	camGlobal.y = $Camera3D.global_position.y
+	var result = castRay(camGlobal, camGlobal+Vector3.BACK.rotated(Vector3.UP, bodyControl.phi)*neckLength*2.0)
+	var wallDistance = neckLength
+	if result:
+		wallDistance = sqrt(pow(result.position.x-camGlobal.x, 2.0)+pow(result.position.z-camGlobal.z, 2.0))-0.1
+	$Camera3D.position.z = min(sin(camYRot)*neckLength, wallDistance)+camPos.z
 	$Camera3D.position.y = cos(camYRot)*neckLength+camPos.y-neckLength
 	var moveDirection = Vector3.ZERO
 	if Input.is_action_pressed("Forward"):
