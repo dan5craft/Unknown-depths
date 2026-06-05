@@ -6,9 +6,11 @@
 bounce = 0.1
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_8y2vh"]
+resource_local_to_scene = true
 radius = 0.025
 
 [sub_resource type="SphereMesh" id="SphereMesh_okk6j"]
+resource_local_to_scene = true
 radius = 0.1
 height = 0.2
 radial_segments = 6
@@ -23,6 +25,7 @@ roughness = 0.19
 refraction_enabled = true
 
 [node name="Water particle" type="RigidBody3D" unique_id=435576836]
+collision_layer = 2
 mass = 0.1
 physics_material_override = SubResource("PhysicsMaterial_6swxi")
 continuous_cd = true

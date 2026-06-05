@@ -1,0 +1,17 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://bhye14dgyphdy"]
+
+[ext_resource type="Texture2D" uid="uid://b1cys6aukdc4c" path="res://Assets/Models/Objects/proceduralStairs_Concrete019_1K-PNG_Color.png" id="1_sot8f"]
+[ext_resource type="Texture2D" uid="uid://itkpo0g13beo" path="res://Assets/Models/Objects/proceduralStairs_Concrete019_1K-PNG_NormalGL.png" id="2_5qqml"]
+[ext_resource type="Texture2D" uid="uid://csbaqm6bbm24t" path="res://Assets/Models/Objects/proceduralStairs_Concrete019_1K-PNG_Roughness.png" id="3_hscma"]
+
+[resource]
+albedo_texture = ExtResource("1_sot8f")
+metallic_texture_channel = 1
+roughness = 0.38
+roughness_texture = ExtResource("3_hscma")
+emission_intensity = 1000.0
+normal_enabled = true
+normal_scale = 1.5
+normal_texture = ExtResource("2_5qqml")
+uv1_triplanar = true
+uv2_triplanar = true
