@@ -8,6 +8,7 @@ class_name bodyController extends Node3D
 @export var smoothFPS:bool = true
 @export var timeScale = 1.0
 @export var bodyHeight = 1.9
+@export var collisionShape:CharacterBody3D
 var velocity:Vector3 = Vector3(0.0, 0.0, 0.0)
 @export_enum("Standing", "Walking", "Falling") var state:String = "Standing"
 @export_category("Legs")
@@ -66,6 +67,16 @@ func getHorizontallyFurthestLeg() -> Leg:
 			furthestDistance = distance
 	return furthest
 
+func getHorizontallyClosestLeg() -> Leg:
+	var closest:Leg = legs[0]
+	var closestDistance = closest.getDistanceHorizontal()
+	for leg in legs:
+		var distance = leg.getDistanceHorizontal()
+		if distance < closestDistance:
+			closest = leg
+			closestDistance = distance
+	return closest
+
 func getFurthestLeg() -> Leg:
 	var furthest:Leg = legs[0]
 	var furthestDistance = furthest.getDistance()
@@ -94,7 +105,7 @@ func fallingCondition() -> bool:
 	var start:Vector3 = newPos+Vector3.UP*bodyHeight
 	var end:Vector3 = newPos+Vector3.DOWN*maxGroundDistance
 	var result = castRay(start, end)
-	if result:
+	if result or getHorizontallyClosestLeg().getDistanceHorizontal() < 0.1:
 		return false
 	else:
 		return true
@@ -240,10 +251,15 @@ func _process(delta: float) -> void:
 		leg.basis = leg.basis.slerp(Basis.IDENTITY.rotated(Vector3.RIGHT, deg_to_rad(106.3)).rotated(Vector3.UP, phi), min(15.0*delta, 1.0))
 	while timer > timeStep/timeScale:
 		timer -= timeStep/timeScale
+		oldPos = newPos
 		for leg in legs:
 			leg.timer += timeStep
-		oldPos = newPos
-		newPos += velocity*timeStep
+		var collision = collisionShape.move_and_collide(velocity*timeStep, true)
+		if collision:
+			velocity.x = 0.0
+			velocity.z = 0.0
+		if not collision:
+			newPos += velocity*timeStep
 		#print(state)
 		if state == "Standing":
 			standing()

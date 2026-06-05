@@ -3982,6 +3982,10 @@ albedo_color = Color(0, 0, 1, 1)
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_givc0"]
 albedo_color = Color(0, 1, 0, 1)
 
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_esi0w"]
+radius = 0.2
+height = 1.1
+
 [node name="TestRoom01" type="Node3D" unique_id=681496940]
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1046564478]
@@ -5105,7 +5109,6 @@ mesh = SubResource("ArrayMesh_m14ww")
 shape = SubResource("ConcavePolygonShape3D_x6f74")
 
 [node name="Player" type="Node3D" parent="." unique_id=535585784 node_paths=PackedStringArray("bodyControl")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -199.63165, 0, 0)
 script = ExtResource("43_esi0w")
 bodyControl = NodePath("skeleton")
 
@@ -5113,11 +5116,12 @@ bodyControl = NodePath("skeleton")
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 1.8796151, 0)
 
 [node name="lowPolyMale" type="MeshInstance3D" parent="Player" unique_id=512295181]
+layers = 4
 mesh = SubResource("ArrayMesh_8ic5h")
 skin = SubResource("Skin_yrjvs")
 skeleton = NodePath("../skeleton")
 
-[node name="skeleton" type="Skeleton3D" parent="Player" unique_id=1469668017 node_paths=PackedStringArray("legs", "body")]
+[node name="skeleton" type="Skeleton3D" parent="Player" unique_id=1469668017 node_paths=PackedStringArray("legs", "body", "collisionShape")]
 animate_physical_bones = false
 bones/0/name = "ORG-spine"
 bones/0/parent = -1
@@ -5556,6 +5560,7 @@ bones/61/scale = Vector3(1, 1, 0.99999994)
 script = ExtResource("44_1y762")
 legs = [NodePath("leftLegTarget"), NodePath("rightLegTarget")]
 body = NodePath("..")
+collisionShape = NodePath("../CharacterBody3D")
 
 [node name="leftLegTarget" type="Marker3D" parent="Player/skeleton" unique_id=929734403 node_paths=PackedStringArray("body", "bodyControl", "symmetricalEqual")]
 transform = Transform3D(1, 0, 0, 0, -0.28031492, -0.9599082, 0, 0.9599082, -0.28031492, 0.15, 0, 0)
@@ -5569,6 +5574,7 @@ symmetricalEqual = NodePath("../rightLegTarget")
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Player/skeleton/leftLegTarget" unique_id=1511303980]
 transform = Transform3D(1, 0, 0, 0, 0.9999999, 2.9802322e-08, 0, -2.9802322e-08, 0.9999999, 0, 0, 0)
 visible = false
+layers = 4
 mesh = SubResource("SphereMesh_hbw02")
 surface_material_override/0 = SubResource("StandardMaterial3D_8ic5h")
 
@@ -5576,6 +5582,7 @@ surface_material_override/0 = SubResource("StandardMaterial3D_8ic5h")
 transform = Transform3D(1, 0, 0, 0, -0.28031492, -0.9599082, 0, 0.9599082, -0.28031492, 0.15, 0, 0)
 top_level = true
 visible = false
+layers = 4
 mesh = SubResource("SphereMesh_hbw02")
 surface_material_override/0 = SubResource("StandardMaterial3D_ea8aj")
 
@@ -5683,6 +5690,7 @@ symmetricalEqual = NodePath("../leftLegTarget")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Player/skeleton/rightLegTarget" unique_id=1787062449]
 visible = false
+layers = 4
 mesh = SubResource("SphereMesh_hbw02")
 surface_material_override/0 = SubResource("StandardMaterial3D_givc0")
 
@@ -5690,6 +5698,7 @@ surface_material_override/0 = SubResource("StandardMaterial3D_givc0")
 transform = Transform3D(1, 0, 0, 0, -0.28031498, -0.9599082, 0, 0.9599082, -0.28031498, -0.15, 0, 0)
 top_level = true
 visible = false
+layers = 4
 mesh = SubResource("SphereMesh_hbw02")
 surface_material_override/0 = SubResource("StandardMaterial3D_ea8aj")
 
@@ -5731,8 +5740,15 @@ chains/3/end_bone = 34
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Player" unique_id=2017824427]
 visible = false
+layers = 4
 mesh = SubResource("SphereMesh_hbw02")
 surface_material_override/0 = SubResource("StandardMaterial3D_givc0")
+
+[node name="CharacterBody3D" type="CharacterBody3D" parent="Player" unique_id=2054576313]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Player/CharacterBody3D" unique_id=667746929]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.45, 0)
+shape = SubResource("CapsuleShape3D_esi0w")
 
 [node name="TestAI" type="Node3D" parent="." unique_id=1398750965 node_paths=PackedStringArray("manager")]
 script = ExtResource("46_myjja")
