@@ -19,7 +19,7 @@ var velocity:Vector3 = Vector3(0.0, 0.0, 0.0)
 @export var maxMovementSpeed = 5.0
 @export var movementAcceleration = 5.0
 @export var maxGroundDistance = 0.5
-var phi = 0.0
+var phi = PI/2.0
 
 var oldPos:Vector3 = Vector3(0.0, 0.0, 0.0)
 var newPos:Vector3 = Vector3(0.0, 0.0, 0.0)
@@ -142,21 +142,25 @@ func enterWalking() -> void:
 	#legs[0].step(legs[0].origin.rotated(Vector3.UP, phi)+newPos+moveDirection*stepLength, 0.5)
 	#legs[0].step(0.0, legs[0].maxAngle)
 
+func getRealMoveDirection():
+	return moveDirection.rotated(Vector3.UP, phi)
+
 func walking():
+	var moveDir = getRealMoveDirection()
 	if fallingCondition():
 		enterFalling()
 		return
 	newPos.y = lerp(newPos.y, getTargetHeight(), min(5.0*timeStep, 1.0))
-	var dir = moveDirection.abs()
-	if moveDirection.x == 0.0:
-		if velocity.x > 0.0 or velocity.x < 0.0:
-			dir.x = 1.0
-	if moveDirection.z == 0.0:
-		if velocity.z > 0.0 or velocity.z < 0.0:
-			dir.z = 1.0
-	dir = dir.normalized()
+	var maxVel = moveDir*movementSpeed
+	var dir = (maxVel-velocity).abs().normalized()
+	#if moveDir.x < 0.01:
+		#if velocity.x > 0.0 or velocity.x < 0.0:
+			#dir.x = 1.0
+	#if moveDir.z == 0.0:
+		#if velocity.z > 0.0 or velocity.z < 0.0:
+			#dir.z = 1.0
+	#dir = dir.normalized()
 	var a = dir*movementAcceleration*timeStep
-	var maxVel = moveDirection*movementSpeed
 	if velocity.x < maxVel.x:
 		velocity.x = min(velocity.x+a.x, maxVel.x)
 	elif velocity.x > maxVel.x:
@@ -165,7 +169,7 @@ func walking():
 		velocity.z = min(velocity.z+a.z, maxVel.z)
 	elif velocity.z > maxVel.z:
 		velocity.z = max(velocity.z-a.z, maxVel.z)
-	if moveDirection.length() == 0.0 and velocity.length() < 0.1:
+	if moveDir.length() == 0.0 and velocity.length() < 0.1:
 		enterStanding()
 		return
 	var biggestAngle := 0.0
@@ -209,14 +213,14 @@ func enterFalling():
 	state = "Falling"
 	for leg in legs:
 		leg.setTarget(newPos+leg.origin)
-		leg.legAcceleration = 10.0
+		leg.legAcceleration = max(velocity.length()*20.0, 10.0)
 		leg.move()
 
 func falling():
 	velocity.y += Globals.gravity*timeStep
 	for leg in legs:
 		leg.setTarget(newPos+leg.origin)
-		leg.legAcceleration = 10.0
+		leg.legAcceleration = max(velocity.length()*20.0, 10.0)
 		leg.move()
 		var result = castRay(leg.oldPos, leg.newPos)
 		if result:
@@ -231,6 +235,9 @@ func falling():
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	timer += delta
+	body.basis = body.basis.slerp(Basis.IDENTITY.rotated(Vector3.UP, phi), min(15.0*delta, 1.0))
+	for leg in legs:
+		leg.basis = leg.basis.slerp(Basis.IDENTITY.rotated(Vector3.RIGHT, deg_to_rad(106.3)).rotated(Vector3.UP, phi), min(15.0*delta, 1.0))
 	while timer > timeStep/timeScale:
 		timer -= timeStep/timeScale
 		for leg in legs:

@@ -144,7 +144,7 @@ func move():
 		velocity = Vector3.ZERO
 
 func getStepTarget(directionalAngle:float, stepAngle:float):
-	directionalAngle = directionalAngle*PI/180 + bodyControl.phi
+	directionalAngle = directionalAngle*PI/180
 	stepAngle *= PI/180
 	var root = bodyControl.newPos+origin.rotated(Vector3.UP, bodyControl.phi)
 	root.y = root.y + legLength
@@ -185,9 +185,6 @@ func setTarget(pos:Vector3):
 		stepping = false
 
 func step(directionalAngle:float, stepAngle:float):
-	if stepping:
-		print("Leg is already stepping dumbass! >:(")
-		return
 	var foundTarget = setStepTarget(directionalAngle, stepAngle)
 	if foundTarget:
 		stepping = true

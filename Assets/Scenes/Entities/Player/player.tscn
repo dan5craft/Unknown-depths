@@ -14,6 +14,7 @@ roughness = 0.875
 resource_name = "head"
 transparency = 1
 depth_draw_mode = 1
+albedo_color = Color(1, 1, 1, 0)
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_8ic5h"]
 resource_name = "testHumanRig_Male2_lambert1_0"
@@ -256,6 +257,9 @@ albedo_color = Color(0, 1, 0, 1)
 [node name="Player" type="Node3D" unique_id=535585784 node_paths=PackedStringArray("bodyControl")]
 script = ExtResource("1_wn8mc")
 bodyControl = NodePath("skeleton")
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=1533799350]
+transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 1.8796151, 0)
 
 [node name="lowPolyMale" type="MeshInstance3D" parent="." unique_id=512295181]
 layers = 4
