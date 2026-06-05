@@ -11,7 +11,6 @@ metallic_texture = ExtResource("2_bo0tn")
 metallic_texture_channel = 1
 roughness = 0.5
 roughness_texture = ExtResource("2_bo0tn")
-emission_intensity = 1000.0
 normal_enabled = true
 normal_texture = ExtResource("3_oo6ql")
 uv1_triplanar = true

@@ -9,7 +9,6 @@ albedo_texture = ExtResource("1_sot8f")
 metallic_texture_channel = 1
 roughness = 0.38
 roughness_texture = ExtResource("3_hscma")
-emission_intensity = 1000.0
 normal_enabled = true
 normal_scale = 1.5
 normal_texture = ExtResource("2_5qqml")
