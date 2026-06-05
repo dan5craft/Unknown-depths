@@ -23,7 +23,7 @@ var phi = PI/2.0
 
 var oldPos:Vector3 = Vector3(0.0, 0.0, 0.0)
 var newPos:Vector3 = Vector3(0.0, 0.0, 0.0)
-var timer:float = -3.0
+var timer:float = 0.0
 var timeStep
 
 
@@ -212,14 +212,14 @@ func walking():
 func enterFalling():
 	state = "Falling"
 	for leg in legs:
-		leg.setTarget(newPos+leg.origin)
+		leg.setTarget(newPos+leg.origin.rotated(Vector3.UP, phi))
 		leg.legAcceleration = max(velocity.length()*20.0, 10.0)
 		leg.move()
 
 func falling():
 	velocity.y += Globals.gravity*timeStep
 	for leg in legs:
-		leg.setTarget(newPos+leg.origin)
+		leg.setTarget(newPos+leg.origin.rotated(Vector3.UP, phi))
 		leg.legAcceleration = max(velocity.length()*20.0, 10.0)
 		leg.move()
 		var result = castRay(leg.oldPos, leg.newPos)
