@@ -1,8 +1,8 @@
 [gd_scene format=4 uid="uid://bduu2t4jgkqul"]
 
 [ext_resource type="Script" uid="uid://b7og20p8b2ag7" path="res://Assets/Scenes/Entities/Player/playerController.gd" id="1_wn8mc"]
-[ext_resource type="Script" uid="uid://cp2eupkld2pru" path="res://Assets/Scenes/Entities/Player/bodyController.gd" id="2_ghiyp"]
-[ext_resource type="Script" uid="uid://d0e8fqdrstjb5" path="res://Assets/Scripts/Misc/Leg.gd" id="2_hbw02"]
+[ext_resource type="Script" uid="uid://cp2eupkld2pru" path="res://Assets/Scenes/Entities/BodyController/bodyController.gd" id="2_ghiyp"]
+[ext_resource type="Script" uid="uid://d0e8fqdrstjb5" path="res://Assets/Scenes/Entities/BodyController/Leg.gd" id="2_hbw02"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ghiyp"]
 resource_name = "body"

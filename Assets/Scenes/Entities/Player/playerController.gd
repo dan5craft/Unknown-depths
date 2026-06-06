@@ -21,15 +21,14 @@ func _input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
 		bodyControl.phi += -event.relative.x*0.001
 		camYRot = clamp(camYRot + event.relative.y*0.001, -PI/2.0, PI/2.0)
-	if event is InputEventMouseButton:
-		if event.button_index == MOUSE_BUTTON_LEFT and event.is_pressed():
-			var start = camera.project_ray_origin(event.position)
-			var end = start + camera.project_ray_normal(event.position) * interactableReach
-			var space_state = get_world_3d().direct_space_state
-			var query := PhysicsRayQueryParameters3D.create(start, end, 1 << 1)
-			var result = space_state.intersect_ray(query)
-			if result:
-				result.collider.get_owner().interact()
+	if event.is_action_pressed("Interact"):
+		var start = camera.project_ray_origin(get_viewport().get_mouse_position())
+		var end = start + camera.project_ray_normal(get_viewport().get_mouse_position()) * interactableReach
+		var space_state = get_world_3d().direct_space_state
+		var query := PhysicsRayQueryParameters3D.create(start, end, 1 << 1)
+		var result = space_state.intersect_ray(query)
+		if result:
+			result.collider.get_owner().interact()
 
 func castRay(pos1:Vector3, pos2:Vector3) -> Dictionary:
 	var space_state = get_world_3d().direct_space_state

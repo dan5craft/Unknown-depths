@@ -2,9 +2,9 @@
 
 [ext_resource type="PackedScene" uid="uid://bduu2t4jgkqul" path="res://Assets/Scenes/Entities/Player/player.tscn" id="1_3o343"]
 [ext_resource type="Texture2D" uid="uid://dqr8dspdatqqx" path="res://Assets/Panoramas/autumn_field_puresky_4k.hdr" id="2_gchey"]
-[ext_resource type="PackedScene" uid="uid://8ksahyogv8s1" path="res://Assets/Scenes/World/Interactables/Button.tscn" id="3_23r1y"]
-[ext_resource type="Script" uid="uid://dyayila6geqeb" path="res://Assets/Scenes/Test areas/tracker.gd" id="4_yexpr"]
-[ext_resource type="Script" uid="uid://cls72tsst83dv" path="res://Assets/Scenes/Test areas/structure_generator.gd" id="5_erbmr"]
+[ext_resource type="PackedScene" uid="uid://8ksahyogv8s1" path="res://Assets/Scenes/World/Interactables/testButton/Button.tscn" id="3_23r1y"]
+[ext_resource type="Script" uid="uid://dyayila6geqeb" path="res://Assets/Scripts/Misc/tracker.gd" id="4_yexpr"]
+[ext_resource type="Script" uid="uid://cls72tsst83dv" path="res://Assets/Scripts/Misc/structure_generator.gd" id="5_erbmr"]
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_gchey"]
 size = Vector2(10, 10)
@@ -48,3 +48,7 @@ binded = NodePath("../StructureGenerator")
 
 [node name="StructureGenerator" type="Node3D" parent="." unique_id=371956793]
 script = ExtResource("5_erbmr")
+
+[node name="Label3D" type="Label3D" parent="." unique_id=924736959]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 1.5, 5)
+text = "Generate furniture"

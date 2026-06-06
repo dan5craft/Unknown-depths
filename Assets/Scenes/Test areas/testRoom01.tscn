@@ -43,8 +43,8 @@
 [ext_resource type="Texture2D" uid="uid://bexpqdo2qrj63" path="res://Assets/Models/TestObjects/testRoom/testRoom_plane_DefaultMaterial_OcclusionRoughnessMetallic.webp" id="41_72du7"]
 [ext_resource type="Texture2D" uid="uid://bvfqpdm64hh2t" path="res://Assets/Models/TestObjects/testRoom/testRoom_plane_DefaultMaterial_Normal.webp" id="42_uwuou"]
 [ext_resource type="Script" uid="uid://b7og20p8b2ag7" path="res://Assets/Scenes/Entities/Player/playerController.gd" id="43_esi0w"]
-[ext_resource type="Script" uid="uid://cp2eupkld2pru" path="res://Assets/Scenes/Entities/Player/bodyController.gd" id="44_1y762"]
-[ext_resource type="Script" uid="uid://d0e8fqdrstjb5" path="res://Assets/Scripts/Misc/Leg.gd" id="45_q3hqh"]
+[ext_resource type="Script" uid="uid://cp2eupkld2pru" path="res://Assets/Scenes/Entities/BodyController/bodyController.gd" id="44_1y762"]
+[ext_resource type="Script" uid="uid://d0e8fqdrstjb5" path="res://Assets/Scenes/Entities/BodyController/Leg.gd" id="45_q3hqh"]
 [ext_resource type="Script" uid="uid://cd0dkmuxipqsf" path="res://Assets/Scripts/AI/AI.gd" id="46_myjja"]
 [ext_resource type="Script" uid="uid://bd1jm5nnw48pf" path="res://Assets/Scripts/AI/AIManager.gd" id="47_esi0w"]
 
