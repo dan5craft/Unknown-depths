@@ -5109,6 +5109,7 @@ mesh = SubResource("ArrayMesh_m14ww")
 shape = SubResource("ConcavePolygonShape3D_x6f74")
 
 [node name="Player" type="Node3D" parent="." unique_id=535585784 node_paths=PackedStringArray("bodyControl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -247.75554, -4.7683716e-07, -6.9524755)
 script = ExtResource("43_esi0w")
 bodyControl = NodePath("skeleton")
 
