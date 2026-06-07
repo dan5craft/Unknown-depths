@@ -5,8 +5,8 @@
 [ext_resource type="PackedScene" uid="uid://8ksahyogv8s1" path="res://Assets/Scenes/World/Interactables/testButton/testButton.tscn" id="3_23r1y"]
 [ext_resource type="Script" uid="uid://dyayila6geqeb" path="res://Assets/Scripts/Misc/tracker.gd" id="4_yexpr"]
 [ext_resource type="Script" uid="uid://cls72tsst83dv" path="res://Assets/Scripts/Misc/structureGenerator.gd" id="5_erbmr"]
-[ext_resource type="PackedScene" uid="uid://qvbiwvytdivc" path="res://Assets/Scenes/World/ProceduralStructures/buildingPieces/floor_1_100x_100_cm.tscn" id="6_djuvf"]
-[ext_resource type="PackedScene" uid="uid://dwkw5u244vvo" path="res://Assets/Scenes/World/Furniture/bed.tscn" id="7_a6pvp"]
+[ext_resource type="ArrayMesh" uid="uid://dxkt153l7kpdo" path="res://Assets/Scenes/World/ProceduralStructures/buildingPieces/floor1_100x100cm.tres" id="6_a6pvp"]
+[ext_resource type="ArrayMesh" uid="uid://dma5hg3qnbvvs" path="res://Assets/Scenes/World/ProceduralStructures/buildingPieces/bed.tres" id="6_djuvf"]
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_gchey"]
 size = Vector2(10, 10)
@@ -59,8 +59,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0, 5)
 script = ExtResource("5_erbmr")
 generateFurnitureButton = NodePath("../generateFurnitureButton")
 button2 = NodePath("../testButton")
-floor = ExtResource("6_djuvf")
-bed = ExtResource("7_a6pvp")
+floorMesh = ExtResource("6_a6pvp")
+bedMesh = ExtResource("6_djuvf")
+bedOccupied = Array[Vector2i]([Vector2i(0, 0), Vector2i(0, 1)])
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="StructureGenerator" unique_id=393502175]
 
 [node name="Label3D" type="Label3D" parent="." unique_id=924736959]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 1.5, 5)

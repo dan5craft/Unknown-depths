@@ -2,11 +2,15 @@ extends Node3D
 
 @export var generateFurnitureButton:Node3D
 @export var button2:Node3D
-@export var floor:PackedScene
-@export var bed:PackedScene
+var floor:ProceduralFurniture
+@export var floorMesh:Mesh
+var bed:ProceduralFurniture
+@export var bedMesh:Mesh
+@export var bedOccupied:Array[Vector2i]
 
 var cells:Array[genCell] = []
 var rng = RandomNumberGenerator.new()
+var mesh:MeshInstance3D
 
 func findCell(x:int, y:int):
 	if cells.is_empty():
@@ -78,8 +82,7 @@ func addCell(cell:genCell) -> void:
 			multiple = true
 	if not multiple:
 		cells.insert(index, cell)
-		cell.position = Vector3(x, 0.0, y)
-		add_child(cell)
+		addMeshes(cell)
 		return
 	var endIndex:int = 0
 	low = 0
@@ -110,8 +113,36 @@ func addCell(cell:genCell) -> void:
 			print("There is already a cell at X: "+str(x)+" Y: "+str(y))
 			return
 	cells.insert(index, cell)
-	cell.position = Vector3(x, 0.0, y)
-	add_child(cell)
+	addMeshes(cell)
+
+func addMeshes(cell:genCell):
+	var arrayMesh:ArrayMesh
+	var vertexCount = 0
+	var arrays = []
+	arrays.resize(Mesh.ARRAY_MAX)
+	if mesh.mesh == null:
+		arrayMesh = ArrayMesh.new()
+	else:
+		arrayMesh = mesh.mesh.duplicate()
+		arrays = arrayMesh.surface_get_arrays(0)
+		vertexCount = len(arrayMesh.surface_get_arrays(0)[Mesh.ARRAY_VERTEX])
+	for model in cell.models:
+		var modelMesh:ArrayMesh = model.duplicate()
+		#print(modelMesh.surface_get_arrays(0))
+		for s in range(modelMesh.get_surface_count()):
+			var surface = modelMesh.surface_get_arrays(s)
+			for i in range(len(surface[Mesh.ARRAY_INDEX])):
+				surface[Mesh.ARRAY_INDEX][i] += vertexCount
+			for i in range(len(surface)):
+				if arrays[i] == null:
+					arrays[i] = surface[i]
+				else:
+					arrays[i].append_array(surface[i])
+			vertexCount += len(surface[Mesh.ARRAY_VERTEX])
+	arrayMesh.clear_surfaces()
+	arrayMesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
+	mesh.mesh = arrayMesh
+	print(arrayMesh.surface_get_arrays(0))
 
 func onButtonPressed(command:String):
 	if command == "generate furniture":
@@ -124,31 +155,32 @@ func onButtonPressed(command:String):
 		var y = int(pos[1])
 		var cell = findCell(x, y)
 		if cell:
-			print(cell.pos)
+			print(cell.type)
 		else:
 			print("could not find cell on position X: "+str(x)+" Y: "+str(y))
 
 func generateFurnitureCells(furniture:ProceduralFurniture, x:int, y:int):
 	var furnitureCells = []
 	for pos in furniture.occupied:
-		var floorInstance = floor.instantiate()
-		var models = [floorInstance]
+		var models:Array[Mesh] = [floor.mesh]
 		if pos == Vector2i.ZERO:
-			models.append(furniture)
+			models.append(furniture.mesh)
 		var cell:genCell = genCell.new(pos.x+x, pos.y+y, "Furniture", models)
 		furnitureCells.append(cell)
 	return furnitureCells
 
 func generateFurniture():
-	for x in range(100):
-		for y in range(50):
-			var bedInstance:ProceduralFurniture = bed.instantiate()
-			var bedCells = generateFurnitureCells(bedInstance, x, y*2)
+	for x in range(1):
+		for y in range(1):
+			var bedCells = generateFurnitureCells(bed, x, y*2)
 			for cell in bedCells:
 				addCell(cell)
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	floor = ProceduralFurniture.new([Vector2i(0, 0)], "Floor", floorMesh)
+	bed = ProceduralFurniture.new(bedOccupied, "Bed", bedMesh)
+	mesh = $MeshInstance3D
 	pass # Replace with function body.
 
 
