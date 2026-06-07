@@ -3,6 +3,7 @@ extends Node3D
 @export var generateFurnitureButton:Node3D
 @export var button2:Node3D
 @export var floor:PackedScene
+@export var bed:PackedScene
 
 var cells:Array[genCell] = []
 var rng = RandomNumberGenerator.new()
@@ -127,13 +128,24 @@ func onButtonPressed(command:String):
 		else:
 			print("could not find cell on position X: "+str(x)+" Y: "+str(y))
 
-func generateFurniture():
-	for i in range(10000):
+func generateFurnitureCells(furniture:ProceduralFurniture, x:int, y:int):
+	var furnitureCells = []
+	for pos in furniture.occupied:
 		var floorInstance = floor.instantiate()
-		var x = floor(float(i)/100.0)
-		var y = i % 100
-		var cell:genCell = genCell.new(x, y, "Floor", [floorInstance])
-		addCell(cell)
+		var models = [floorInstance]
+		if pos == Vector2i.ZERO:
+			models.append(furniture)
+		var cell:genCell = genCell.new(pos.x+x, pos.y+y, "Furniture", models)
+		furnitureCells.append(cell)
+	return furnitureCells
+
+func generateFurniture():
+	for x in range(100):
+		for y in range(50):
+			var bedInstance:ProceduralFurniture = bed.instantiate()
+			var bedCells = generateFurnitureCells(bedInstance, x, y*2)
+			for cell in bedCells:
+				addCell(cell)
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:

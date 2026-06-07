@@ -2,9 +2,9 @@ class_name genCell extends Node3D
 
 @export var pos:Vector2i = Vector2i.ZERO
 @export var type:String = "Empty"
-@export var models:Array[Node3D]
+@export var models:Array
 
-func _init(x:int, y:int, TYPE:String, MODELS:Array[Node3D]) -> void:
+func _init(x:int, y:int, TYPE:String, MODELS:Array) -> void:
 	pos = Vector2i(x, y)
 	type = TYPE
 	models = MODELS
