@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://b3xawbqmisiet"]
 
-[ext_resource type="Script" uid="uid://bemn6ue71bqeb" path="res://Assets/Scenes/World/ProceduralStructures/gen_cell.gd" id="1_wtupg"]
+[ext_resource type="Script" uid="uid://bemn6ue71bqeb" path="res://Assets/Scenes/World/ProceduralStructures/genCell.gd" id="1_wtupg"]
 
-[node name="GenCell" type="Node3D" unique_id=1563795267]
+[node name="GenCell" type="Node3D" unique_id=1563795267 node_paths=PackedStringArray("models")]
 script = ExtResource("1_wtupg")
+models = [null]

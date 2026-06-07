@@ -4,7 +4,8 @@
 [ext_resource type="Texture2D" uid="uid://dqr8dspdatqqx" path="res://Assets/Panoramas/autumn_field_puresky_4k.hdr" id="2_gchey"]
 [ext_resource type="PackedScene" uid="uid://8ksahyogv8s1" path="res://Assets/Scenes/World/Interactables/testButton/testButton.tscn" id="3_23r1y"]
 [ext_resource type="Script" uid="uid://dyayila6geqeb" path="res://Assets/Scripts/Misc/tracker.gd" id="4_yexpr"]
-[ext_resource type="Script" uid="uid://cls72tsst83dv" path="res://Assets/Scripts/Misc/structure_generator.gd" id="5_erbmr"]
+[ext_resource type="Script" uid="uid://cls72tsst83dv" path="res://Assets/Scripts/Misc/structureGenerator.gd" id="5_erbmr"]
+[ext_resource type="PackedScene" uid="uid://qvbiwvytdivc" path="res://Assets/Scenes/World/ProceduralStructures/buildingPieces/floor_1_100x_100_cm.tscn" id="6_djuvf"]
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_gchey"]
 size = Vector2(10, 10)
@@ -53,9 +54,11 @@ binded = NodePath("../StructureGenerator")
 active = false
 
 [node name="StructureGenerator" type="Node3D" parent="." unique_id=371956793 node_paths=PackedStringArray("generateFurnitureButton", "button2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0, 5)
 script = ExtResource("5_erbmr")
 generateFurnitureButton = NodePath("../generateFurnitureButton")
 button2 = NodePath("../testButton")
+floor = ExtResource("6_djuvf")
 
 [node name="Label3D" type="Label3D" parent="." unique_id=924736959]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 1.5, 5)

@@ -4,8 +4,10 @@ class_name genCell extends Node3D
 @export var type:String = "Empty"
 @export var models:Array[Node3D]
 
-func _init(POS:Vector2i) -> void:
-	pos = POS
+func _init(x:int, y:int, TYPE:String, MODELS:Array[Node3D]) -> void:
+	pos = Vector2i(x, y)
+	type = TYPE
+	models = MODELS
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:

@@ -2,13 +2,12 @@ extends Node3D
 
 @export var generateFurnitureButton:Node3D
 @export var button2:Node3D
+@export var floor:PackedScene
 
 var cells:Array[genCell] = []
 var rng = RandomNumberGenerator.new()
 
-func findCell(pos:Vector2i):
-	var x:int = pos.x
-	var y:int = pos.y
+func findCell(x:int, y:int):
 	if cells.is_empty():
 		return false
 	var startIndex:int = -1
@@ -78,6 +77,8 @@ func addCell(cell:genCell) -> void:
 			multiple = true
 	if not multiple:
 		cells.insert(index, cell)
+		cell.position = Vector3(x, 0.0, y)
+		add_child(cell)
 		return
 	var endIndex:int = 0
 	low = 0
@@ -108,31 +109,31 @@ func addCell(cell:genCell) -> void:
 			print("There is already a cell at X: "+str(x)+" Y: "+str(y))
 			return
 	cells.insert(index, cell)
+	cell.position = Vector3(x, 0.0, y)
+	add_child(cell)
 
 func onButtonPressed(command:String):
 	if command == "generate furniture":
 		generateFurnitureButton.active = false
-		for i in range(100000):
-			var x = floor(float(i)/100.0)
-			var y = i % 100
-			#var x:int = rng.randi_range(0, 10)
-			#var y:int = rng.randi_range(0, 10)
-			var cell:genCell = genCell.new(Vector2i(x, y))
-			addCell(cell)
+		generateFurniture()
 		button2.active = true
-		for cell in cells:
-			print(cell.pos)
 	if command.begins_with("find"):
 		var pos = command.erase(0, 4).remove_chars(" ").split(",")
 		var x = int(pos[0])
 		var y = int(pos[1])
-		var cell = findCell(Vector2i(x, y))
+		var cell = findCell(x, y)
 		if cell:
 			print(cell.pos)
 		else:
 			print("could not find cell on position X: "+str(x)+" Y: "+str(y))
 
-
+func generateFurniture():
+	for i in range(100):
+		var floorInstance = floor.instantiate()
+		var x = floor(float(i)/10.0)
+		var y = i % 10
+		var cell:genCell = genCell.new(x, y, "Floor", [floorInstance])
+		addCell(cell)
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
