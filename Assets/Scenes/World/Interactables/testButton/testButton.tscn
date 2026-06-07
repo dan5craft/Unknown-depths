@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://8ksahyogv8s1"]
 
-[ext_resource type="Script" uid="uid://cynbomnp4bdul" path="res://Assets/Scenes/World/Interactables/testButton/button.gd" id="1_m4k57"]
+[ext_resource type="Script" uid="uid://cynbomnp4bdul" path="res://Assets/Scenes/World/Interactables/testButton/testButton.gd" id="1_m4k57"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_xnofl"]
 size = Vector3(0.2, 1, 0.2)
@@ -76,7 +76,7 @@ _data = {
 &"buttonPress": SubResource("Animation_w6kt6")
 }
 
-[node name="Button" type="Node3D" unique_id=1370202307]
+[node name="testButton" type="Node3D" unique_id=1370202307]
 script = ExtResource("1_m4k57")
 
 [node name="Base" type="MeshInstance3D" parent="." unique_id=1972872561]
