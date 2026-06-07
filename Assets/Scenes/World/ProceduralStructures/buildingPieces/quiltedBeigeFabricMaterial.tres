@@ -1,0 +1,16 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://qa4yq1ujjuah"]
+
+[ext_resource type="Texture2D" uid="uid://cde2b8kjx3gaa" path="res://Assets/Models/Objects/bed_Fabric008_4K-JPG_Color.jpg" id="1_fi6ym"]
+[ext_resource type="Texture2D" uid="uid://ds4cfohwo84yh" path="res://Assets/Models/Objects/bed_Fabric008_4K-JPG_Roughness.png" id="2_xju6y"]
+[ext_resource type="Texture2D" uid="uid://cdua7ky3hffa1" path="res://Assets/Models/Objects/bed_Fabric008_4K-JPG_NormalGL.jpg" id="3_nhuoa"]
+
+[resource]
+resource_name = "Quilted Beige Fabric"
+cull_mode = 2
+albedo_texture = ExtResource("1_fi6ym")
+metallic_texture = ExtResource("2_xju6y")
+metallic_texture_channel = 2
+roughness_texture = ExtResource("2_xju6y")
+roughness_texture_channel = 1
+normal_enabled = true
+normal_texture = ExtResource("3_nhuoa")

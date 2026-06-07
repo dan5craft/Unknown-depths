@@ -1,18 +1,8 @@
 [gd_scene format=3 uid="uid://qvbiwvytdivc"]
 
-[ext_resource type="ArrayMesh" uid="uid://dxkt153l7kpdo" path="res://Assets/Scenes/World/ProceduralStructures/buildingPieces/floor1_100x100cm.tres" id="1_ajqlo"]
-
-[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_ajqlo"]
-data = PackedVector3Array(0, 0, 0, 0, 1, -1, 0, 1, 0, 0, 0, 0, 0, 0, -1, 0, 1, -1)
+[ext_resource type="ArrayMesh" uid="uid://cnsq1r0iipwah" path="res://Assets/Scenes/World/ProceduralStructures/buildingPieces/floor_100x100cm.tres" id="1_ajqlo"]
 
 [node name="floor1_100x100cm" type="Node3D" unique_id=753855673]
 
-[node name="floor1_100x100cm" type="MeshInstance3D" parent="." unique_id=2120567969]
-transform = Transform3D(0, 1, 0, -1, 0, 0, 0, 0, 1, 0, 0, 1)
+[node name="floor_100x100cm" type="MeshInstance3D" parent="." unique_id=1384576912]
 mesh = ExtResource("1_ajqlo")
-
-[node name="StaticBody3D" type="StaticBody3D" parent="." unique_id=1470976276]
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" unique_id=98669306]
-transform = Transform3D(0, 1, 0, -1, 0, 0, 0, 0, 1, 0, 0, 1)
-shape = SubResource("ConcavePolygonShape3D_ajqlo")

@@ -1,0 +1,14 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://bc7uwalatyb3c"]
+
+[ext_resource type="Texture2D" uid="uid://b67mry50drh1y" path="res://Assets/Models/Objects/baseSet/centered_floor_Concrete027_1K-PNG_Color.webp" id="1_q0rlf"]
+[ext_resource type="Texture2D" uid="uid://bfyjpcrc5dvug" path="res://Assets/Models/Objects/baseSet/centered_floor_Concrete027_1K-PNG_NormalGL.webp" id="2_6fb3q"]
+[ext_resource type="Texture2D" uid="uid://cg0tue5uyaon5" path="res://Assets/Models/Objects/baseSet/centered_floor_Concrete027_1K-PNG_Roughness.webp" id="3_6djio"]
+
+[resource]
+albedo_texture = ExtResource("1_q0rlf")
+roughness = 0.5
+roughness_texture = ExtResource("3_6djio")
+normal_enabled = true
+normal_scale = 2.0
+normal_texture = ExtResource("2_6fb3q")
+uv1_triplanar = true
