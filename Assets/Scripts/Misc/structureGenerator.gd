@@ -128,10 +128,10 @@ func onButtonPressed(command:String):
 			print("could not find cell on position X: "+str(x)+" Y: "+str(y))
 
 func generateFurniture():
-	for i in range(100):
+	for i in range(10000):
 		var floorInstance = floor.instantiate()
-		var x = floor(float(i)/10.0)
-		var y = i % 10
+		var x = floor(float(i)/100.0)
+		var y = i % 100
 		var cell:genCell = genCell.new(x, y, "Floor", [floorInstance])
 		addCell(cell)
 
