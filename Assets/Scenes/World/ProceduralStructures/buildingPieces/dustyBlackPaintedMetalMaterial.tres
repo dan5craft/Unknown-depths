@@ -1,0 +1,16 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://bifjccnaoe7a6"]
+
+[ext_resource type="Texture2D" uid="uid://bdbssygubc1p8" path="res://Assets/Models/Objects/bed_Dusty Black Painted Metal_BaseColor-4096x4096.jpg" id="1_1s3rf"]
+[ext_resource type="Texture2D" uid="uid://d00o3k2nw5jd3" path="res://Assets/Models/Objects/bed_Dusty Black Painted Metal_Roughness-4096x4096.png" id="2_dxqlo"]
+[ext_resource type="Texture2D" uid="uid://dr53tx6pa4gri" path="res://Assets/Models/Objects/bed_Dusty Black Painted Metal_Normal-4096x4096.jpg" id="3_5m38a"]
+
+[resource]
+resource_name = "Dusty Black Painted Metal"
+cull_mode = 2
+albedo_texture = ExtResource("1_1s3rf")
+metallic_texture = ExtResource("2_dxqlo")
+metallic_texture_channel = 2
+roughness_texture = ExtResource("2_dxqlo")
+roughness_texture_channel = 1
+normal_enabled = true
+normal_texture = ExtResource("3_5m38a")

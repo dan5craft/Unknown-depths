@@ -11,6 +11,7 @@ var bed:ProceduralFurniture
 var cells:Array[genCell] = []
 var rng = RandomNumberGenerator.new()
 var mesh:MeshInstance3D
+var collisionShape:CollisionShape3D
 
 func findCell(x:int, y:int):
 	if cells.is_empty():
@@ -82,7 +83,6 @@ func addCell(cell:genCell) -> void:
 			multiple = true
 	if not multiple:
 		cells.insert(index, cell)
-		addMeshes(cell)
 		return
 	var endIndex:int = 0
 	low = 0
@@ -113,36 +113,34 @@ func addCell(cell:genCell) -> void:
 			print("There is already a cell at X: "+str(x)+" Y: "+str(y))
 			return
 	cells.insert(index, cell)
-	addMeshes(cell)
 
-func addMeshes(cell:genCell):
+func addMeshes():
 	var arrayMesh:ArrayMesh
 	var vertexCount = 0
 	var arrays = []
 	arrays.resize(Mesh.ARRAY_MAX)
-	if mesh.mesh == null:
-		arrayMesh = ArrayMesh.new()
-	else:
-		arrayMesh = mesh.mesh.duplicate()
-		arrays = arrayMesh.surface_get_arrays(0)
-		vertexCount = len(arrayMesh.surface_get_arrays(0)[Mesh.ARRAY_VERTEX])
-	for model in cell.models:
-		var modelMesh:ArrayMesh = model.duplicate()
-		#print(modelMesh.surface_get_arrays(0))
-		for s in range(modelMesh.get_surface_count()):
-			var surface = modelMesh.surface_get_arrays(s)
-			for i in range(len(surface[Mesh.ARRAY_INDEX])):
-				surface[Mesh.ARRAY_INDEX][i] += vertexCount
-			for i in range(len(surface)):
-				if arrays[i] == null:
-					arrays[i] = surface[i]
-				else:
-					arrays[i].append_array(surface[i])
-			vertexCount += len(surface[Mesh.ARRAY_VERTEX])
-	arrayMesh.clear_surfaces()
+	arrayMesh = ArrayMesh.new()
+	for cell in cells:
+		for model in cell.models:
+			var modelMesh:ArrayMesh = model.duplicate()
+			#print(modelMesh.surface_get_arrays(0))
+			for s in range(modelMesh.get_surface_count()):
+				var surface = modelMesh.surface_get_arrays(s)
+				for i in range(len(surface[Mesh.ARRAY_INDEX])):
+					surface[Mesh.ARRAY_INDEX][i] += vertexCount
+				for i in range(len(surface[Mesh.ARRAY_VERTEX])):
+					surface[Mesh.ARRAY_VERTEX][i] += Vector3(cell.pos.x, 0.0, cell.pos.y)
+				for i in range(len(surface)):
+					if arrays[i] == null:
+						arrays[i] = surface[i]
+					else:
+						arrays[i].append_array(surface[i])
+				vertexCount += len(surface[Mesh.ARRAY_VERTEX])
 	arrayMesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
+	var shape = arrayMesh.create_trimesh_shape()
+	collisionShape.shape = shape
 	mesh.mesh = arrayMesh
-	print(arrayMesh.surface_get_arrays(0))
+	
 
 func onButtonPressed(command:String):
 	if command == "generate furniture":
@@ -170,17 +168,19 @@ func generateFurnitureCells(furniture:ProceduralFurniture, x:int, y:int):
 	return furnitureCells
 
 func generateFurniture():
-	for x in range(1):
-		for y in range(1):
+	for x in range(200):
+		for y in range(100):
 			var bedCells = generateFurnitureCells(bed, x, y*2)
 			for cell in bedCells:
 				addCell(cell)
+	addMeshes()
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	floor = ProceduralFurniture.new([Vector2i(0, 0)], "Floor", floorMesh)
 	bed = ProceduralFurniture.new(bedOccupied, "Bed", bedMesh)
 	mesh = $MeshInstance3D
+	collisionShape = $StaticBody3D/CollisionShape3D
 	pass # Replace with function body.
 
 

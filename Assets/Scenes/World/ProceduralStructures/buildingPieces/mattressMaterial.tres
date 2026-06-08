@@ -1,0 +1,17 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://bx32yti3rkoxk"]
+
+[ext_resource type="Texture2D" uid="uid://cx4c38exfkisg" path="res://Assets/Models/Objects/bed_Fabric_Mattress_03_basecolor.jpg" id="1_4bq7q"]
+[ext_resource type="Texture2D" uid="uid://b3wwj3mxkkcw1" path="res://Assets/Models/Objects/bed_Fabric_Mattress_03_metallic-Fabric_Mattress_03_roughness.png" id="2_rm3g3"]
+[ext_resource type="Texture2D" uid="uid://b7wvaaisxkvew" path="res://Assets/Models/Objects/bed_Fabric_Mattress_03_normal.jpg" id="3_y40cs"]
+
+[resource]
+resource_name = "Mattress 03"
+cull_mode = 2
+albedo_texture = ExtResource("1_4bq7q")
+metallic = 1.0
+metallic_texture = ExtResource("2_rm3g3")
+metallic_texture_channel = 2
+roughness_texture = ExtResource("2_rm3g3")
+roughness_texture_channel = 1
+normal_enabled = true
+normal_texture = ExtResource("3_y40cs")

@@ -2,11 +2,14 @@
 
 [ext_resource type="PackedScene" uid="uid://bduu2t4jgkqul" path="res://Assets/Scenes/Entities/Player/player.tscn" id="1_3o343"]
 [ext_resource type="Texture2D" uid="uid://dqr8dspdatqqx" path="res://Assets/Panoramas/autumn_field_puresky_4k.hdr" id="2_gchey"]
+[ext_resource type="Script" path="res://Assets/Scripts/Misc/FpsCounter.gd" id="2_kj4mv"]
 [ext_resource type="PackedScene" uid="uid://8ksahyogv8s1" path="res://Assets/Scenes/World/Interactables/testButton/testButton.tscn" id="3_23r1y"]
 [ext_resource type="Script" uid="uid://dyayila6geqeb" path="res://Assets/Scripts/Misc/tracker.gd" id="4_yexpr"]
 [ext_resource type="Script" uid="uid://cls72tsst83dv" path="res://Assets/Scripts/Misc/structureGenerator.gd" id="5_erbmr"]
-[ext_resource type="ArrayMesh" uid="uid://dxkt153l7kpdo" path="res://Assets/Scenes/World/ProceduralStructures/buildingPieces/floor1_100x100cm.tres" id="6_a6pvp"]
+[ext_resource type="ArrayMesh" uid="uid://cnsq1r0iipwah" path="res://Assets/Scenes/World/ProceduralStructures/buildingPieces/floor_100x100cm.tres" id="6_a6pvp"]
 [ext_resource type="ArrayMesh" uid="uid://dma5hg3qnbvvs" path="res://Assets/Scenes/World/ProceduralStructures/buildingPieces/bed.tres" id="6_djuvf"]
+
+[sub_resource type="Texture2DRD" id="Texture2DRD_5cjvr"]
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_gchey"]
 size = Vector2(10, 10)
@@ -29,6 +32,43 @@ sky = SubResource("Sky_yexpr")
 [node name="Tracker" type="Node3D" parent="." unique_id=2098517412 node_paths=PackedStringArray("player")]
 script = ExtResource("4_yexpr")
 player = NodePath("../Player")
+
+[node name="Control" type="Control" parent="." unique_id=1697220096]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextureRect" type="TextureRect" parent="Control" unique_id=938673648]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -256.0
+offset_top = -256.0
+offset_right = 256.0
+offset_bottom = 256.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("Texture2DRD_5cjvr")
+stretch_mode = 4
+
+[node name="Label" type="Label" parent="Control" unique_id=1044677940]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -81.0
+offset_right = -13.0
+offset_bottom = 23.0
+text = "1000 FPS"
+horizontal_alignment = 2
+script = ExtResource("2_kj4mv")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=58527052]
 mesh = SubResource("PlaneMesh_gchey")
@@ -64,6 +104,10 @@ bedMesh = ExtResource("6_djuvf")
 bedOccupied = Array[Vector2i]([Vector2i(0, 0), Vector2i(0, 1)])
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="StructureGenerator" unique_id=393502175]
+
+[node name="StaticBody3D" type="StaticBody3D" parent="StructureGenerator" unique_id=350728011]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StructureGenerator/StaticBody3D" unique_id=563978366]
 
 [node name="Label3D" type="Label3D" parent="." unique_id=924736959]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 1.5, 5)
