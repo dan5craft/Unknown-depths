@@ -2,7 +2,7 @@ extends Node3D
 
 var player:PlayerController
 @export var command:String = "command"
-@export var binded:Node
+@export var binded:Array[Node]
 @export var active:bool = true
 
 var up = true
@@ -11,7 +11,8 @@ func interact():
 	if $AnimationPlayer.is_playing() or not active:
 		return
 	$AnimationPlayer.play("buttonPress")
-	binded.onButtonPressed(command)
+	for node in binded:
+		node.onButtonPressed(command)
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:

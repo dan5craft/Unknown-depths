@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://dwkw5u244vvo"]
 
-[ext_resource type="Script" uid="uid://c5w73ec06fxy1" path="res://Assets/Scripts/Misc/proceduralFurniture.gd" id="1_oiod7"]
+[ext_resource type="Script" uid="uid://c5w73ec06fxy1" path="res://Assets/Scripts/Misc/proceduralModel.gd" id="1_oiod7"]
 [ext_resource type="ArrayMesh" uid="uid://dma5hg3qnbvvs" path="res://Assets/Scenes/World/ProceduralStructures/buildingPieces/bed.tres" id="2_pejar"]
 
 [node name="bed" type="Node3D" unique_id=1243341911]

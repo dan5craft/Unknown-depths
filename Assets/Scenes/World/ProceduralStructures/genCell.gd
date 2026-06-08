@@ -1,10 +1,10 @@
 class_name genCell
 
-@export var pos:Vector2i = Vector2i.ZERO
-@export var type:String = "Empty"
-@export var models:Array[Mesh]
+var pos:Vector2i = Vector2i.ZERO
+var type:String = "Empty"
+var models:Array[ProceduralModel]
 
-func _init(x:int, y:int, TYPE:String, MODELS:Array[Mesh]) -> void:
+func _init(x:int, y:int, TYPE:String, MODELS:Array[ProceduralModel]) -> void:
 	pos = Vector2i(x, y)
 	type = TYPE
 	models = MODELS

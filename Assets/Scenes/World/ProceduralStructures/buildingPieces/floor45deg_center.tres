@@ -1,0 +1,34 @@
+[gd_resource type="ArrayMesh" format=4 uid="uid://ni6f0avkidai"]
+
+[ext_resource type="Material" uid="uid://bc7uwalatyb3c" path="res://Assets/Scenes/World/ProceduralStructures/buildingPieces/concreteMaterial.tres" id="1_2va0o"]
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_8d1qf"]
+_surfaces = [{
+"aabb": AABB(-2.1855692e-08, -6.2092287e-09, -7.946628e-09, 0.5, 0.5, 0.5),
+"format": 34896613377,
+"index_count": 24,
+"index_data": PackedByteArray("AAABAAIAAAADAAEAAAACAAQAAAAEAAUABQAEAAYABQAGAAcABwAGAAgABwAIAAkA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 10,
+"vertex_data": PackedByteArray("AAD///8/AAD/////AAAAAP//////PwAAAAD//wAAAAD///8//z8AAAAA/z//PwAA//8AAP+fAAAAAAAA/58AAP//AAD//wAAAAAAAP7/AAA=")
+}]
+blend_shape_mode = 0
+
+[resource]
+resource_name = "floor45deg_center_Plane_059"
+_surfaces = [{
+"aabb": AABB(-2.1855692e-08, -6.2092287e-09, -7.946628e-09, 0.5, 0.5, 0.5),
+"attribute_data": PackedByteArray("/v//f/+//////////v//f/+//3//n////5//f/+////+//9//7////+//3///////5//f/9/////f/9//5///w=="),
+"format": 34896613399,
+"index_count": 24,
+"index_data": PackedByteArray("AAABAAIAAAADAAEABAAFAAYABAAHAAUACAAJAAoACAALAAkADAANAA4ADAAPAA0A"),
+"material": ExtResource("1_2va0o"),
+"name": "Concrete",
+"primitive": 3,
+"uv_scale": Vector4(1.1180341, 1, 0, 0),
+"vertex_count": 16,
+"vertex_data": PackedByteArray("AAD///8/qir/////AACqKv//////P6oqAAD//wAA/78AAP8//z8lyf//AAD/nyXJAAAAAP+fJcn///8//z8lyQAA////P/+/////P/8//78AAP8//z//v///////P/+/AAAAAP+fVNX//wAA//9U1QAAAAD+/1TV//8AAP+fVNWqqqqqqqqqqqqqqqr///9/6N4WIejeFiHo3hYh6N4WIf////////////////////9U1aoqVNWqKlTVqipU1aoq")
+}]
+blend_shape_mode = 0
+shadow_mesh = SubResource("ArrayMesh_8d1qf")

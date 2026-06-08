@@ -2,9 +2,10 @@ extends Node3D
 
 @export var generateFurnitureButton:Node3D
 @export var button2:Node3D
-var floor:ProceduralFurniture
+var floor:ProceduralModel
 @export var floorMesh:Mesh
-var bed:ProceduralFurniture
+@export var wallStartMesh:Mesh
+@export var wallMesh:Mesh
 @export var bedMesh:Mesh
 @export var bedOccupied:Array[Vector2i]
 
@@ -121,15 +122,19 @@ func addMeshes():
 	arrays.resize(Mesh.ARRAY_MAX)
 	arrayMesh = ArrayMesh.new()
 	for cell in cells:
-		for model in cell.models:
+		for Procedural in cell.models:
+			var model = Procedural.mesh
 			var modelMesh:ArrayMesh = model.duplicate()
-			#print(modelMesh.surface_get_arrays(0))
 			for s in range(modelMesh.get_surface_count()):
 				var surface = modelMesh.surface_get_arrays(s)
 				for i in range(len(surface[Mesh.ARRAY_INDEX])):
 					surface[Mesh.ARRAY_INDEX][i] += vertexCount
 				for i in range(len(surface[Mesh.ARRAY_VERTEX])):
-					surface[Mesh.ARRAY_VERTEX][i] += Vector3(cell.pos.x, 0.0, cell.pos.y)
+					var shifted = surface[Mesh.ARRAY_VERTEX][i]-Vector3(Procedural.center.x-Procedural.pos.x, 0.0, Procedural.center.y-Procedural.pos.z)
+					var x = shifted.x*cos(0.5*PI*Procedural.rot) - shifted.z*sin(0.5*PI*Procedural.rot)+Procedural.center.x
+					var y = shifted.x*sin(0.5*PI*Procedural.rot) + shifted.z*cos(0.5*PI*Procedural.rot)+Procedural.center.y
+					surface[Mesh.ARRAY_VERTEX][i] = Vector3(x, surface[Mesh.ARRAY_VERTEX][i].y, y) + Vector3(cell.pos.x, 0.0+Procedural.pos.y, cell.pos.y)
+					#print(surface[Mesh.ARRAY_VERTEX][i])
 				for i in range(len(surface)):
 					if arrays[i] == null:
 						arrays[i] = surface[i]
@@ -140,7 +145,7 @@ func addMeshes():
 	var shape = arrayMesh.create_trimesh_shape()
 	collisionShape.shape = shape
 	mesh.mesh = arrayMesh
-	
+	print(vertexCount)
 
 func onButtonPressed(command:String):
 	if command == "generate furniture":
@@ -157,28 +162,44 @@ func onButtonPressed(command:String):
 		else:
 			print("could not find cell on position X: "+str(x)+" Y: "+str(y))
 
-func generateFurnitureCells(furniture:ProceduralFurniture, x:int, y:int):
+func generateFurnitureCells(furniture:ProceduralModel, x:int, y:int):
 	var furnitureCells = []
 	for pos in furniture.occupied:
-		var models:Array[Mesh] = [floor.mesh]
+		var models:Array[ProceduralModel] = [floor]
 		if pos == Vector2i.ZERO:
-			models.append(furniture.mesh)
+			models.append(furniture)
 		var cell:genCell = genCell.new(pos.x+x, pos.y+y, "Furniture", models)
 		furnitureCells.append(cell)
 	return furnitureCells
 
 func generateFurniture():
-	for x in range(200):
+	for x in range(100):
 		for y in range(100):
-			var bedCells = generateFurnitureCells(bed, x, y*2)
-			for cell in bedCells:
-				addCell(cell)
+			var models:Array[ProceduralModel] = []
+			if rng.randf() < 0.2:
+				var rot = rng.randi_range(0, 3)
+				var rot2 = rot + 2
+				if rot2 > 3: rot2-=4
+				for i in range(2):
+					var wallStart = ProceduralModel.new([Vector2i.ZERO], "WallStart", wallStartMesh, Vector3(i*0.5, 0.0, 0.5), rot, Vector2(0.5, 0.5))
+					var wallStart2 = ProceduralModel.new([Vector2i.ZERO], "WallStart", wallStartMesh, Vector3(i*0.5, 0.0, 0.5), rot2, Vector2(0.5, 0.5))
+					for n in range(3):
+						var wall = ProceduralModel.new([Vector2i.ZERO], "Wall", wallMesh, Vector3(i*0.5, (n+1)*0.5, 0.5), rot, Vector2(0.5, 0.5))
+						var wall2 = ProceduralModel.new([Vector2i.ZERO], "Wall", wallMesh, Vector3(i*0.5, (n+1)*0.5, 0.5), rot2, Vector2(0.5, 0.5))
+						models.append(wall)
+						models.append(wall2)
+					models.append(wallStart)
+					models.append(wallStart2)
+			models.append(floor)
+			var cell:genCell = genCell.new(x, y, "Floor", models)
+			#var bedCells = generateFurnitureCells(bed, x, y*2)
+			#for cell in bedCells:
+			addCell(cell)
 	addMeshes()
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	floor = ProceduralFurniture.new([Vector2i(0, 0)], "Floor", floorMesh)
-	bed = ProceduralFurniture.new(bedOccupied, "Bed", bedMesh)
+	floor = ProceduralModel.new([Vector2i(0, 0)], "Floor", floorMesh, Vector3.ZERO, 0, Vector2(0.5, 0.5))
 	mesh = $MeshInstance3D
 	collisionShape = $StaticBody3D/CollisionShape3D
 	pass # Replace with function body.
