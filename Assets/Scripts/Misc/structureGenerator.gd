@@ -132,8 +132,6 @@ func rotateVector(vector:Vector3, point:Vector2, rot:int) -> Vector3:
 	return Vector3(x, vector.y, y)
 
 func addMeshes(arrays:Array, materials:Array, cellIndex:int):
-	var arrayMesh:ArrayMesh
-	arrayMesh = ArrayMesh.new()
 	var cell = cells[cellIndex]
 	var p:int = round(float(cellIndex)/float(len(cells))*100000.0)
 	if p % 5000 == 0:
@@ -171,6 +169,8 @@ func addMeshes(arrays:Array, materials:Array, cellIndex:int):
 	if cellIndex < len(cells) - 1:
 		return
 	label.text = "Setting mesh"
+	var arrayMesh:ArrayMesh
+	arrayMesh = ArrayMesh.new()
 	for i in range(len(arrays)):
 		var array = arrays[i]
 		var material = materials[i]
@@ -216,7 +216,7 @@ func generateFurnitureCells(furniture:ProceduralModel, x:int, y:int):
 
 func generateFurniture():
 	for x in range(200):
-		for y in range(50):
+		for y in range(100):
 			#var models:Array[ProceduralModel] = []
 			#if rng.randf() < 0.2:
 				#var rot = rng.randi_range(0, 3)
