@@ -22,6 +22,7 @@ var generatingMesh = false
 var meshArrays
 var meshMaterials
 var meshCellIndex
+var meshGenerationStartTime
 
 func findCell(x:int, y:int):
 	if cells.is_empty():
@@ -178,8 +179,9 @@ func addMeshes(arrays:Array, materials:Array, cellIndex:int):
 	var shape = arrayMesh.create_trimesh_shape()
 	collisionShape.shape = shape
 	mesh.mesh = arrayMesh
+	var time:float = float(Time.get_ticks_msec() - meshGenerationStartTime)/1000.0
 	generatingMesh = false
-	label.text = "Done"
+	label.text = "Done\nTook "+str(time)+" seconds"
 
 func onButtonPressed(command:String):
 	if command == "generate furniture":
@@ -200,6 +202,7 @@ func onButtonPressed(command:String):
 		meshArrays = []
 		meshCellIndex = 0
 		meshMaterials = []
+		meshGenerationStartTime = Time.get_ticks_msec()
 
 func generateFurnitureCells(furniture:ProceduralModel, x:int, y:int):
 	var furnitureCells = []
@@ -212,7 +215,7 @@ func generateFurnitureCells(furniture:ProceduralModel, x:int, y:int):
 	return furnitureCells
 
 func generateFurniture():
-	for x in range(100):
+	for x in range(200):
 		for y in range(50):
 			#var models:Array[ProceduralModel] = []
 			#if rng.randf() < 0.2:
@@ -248,6 +251,8 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	if generatingMesh:
 		for i in range(CPS):
+			if meshCellIndex == len(cells):
+				break
 			addMeshes(meshArrays, meshMaterials, meshCellIndex)
 			meshCellIndex += 1
 	pass

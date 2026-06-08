@@ -117,6 +117,7 @@ wallStartMesh = ExtResource("8_0qfsd")
 wallMesh = ExtResource("9_st10f")
 bedMesh = ExtResource("6_djuvf")
 bedOccupied = Array[Vector2i]([Vector2i(0, 0), Vector2i(0, 1)])
+CPS = 3
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="StructureGenerator" unique_id=393502175]
 
