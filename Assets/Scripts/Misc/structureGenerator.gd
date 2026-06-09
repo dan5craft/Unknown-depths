@@ -9,7 +9,7 @@ var floor:ProceduralModel
 @export var wallMesh:Mesh
 @export var bedMesh:Mesh
 @export var bedOccupied:Array[Vector2i]
-@export var CPS:int = 10
+@export var CPF:int = 10
 @export_tool_button("Generate furniture", "Bake") var genFurToolButton = generateFurniture
 
 var cells:Array[genCell] = []
@@ -23,6 +23,9 @@ var meshArrays
 var meshMaterials
 var meshCellIndex
 var meshGenerationStartTime
+var meshModelArrays
+var meshModelNames
+var meshModelMaterials
 
 func findCell(x:int, y:int):
 	if cells.is_empty():
@@ -131,44 +134,54 @@ func rotateVector(vector:Vector3, point:Vector2, rot:int) -> Vector3:
 	var y = shifted.x*sin(0.5*PI*rot) + shifted.z*cos(0.5*PI*rot)+point.y
 	return Vector3(x, vector.y, y)
 
-func addMeshes(arrays:Array, materials:Array, cellIndex:int):
+func addMeshes(cellIndex:int, arrays:Array, materials:Array, modelNames:Array, modelArrays:Array, modelMaterials:Array):
 	var cell = cells[cellIndex]
 	var p:int = round(float(cellIndex)/float(len(cells))*100000.0)
 	if p % 5000 == 0:
 		label.text = "Generating mesh\n"+str(p/1000)+"%"
-	for Procedural in cell.models:
-		var model = Procedural.mesh
-		var modelMesh:ArrayMesh = model.duplicate()
-		for n in range(modelMesh.get_surface_count()):
-			var surface = modelMesh.surface_get_arrays(n)
-			var surface2 = len(arrays)
-			var material = modelMesh.surface_get_material(n)
+	for model in cell.models:
+		var modelMesh = model.mesh
+		var modelName = model.name
+		var surfaces = []
+		var materialArray = []
+		if modelNames.count(modelName) == 0:
+			modelNames.append(modelName)
+			for s in range(modelMesh.get_surface_count()):
+				surfaces.append(modelMesh.surface_get_arrays(s))
+				materialArray.append(modelMesh.surface_get_material(s))
+			modelArrays.append(surfaces.duplicate(true))
+			modelMaterials.append(materialArray)
+		else:
+			var index = modelNames.find(modelName)
+			surfaces = modelArrays[index].duplicate(true)
+			materialArray = modelMaterials[index]
+		for i in range(len(surfaces)):
+			var surface = surfaces[i]
+			var material = materialArray[i]
+			var surfaceIndex = len(arrays)
 			var vertexCount = 0
-			for i in range(len(materials)):
-				var material2 = materials[i]
-				if material.resource_path == material2.resource_path:
-					surface2 = i
-			if surface2 < len(arrays):
-				vertexCount = len(arrays[surface2][Mesh.ARRAY_VERTEX])
+			if materials.count(material) > 0:
+				var index = materials.find(material)
+				surfaceIndex = index
+				vertexCount = len(arrays[index][Mesh.ARRAY_VERTEX])
 			else:
+				materials.append(material)
 				var newArray = []
 				newArray.resize(Mesh.ARRAY_MAX)
 				arrays.append(newArray)
-				materials.append(material)
-			for i in range(len(surface[Mesh.ARRAY_INDEX])):
-				surface[Mesh.ARRAY_INDEX][i] += vertexCount
-			for i in range(len(surface[Mesh.ARRAY_VERTEX])):
-				var offset = Vector3(Procedural.pos.x, 0.0, Procedural.pos.z)
-				surface[Mesh.ARRAY_VERTEX][i] = rotateVector(surface[Mesh.ARRAY_VERTEX][i]+offset, Procedural.center, Procedural.rot) + Vector3(cell.pos.x, 0.0+Procedural.pos.y, cell.pos.y)
-				surface[Mesh.ARRAY_NORMAL][i] = rotateVector(surface[Mesh.ARRAY_NORMAL][i], Vector2.ZERO, Procedural.rot)
-			for i in range(len(surface)):
-				if arrays[surface2][i] == null:
-					arrays[surface2][i] = surface[i]
+			for n in range(len(surface[Mesh.ARRAY_INDEX])):
+				surface[Mesh.ARRAY_INDEX][n] += vertexCount
+			for n in range(len(surface[Mesh.ARRAY_VERTEX])):
+				var offset = Vector3(model.pos.x, 0.0, model.pos.z)
+				surface[Mesh.ARRAY_VERTEX][n] = rotateVector(surface[Mesh.ARRAY_VERTEX][n]+offset, model.center, model.rot) + Vector3(cell.pos.x, 0.0+model.pos.y, cell.pos.y)
+				surface[Mesh.ARRAY_NORMAL][n] = rotateVector(surface[Mesh.ARRAY_NORMAL][n], Vector2.ZERO, model.rot)
+			for n in range(len(surface)):
+				if arrays[surfaceIndex][n] == null:
+					arrays[surfaceIndex][n] = surface[n]
 				else:
-					arrays[surface2][i].append_array(surface[i])
+					arrays[surfaceIndex][n].append_array(surface[n])
 	if cellIndex < len(cells) - 1:
 		return
-	label.text = "Setting mesh"
 	var arrayMesh:ArrayMesh
 	arrayMesh = ArrayMesh.new()
 	for i in range(len(arrays)):
@@ -182,6 +195,58 @@ func addMeshes(arrays:Array, materials:Array, cellIndex:int):
 	var time:float = float(Time.get_ticks_msec() - meshGenerationStartTime)/1000.0
 	generatingMesh = false
 	label.text = "Done\nTook "+str(time)+" seconds"
+
+#func addMeshes(arrays:Array, materials:Array, cellIndex:int):
+	#var cell = cells[cellIndex]
+	#var p:int = round(float(cellIndex)/float(len(cells))*100000.0)
+	#if p % 5000 == 0:
+		#label.text = "Generating mesh\n"+str(p/1000)+"%"
+	#for Procedural in cell.models:
+		#var model = Procedural.mesh
+		#var modelMesh:ArrayMesh = model.duplicate()
+		#for n in range(modelMesh.get_surface_count()):
+			#var surface = modelMesh.surface_get_arrays(n)
+			#var surface2 = len(arrays)
+			#var material = modelMesh.surface_get_material(n)
+			#var vertexCount = 0
+			#for i in range(len(materials)):
+				#var material2 = materials[i]
+				#if material.resource_path == material2.resource_path:
+					#surface2 = i
+			#if surface2 < len(arrays):
+				#vertexCount = len(arrays[surface2][Mesh.ARRAY_VERTEX])
+			#else:
+				#var newArray = []
+				#newArray.resize(Mesh.ARRAY_MAX)
+				#arrays.append(newArray)
+				#materials.append(material)
+			#for i in range(len(surface[Mesh.ARRAY_INDEX])):
+				#surface[Mesh.ARRAY_INDEX][i] += vertexCount
+			#for i in range(len(surface[Mesh.ARRAY_VERTEX])):
+				#var offset = Vector3(Procedural.pos.x, 0.0, Procedural.pos.z)
+				#surface[Mesh.ARRAY_VERTEX][i] = rotateVector(surface[Mesh.ARRAY_VERTEX][i]+offset, Procedural.center, Procedural.rot) + Vector3(cell.pos.x, 0.0+Procedural.pos.y, cell.pos.y)
+				#surface[Mesh.ARRAY_NORMAL][i] = rotateVector(surface[Mesh.ARRAY_NORMAL][i], Vector2.ZERO, Procedural.rot)
+			#for i in range(len(surface)):
+				#if arrays[surface2][i] == null:
+					#arrays[surface2][i] = surface[i]
+				#else:
+					#arrays[surface2][i].append_array(surface[i])
+	#if cellIndex < len(cells) - 1:
+		#return
+	#label.text = "Setting mesh"
+	#var arrayMesh:ArrayMesh
+	#arrayMesh = ArrayMesh.new()
+	#for i in range(len(arrays)):
+		#var array = arrays[i]
+		#var material = materials[i]
+		#arrayMesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, array)
+		#arrayMesh.surface_set_material(i, material)
+	#var shape = arrayMesh.create_trimesh_shape()
+	#collisionShape.shape = shape
+	#mesh.mesh = arrayMesh
+	#var time:float = float(Time.get_ticks_msec() - meshGenerationStartTime)/1000.0
+	#generatingMesh = false
+	#label.text = "Done\nTook "+str(time)+" seconds"
 
 func onButtonPressed(command:String):
 	if command == "generate furniture":
@@ -202,7 +267,15 @@ func onButtonPressed(command:String):
 		meshArrays = []
 		meshCellIndex = 0
 		meshMaterials = []
+		meshModelArrays = []
+		meshModelNames = []
+		meshModelMaterials = []
 		meshGenerationStartTime = Time.get_ticks_msec()
+	#if command == "generate mesh":
+		#meshGenerationStartTime = Time.get_ticks_msec()
+		#addMeshes()
+		#var time = float(Time.get_ticks_msec()-meshGenerationStartTime)/1000.0
+		#label.text = "Done\nTook "+str(time)+" seconds"
 
 func generateFurnitureCells(furniture:ProceduralModel, x:int, y:int):
 	var furnitureCells = []
@@ -215,8 +288,8 @@ func generateFurnitureCells(furniture:ProceduralModel, x:int, y:int):
 	return furnitureCells
 
 func generateFurniture():
-	for x in range(200):
-		for y in range(100):
+	for x in range(500):
+		for y in range(250):
 			#var models:Array[ProceduralModel] = []
 			#if rng.randf() < 0.2:
 				#var rot = rng.randi_range(0, 3)
@@ -250,9 +323,9 @@ func _ready() -> void:
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	if generatingMesh:
-		for i in range(CPS):
+		for i in range(CPF):
 			if meshCellIndex == len(cells):
 				break
-			addMeshes(meshArrays, meshMaterials, meshCellIndex)
+			addMeshes(meshCellIndex, meshArrays, meshMaterials, meshModelNames, meshModelArrays, meshModelMaterials)
 			meshCellIndex += 1
 	pass
