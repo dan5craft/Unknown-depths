@@ -1,15 +1,25 @@
 @tool
 extends Node3D
 
-@export var generateFurnitureButton:Node3D
-@export var button2:Node3D
+@export_category("Structure")
+@export var crewSize:int = 20
+@export_category("Meshes")
 var floor:ProceduralModel
 @export var floorMesh:Mesh
 @export var wallStartMesh:Mesh
 @export var wallMesh:Mesh
-@export var bedMesh:Mesh
+@export var innerCornerMesh:Mesh
+@export var innerCornerStartMesh:Mesh
+@export var outerCornerMesh:Mesh
+@export var outerCornerStartMesh:Mesh
+@export_category("Instances")
+@export var bedInstance:PackedScene
 @export var bedOccupied:Array[Vector2i]
-@export var CPF:int = 10
+@export_category("Mesh Generation")
+@export var CPS:int = 10000
+var CPSTimer:float = 0.0
+@export var setMeshEachStep:bool = false
+@export var clearDataOnMeshCompletion = false
 @export_tool_button("Generate furniture", "Bake") var genFurToolButton = generateFurniture
 
 var cells:Array[genCell] = []
@@ -19,13 +29,13 @@ var collisionShape:CollisionShape3D
 var label:Label3D
 
 var generatingMesh = false
-var meshArrays
-var meshMaterials
-var meshCellIndex
+var meshArrays = []
+var meshMaterials = []
+var meshCellIndex = 0
 var meshGenerationStartTime
-var meshModelArrays
-var meshModelNames
-var meshModelMaterials
+var meshModelArrays = []
+var meshModelNames = []
+var meshModelMaterials = []
 
 func findCell(x:int, y:int):
 	if cells.is_empty():
@@ -134,12 +144,28 @@ func rotateVector(vector:Vector3, point:Vector2, rot:int) -> Vector3:
 	var y = shifted.x*sin(0.5*PI*rot) + shifted.z*cos(0.5*PI*rot)+point.y
 	return Vector3(x, vector.y, y)
 
+func setMesh():
+	var arrayMesh:ArrayMesh
+	arrayMesh = ArrayMesh.new()
+	for i in range(len(meshArrays)):
+		var array = meshArrays[i]
+		var material = meshMaterials[i]
+		arrayMesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, array)
+		arrayMesh.surface_set_material(i, material)
+	var shape = arrayMesh.create_trimesh_shape()
+	collisionShape.shape = shape
+	mesh.mesh = arrayMesh
+
 func addMeshes(cellIndex:int, arrays:Array, materials:Array, modelNames:Array, modelArrays:Array, modelMaterials:Array):
 	var cell = cells[cellIndex]
 	var p:int = round(float(cellIndex)/float(len(cells))*100000.0)
 	if p % 5000 == 0:
 		label.text = "Generating mesh\n"+str(p/1000)+"%"
 	for model in cell.models:
+		for i in cell.instances:
+			var instance = i.instantiate()
+			instance.position += Vector3(cell.pos.x, 0.0, cell.pos.y)
+			$Instances.add_child(instance)
 		var modelMesh = model.mesh
 		var modelName = model.name
 		var surfaces = []
@@ -180,79 +206,23 @@ func addMeshes(cellIndex:int, arrays:Array, materials:Array, modelNames:Array, m
 					arrays[surfaceIndex][n] = surface[n]
 				else:
 					arrays[surfaceIndex][n].append_array(surface[n])
-	if cellIndex < len(cells) - 1:
-		return
-	var arrayMesh:ArrayMesh
-	arrayMesh = ArrayMesh.new()
-	for i in range(len(arrays)):
-		var array = arrays[i]
-		var material = materials[i]
-		arrayMesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, array)
-		arrayMesh.surface_set_material(i, material)
-	var shape = arrayMesh.create_trimesh_shape()
-	collisionShape.shape = shape
-	mesh.mesh = arrayMesh
-	var time:float = float(Time.get_ticks_msec() - meshGenerationStartTime)/1000.0
-	generatingMesh = false
-	label.text = "Done\nTook "+str(time)+" seconds"
-
-#func addMeshes(arrays:Array, materials:Array, cellIndex:int):
-	#var cell = cells[cellIndex]
-	#var p:int = round(float(cellIndex)/float(len(cells))*100000.0)
-	#if p % 5000 == 0:
-		#label.text = "Generating mesh\n"+str(p/1000)+"%"
-	#for Procedural in cell.models:
-		#var model = Procedural.mesh
-		#var modelMesh:ArrayMesh = model.duplicate()
-		#for n in range(modelMesh.get_surface_count()):
-			#var surface = modelMesh.surface_get_arrays(n)
-			#var surface2 = len(arrays)
-			#var material = modelMesh.surface_get_material(n)
-			#var vertexCount = 0
-			#for i in range(len(materials)):
-				#var material2 = materials[i]
-				#if material.resource_path == material2.resource_path:
-					#surface2 = i
-			#if surface2 < len(arrays):
-				#vertexCount = len(arrays[surface2][Mesh.ARRAY_VERTEX])
-			#else:
-				#var newArray = []
-				#newArray.resize(Mesh.ARRAY_MAX)
-				#arrays.append(newArray)
-				#materials.append(material)
-			#for i in range(len(surface[Mesh.ARRAY_INDEX])):
-				#surface[Mesh.ARRAY_INDEX][i] += vertexCount
-			#for i in range(len(surface[Mesh.ARRAY_VERTEX])):
-				#var offset = Vector3(Procedural.pos.x, 0.0, Procedural.pos.z)
-				#surface[Mesh.ARRAY_VERTEX][i] = rotateVector(surface[Mesh.ARRAY_VERTEX][i]+offset, Procedural.center, Procedural.rot) + Vector3(cell.pos.x, 0.0+Procedural.pos.y, cell.pos.y)
-				#surface[Mesh.ARRAY_NORMAL][i] = rotateVector(surface[Mesh.ARRAY_NORMAL][i], Vector2.ZERO, Procedural.rot)
-			#for i in range(len(surface)):
-				#if arrays[surface2][i] == null:
-					#arrays[surface2][i] = surface[i]
-				#else:
-					#arrays[surface2][i].append_array(surface[i])
-	#if cellIndex < len(cells) - 1:
-		#return
-	#label.text = "Setting mesh"
-	#var arrayMesh:ArrayMesh
-	#arrayMesh = ArrayMesh.new()
-	#for i in range(len(arrays)):
-		#var array = arrays[i]
-		#var material = materials[i]
-		#arrayMesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, array)
-		#arrayMesh.surface_set_material(i, material)
-	#var shape = arrayMesh.create_trimesh_shape()
-	#collisionShape.shape = shape
-	#mesh.mesh = arrayMesh
-	#var time:float = float(Time.get_ticks_msec() - meshGenerationStartTime)/1000.0
-	#generatingMesh = false
-	#label.text = "Done\nTook "+str(time)+" seconds"
+	if meshCellIndex == len(cells) - 1:
+		setMesh()
+		var time:float = float(Time.get_ticks_msec() - meshGenerationStartTime)/1000.0
+		generatingMesh = false
+		if clearDataOnMeshCompletion:
+			cells = []
+		meshArrays = []
+		meshCellIndex = -1
+		meshMaterials = []
+		meshModelArrays = []
+		meshModelNames = []
+		meshModelMaterials = []
+		label.text = "Done\nTook "+str(time)+" seconds"
 
 func onButtonPressed(command:String):
 	if command == "generate furniture":
-		generateFurnitureButton.active = false
 		generateFurniture()
-		button2.active = true
 	if command.begins_with("find"):
 		var pos = command.erase(0, 4).remove_chars(" ").split(",")
 		var x = int(pos[0])
@@ -264,53 +234,177 @@ func onButtonPressed(command:String):
 			print("could not find cell on position X: "+str(x)+" Y: "+str(y))
 	if command == "generate mesh":
 		generatingMesh = true
-		meshArrays = []
-		meshCellIndex = 0
-		meshMaterials = []
-		meshModelArrays = []
-		meshModelNames = []
-		meshModelMaterials = []
 		meshGenerationStartTime = Time.get_ticks_msec()
-	#if command == "generate mesh":
-		#meshGenerationStartTime = Time.get_ticks_msec()
-		#addMeshes()
-		#var time = float(Time.get_ticks_msec()-meshGenerationStartTime)/1000.0
-		#label.text = "Done\nTook "+str(time)+" seconds"
 
-func generateFurnitureCells(furniture:ProceduralModel, x:int, y:int):
-	var furnitureCells = []
-	for pos in furniture.occupied:
-		var models:Array[ProceduralModel] = [floor]
+func isSpaceEmpty(spaces:Array[Vector2i]) -> bool:
+	for space in spaces:
+		var cell = findCell(space.x, space.y)
+		if cell:
+			return false
+	return true
+
+func isSpaceFloor(spaces:Array[Vector2i]) -> bool:
+	for space in spaces:
+		var cell = findCell(space.x, space.y)
+		if not cell or cell.type != "Floor":
+			return false
+	return true
+
+func addFurniture(furniture:PackedScene, occupied:Array[Vector2i], x:int, y:int) -> void:
+	for pos in occupied:
+		var gridX = pos.x+x
+		var gridY = pos.y+y
+		var cell = findCell(gridX, gridY)
+		cell.type = "Furniture"
 		if pos == Vector2i.ZERO:
-			models.append(furniture)
-		var cell:genCell = genCell.new(pos.x+x, pos.y+y, "Furniture", models)
-		furnitureCells.append(cell)
-	return furnitureCells
+			cell.addInstance(furniture)
+
+func addWall(from:Vector2i, to:Vector2i, height:float, rot:int = -1) -> void:
+	var diff = to-from
+	var dir:Vector2i
+	var length = max(abs(diff.x), abs(diff.y)) + 1
+	var heightN:int = round(height/0.5)
+	if diff.x > 0 and diff.y == 0:
+		rot = 0
+		dir = Vector2i(1, 0)
+	if diff.x < 0 and diff.y == 0:
+		rot = 2
+		dir = Vector2i(-1, 0)
+	if diff.y > 0 and diff.x == 0:
+		rot = 1
+		dir = Vector2i(0, 1)
+	if diff.y < 0 and diff.x == 0:
+		rot = 3
+		dir = Vector2i(0, -1)
+	for i in range(length):
+		var pos = from+dir*i
+		var cell = findCell(pos.x, pos.y)
+		cell.type = "Wall"
+		for x in range(2):
+			var wallStart = ProceduralModel.new([Vector2i.ZERO], "WallStart", wallStartMesh, Vector3(0.5*x, 0.0, 0.5), rot, Vector2(0.5, 0.5))
+			for y in range(heightN-1):
+				var wall = ProceduralModel.new([Vector2i.ZERO], "Wall", wallMesh, Vector3(0.5*x, 0.5+0.5*y, 0.5), rot, Vector2(0.5, 0.5))
+				cell.models.append(wall)
+			cell.models.append(wallStart)
+
+## corners have to be supplied sorted clockwise and the line between them have to be straight
+func addWallFromCorners(corners:Array[Vector2i], height:float, connectEnd:bool = true):
+	var heightN:int = round(height/0.5)
+	var cornerNum = len(corners)
+	if not connectEnd: cornerNum -= 1
+	for i in range(cornerNum):
+		var inner = true
+		var corner = corners[i]
+		var cornerCell = findCell(corner.x, corner.y)
+		var nextIndex = i + 1
+		var rot = 0
+		if nextIndex > len(corners)-1: nextIndex -= len(corners)
+		var nextCorner = corners[nextIndex]
+		var dir = sign(nextCorner-corner)
+		var lastIndex = i - 1
+		if lastIndex < 0: lastIndex += len(corners)
+		var lastCorner = corners[lastIndex]
+		var diff = sign(nextCorner-lastCorner)
+		var diff1 = sign(corner-lastCorner)
+		var diff2 = sign(nextCorner-corner)
+		if diff1.x > 0 and diff2.y < 0 or diff1.x < 0 and diff2.y > 0 or diff1.y > 0 and diff2.x > 0 or diff1.y < 0 and diff2.x < 0:
+			inner = false
+		if diff.x > 0 and diff.y > 0:
+			rot = 0
+		if diff.x < 0 and diff.y > 0:
+			rot = 1
+		if diff.x < 0 and diff.y < 0:
+			rot = 2
+		if diff.x > 0 and diff.y < 0:
+			rot = 3
+		cornerCell.type = "Wall"
+		var cornerStartModel
+		var rot2 = rot+1
+		if rot2 > 3: rot2-=4
+		var rot3 = rot-1
+		if rot3 < 0: rot3+=4
+		if connectEnd or i > 0:
+			if inner:
+				cornerStartModel = ProceduralModel.new([Vector2i.ZERO], "InnerCornerStart", innerCornerStartMesh, Vector3(0.0, 0.0, 0.5), rot, Vector2(0.5, 0.5))
+			else:
+				cornerStartModel = ProceduralModel.new([Vector2i.ZERO], "OuterCornerStart", outerCornerStartMesh, Vector3(0.5, 0.0, 0.5), rot2, Vector2(0.5, 0.5))
+				var extraWallStartModel1 = ProceduralModel.new([Vector2i.ZERO], "WallStart", wallStartMesh, Vector3(0.0, 0.0, 0.5), rot2, Vector2(0.5, 0.5))
+				var extraWallStartModel2 = ProceduralModel.new([Vector2i.ZERO], "WallStart", wallStartMesh, Vector3(0.5, 0.0, 0.5), rot, Vector2(0.5, 0.5))
+				cornerCell.models.append(extraWallStartModel1)
+				cornerCell.models.append(extraWallStartModel2)
+			cornerCell.models.append(cornerStartModel)
+			for n in range(heightN-1):
+				var cornerModel
+				if inner:
+					cornerModel = ProceduralModel.new([Vector2i.ZERO], "InnerCorner", innerCornerMesh, Vector3(0.0, 0.5*n+0.5, 0.5), rot, Vector2(0.5, 0.5))
+				else:
+					cornerModel = ProceduralModel.new([Vector2i.ZERO], "OuterCorner", outerCornerMesh, Vector3(0.5, 0.5*n+0.5, 0.5), rot2, Vector2(0.5, 0.5))
+					var extraWallModel1 = ProceduralModel.new([Vector2i.ZERO], "Wall", wallMesh, Vector3(0.0, 0.5*n+0.5, 0.5), rot2, Vector2(0.5, 0.5))
+					var extraWallModel2 = ProceduralModel.new([Vector2i.ZERO], "Wall", wallMesh, Vector3(0.5, 0.5*n+0.5, 0.5), rot, Vector2(0.5, 0.5))
+					cornerCell.models.append(extraWallModel1)
+					cornerCell.models.append(extraWallModel2)
+				cornerCell.models.append(cornerModel)
+			if i == len(corners)-2 and not connectEnd:
+				addWall(corner+dir, nextCorner, 2.0, rot3)
+			else:
+				addWall(corner+dir, nextCorner-dir, 2.0, rot3)
+		elif i == 0:
+			addWall(corner, nextCorner-dir, 2.0, rot3)
+		else:
+			addWall(corner, nextCorner, 2.0, rot3)
+func addFloorFromArray(spaces:Array[Vector2i]):
+	for space in spaces:
+		addCell(genCell.new(space.x, space.y, "Floor", [floor]))
+
+func addFloor(from:Vector2i, to:Vector2i):
+	var diff = to-from
+	var dir = sign(diff)
+	for x in range(abs(diff.x)+1):
+		for y in range(abs(diff.y)+1):
+			var pos = Vector2i(dir.x*x+from.x, dir.y*y+from.y)
+			addCell(genCell.new(pos.x, pos.y, "Floor", [floor]))
+
+func generateSleepingRoom():
+	var rows:int = rng.randi_range(ceil(sqrt(crewSize)/2.0), ceil(sqrt(crewSize)*2.0))
+	var bedPerRow:int = ceil(float(crewSize)/float(rows))
+	for row in range(rows):
+		for bed in range(bedPerRow):
+			var spaces:Array[Vector2i] = []
+			for space in bedOccupied:
+				spaces.append(Vector2i(space.x+row, space.y+bed*3))
+			if isSpaceEmpty(spaces):
+				addFloorFromArray(spaces)
+			if isSpaceFloor(spaces):
+				addFurniture(bedInstance, bedOccupied, row, bed*3)
+	var floorDim = Vector2i(10, 10)
+	var floorDim2 = Vector2i(10, 5)
+	addFloor(Vector2i(0, bedPerRow*3), Vector2i(floorDim.x, bedPerRow*3+floorDim.y))
+	addFloor(Vector2i(floorDim.x+1, bedPerRow*3+floorDim.y), Vector2i(floorDim.x+1+floorDim2.x, bedPerRow*3+floorDim.y-floorDim2.y))
+	var corners:Array[Vector2i] = []
+	corners.append(Vector2i(0, bedPerRow*3+1))
+	corners.append(Vector2i(0, bedPerRow*3))
+	corners.append(Vector2i(floorDim.x, bedPerRow*3))
+	corners.append(Vector2i(floorDim.x, bedPerRow*3+floorDim.y-floorDim2.y))
+	corners.append(Vector2i(floorDim.x+1+floorDim2.x, bedPerRow*3+floorDim.y-floorDim2.y))
+	corners.append(Vector2i(floorDim.x+1+floorDim2.x, bedPerRow*3+floorDim.y))
+	corners.append(Vector2i(0, bedPerRow*3+floorDim.y))
+	corners.append(Vector2i(0, bedPerRow*3+3))
+	addWallFromCorners(corners, 2.0, false)
+	var pathOffset = Vector2i(-3, -2)
+	addFloor(pathOffset, Vector2i(pathOffset.x, bedPerRow*3+2))
+	addFloor(Vector2i(pathOffset.x+1, pathOffset.y), Vector2i(-1, pathOffset.y))
+	addFloor(Vector2i(pathOffset.x+1, bedPerRow*3+2), Vector2i(-1, bedPerRow*3+2))
+	
 
 func generateFurniture():
-	for x in range(500):
-		for y in range(250):
-			#var models:Array[ProceduralModel] = []
-			#if rng.randf() < 0.2:
-				#var rot = rng.randi_range(0, 3)
-				#var rot2 = rot + 2
-				#if rot2 > 3: rot2-=4
-				#for i in range(2):
-					#var wallStart = ProceduralModel.new([Vector2i.ZERO], "WallStart", wallStartMesh, Vector3(i*0.5, 0.0, 0.5), rot, Vector2(0.5, 0.5))
-					#var wallStart2 = ProceduralModel.new([Vector2i.ZERO], "WallStart", wallStartMesh, Vector3(i*0.5, 0.0, 0.5), rot2, Vector2(0.5, 0.5))
-					#for n in range(3):
-						#var wall = ProceduralModel.new([Vector2i.ZERO], "Wall", wallMesh, Vector3(i*0.5, (n+1)*0.5, 0.5), rot, Vector2(0.5, 0.5))
-						#var wall2 = ProceduralModel.new([Vector2i.ZERO], "Wall", wallMesh, Vector3(i*0.5, (n+1)*0.5, 0.5), rot2, Vector2(0.5, 0.5))
-						#models.append(wall)
-						#models.append(wall2)
-					#models.append(wallStart)
-					#models.append(wallStart2)
-			#models.append(floor)
-			#var cell:genCell = genCell.new(x, y, "Floor", models)
-			var bedCells = generateFurnitureCells(ProceduralModel.new(bedOccupied, "Bed", bedMesh, Vector3.ZERO, 0, Vector2.ZERO), x, y*2)
-			for cell in bedCells:
-				addCell(cell)
-
+	cells = []
+	var children = $Instances.get_children()
+	for child in children:
+		child.queue_free()
+	generateSleepingRoom()
+	generatingMesh = true
+	meshGenerationStartTime = Time.get_ticks_msec()
+	
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	floor = ProceduralModel.new([Vector2i(0, 0)], "Floor", floorMesh, Vector3.ZERO, 0, Vector2(0.5, 0.5))
@@ -323,9 +417,12 @@ func _ready() -> void:
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	if generatingMesh:
-		for i in range(CPF):
-			if meshCellIndex == len(cells):
-				break
+		CPSTimer += delta
+		var CPSTime = 1.0/CPS
+		while CPSTimer > CPSTime and generatingMesh:
+			CPSTimer -= CPSTime
 			addMeshes(meshCellIndex, meshArrays, meshMaterials, meshModelNames, meshModelArrays, meshModelMaterials)
 			meshCellIndex += 1
+		if setMeshEachStep and generatingMesh:
+			setMesh()
 	pass
