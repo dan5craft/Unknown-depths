@@ -298,6 +298,7 @@ func addWallFromCorners(corners:Array[Vector2i], height:float, connectEnd:bool =
 		var cornerCell = findCell(corner.x, corner.y)
 		var nextIndex = i + 1
 		var rot = 0
+		var wallRot = 0
 		if nextIndex > len(corners)-1: nextIndex -= len(corners)
 		var nextCorner = corners[nextIndex]
 		var dir = sign(nextCorner-corner)
@@ -317,12 +318,19 @@ func addWallFromCorners(corners:Array[Vector2i], height:float, connectEnd:bool =
 			rot = 2
 		if diff.x > 0 and diff.y < 0:
 			rot = 3
+		if diff2.x > 0 and diff2.y == 0:
+			wallRot = 0
+		if diff2.y > 0 and diff2.x == 0:
+			wallRot = 1
+		if diff2.x < 0 and diff2.y == 0:
+			wallRot = 2
+		if diff2.y < 0 and diff2.x == 0:
+			wallRot = 3
 		cornerCell.type = "Wall"
 		var cornerStartModel
 		var rot2 = rot+1
 		if rot2 > 3: rot2-=4
-		var rot3 = rot-1
-		if rot3 < 0: rot3+=4
+		var length = max(abs(nextCorner.x-corner.x), abs(nextCorner.y-corner.y))
 		if connectEnd or i > 0:
 			if inner:
 				cornerStartModel = ProceduralModel.new([Vector2i.ZERO], "InnerCornerStart", innerCornerStartMesh, Vector3(0.0, 0.0, 0.5), rot, Vector2(0.5, 0.5))
@@ -345,13 +353,13 @@ func addWallFromCorners(corners:Array[Vector2i], height:float, connectEnd:bool =
 					cornerCell.models.append(extraWallModel2)
 				cornerCell.models.append(cornerModel)
 			if i == len(corners)-2 and not connectEnd:
-				addWall(corner+dir, nextCorner, 2.0, rot3)
-			else:
-				addWall(corner+dir, nextCorner-dir, 2.0, rot3)
+				addWall(corner+dir, nextCorner, height, wallRot)
+			elif length > 1:
+				addWall(corner+dir, nextCorner-dir, height, wallRot)
 		elif i == 0:
-			addWall(corner, nextCorner-dir, 2.0, rot3)
+			addWall(corner, nextCorner-dir, height, wallRot)
 		else:
-			addWall(corner, nextCorner, 2.0, rot3)
+			addWall(corner, nextCorner, height, wallRot)
 func addFloorFromArray(spaces:Array[Vector2i]):
 	for space in spaces:
 		addCell(genCell.new(space.x, space.y, "Floor", [floor]))
@@ -365,36 +373,17 @@ func addFloor(from:Vector2i, to:Vector2i):
 			addCell(genCell.new(pos.x, pos.y, "Floor", [floor]))
 
 func generateSleepingRoom():
-	var rows:int = rng.randi_range(ceil(sqrt(crewSize)/2.0), ceil(sqrt(crewSize)*2.0))
-	var bedPerRow:int = ceil(float(crewSize)/float(rows))
-	for row in range(rows):
-		for bed in range(bedPerRow):
-			var spaces:Array[Vector2i] = []
-			for space in bedOccupied:
-				spaces.append(Vector2i(space.x+row, space.y+bed*3))
-			if isSpaceEmpty(spaces):
-				addFloorFromArray(spaces)
-			if isSpaceFloor(spaces):
-				addFurniture(bedInstance, bedOccupied, row, bed*3)
-	var floorDim = Vector2i(10, 10)
-	var floorDim2 = Vector2i(10, 5)
-	addFloor(Vector2i(0, bedPerRow*3), Vector2i(floorDim.x, bedPerRow*3+floorDim.y))
-	addFloor(Vector2i(floorDim.x+1, bedPerRow*3+floorDim.y), Vector2i(floorDim.x+1+floorDim2.x, bedPerRow*3+floorDim.y-floorDim2.y))
+	addFloor(Vector2i(0, 0), Vector2i(50, 50))
 	var corners:Array[Vector2i] = []
-	corners.append(Vector2i(0, bedPerRow*3+1))
-	corners.append(Vector2i(0, bedPerRow*3))
-	corners.append(Vector2i(floorDim.x, bedPerRow*3))
-	corners.append(Vector2i(floorDim.x, bedPerRow*3+floorDim.y-floorDim2.y))
-	corners.append(Vector2i(floorDim.x+1+floorDim2.x, bedPerRow*3+floorDim.y-floorDim2.y))
-	corners.append(Vector2i(floorDim.x+1+floorDim2.x, bedPerRow*3+floorDim.y))
-	corners.append(Vector2i(0, bedPerRow*3+floorDim.y))
-	corners.append(Vector2i(0, bedPerRow*3+3))
-	addWallFromCorners(corners, 2.0, false)
-	var pathOffset = Vector2i(-3, -2)
-	addFloor(pathOffset, Vector2i(pathOffset.x, bedPerRow*3+2))
-	addFloor(Vector2i(pathOffset.x+1, pathOffset.y), Vector2i(-1, pathOffset.y))
-	addFloor(Vector2i(pathOffset.x+1, bedPerRow*3+2), Vector2i(-1, bedPerRow*3+2))
-	
+	corners.append(Vector2i(0, 1))
+	corners.append(Vector2i(4, 1))
+	corners.append(Vector2i(4, 2))
+	corners.append(Vector2i(1, 2))
+	corners.append(Vector2i(1, 0))
+	corners.append(Vector2i(0, 0))
+	addWallFromCorners(corners, 2.5, false)
+	corners.reverse()
+	#addWallFromCorners(corners, 2.5, true)
 
 func generateFurniture():
 	cells = []
@@ -411,7 +400,6 @@ func _ready() -> void:
 	label = $Label3D
 	mesh = $MeshInstance3D
 	collisionShape = $StaticBody3D/CollisionShape3D
-	pass # Replace with function body.
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -425,4 +413,3 @@ func _process(delta: float) -> void:
 			meshCellIndex += 1
 		if setMeshEachStep and generatingMesh:
 			setMesh()
-	pass
