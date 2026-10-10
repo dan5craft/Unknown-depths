@@ -1,0 +1,68 @@
+[gd_resource type="MeshLibrary" format=3 uid="uid://cvpef78y45yba"]
+
+[ext_resource type="ArrayMesh" uid="uid://dma5hg3qnbvvs" path="res://Assets/Scenes/World/ProceduralStructures/buildingPieces/bed.tres" id="1_2ch5w"]
+[ext_resource type="ArrayMesh" uid="uid://ni6f0avkidai" path="res://Assets/Scenes/World/ProceduralStructures/buildingPieces/floor45deg_center.tres" id="2_xtd2t"]
+[ext_resource type="ArrayMesh" uid="uid://cnsq1r0iipwah" path="res://Assets/Scenes/World/ProceduralStructures/buildingPieces/floor_100x100cm.tres" id="3_2weor"]
+[ext_resource type="ArrayMesh" uid="uid://cgm7n1udb01ej" path="res://Assets/Scenes/World/ProceduralStructures/buildingPieces/innerCorner_center_50.tres" id="4_bgbd8"]
+[ext_resource type="ArrayMesh" uid="uid://cwlbee6fxoigp" path="res://Assets/Scenes/World/ProceduralStructures/buildingPieces/innerCorner_floor45deg.tres" id="5_lx0x0"]
+[ext_resource type="ArrayMesh" uid="uid://b8plh4xe0v1ng" path="res://Assets/Scenes/World/ProceduralStructures/buildingPieces/outerCorner_center_50.tres" id="6_t05mu"]
+[ext_resource type="ArrayMesh" uid="uid://dc775yrh4yv0h" path="res://Assets/Scenes/World/ProceduralStructures/buildingPieces/outerCorner_floor45deg.tres" id="7_cid7r"]
+[ext_resource type="ArrayMesh" uid="uid://dq8imijfmbtjo" path="res://Assets/Scenes/World/ProceduralStructures/buildingPieces/wall_center_center.tres" id="8_gxfp6"]
+
+[resource]
+item/0/name = "Bed"
+item/0/mesh = ExtResource("1_2ch5w")
+item/0/mesh_transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+item/0/mesh_cast_shadow = 1
+item/0/shapes = []
+item/0/navigation_mesh_transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+item/0/navigation_layers = 1
+item/1/name = "Wall start"
+item/1/mesh = ExtResource("2_xtd2t")
+item/1/mesh_transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+item/1/mesh_cast_shadow = 1
+item/1/shapes = []
+item/1/navigation_mesh_transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+item/1/navigation_layers = 1
+item/2/name = "Floor"
+item/2/mesh = ExtResource("3_2weor")
+item/2/mesh_transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+item/2/mesh_cast_shadow = 1
+item/2/shapes = []
+item/2/navigation_mesh_transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+item/2/navigation_layers = 1
+item/3/name = "Outer corner"
+item/3/mesh = ExtResource("4_bgbd8")
+item/3/mesh_transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+item/3/mesh_cast_shadow = 1
+item/3/shapes = []
+item/3/navigation_mesh_transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+item/3/navigation_layers = 1
+item/4/name = "Outer corner start"
+item/4/mesh = ExtResource("5_lx0x0")
+item/4/mesh_transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+item/4/mesh_cast_shadow = 1
+item/4/shapes = []
+item/4/navigation_mesh_transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+item/4/navigation_layers = 1
+item/5/name = "Inner corner"
+item/5/mesh = ExtResource("6_t05mu")
+item/5/mesh_transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+item/5/mesh_cast_shadow = 1
+item/5/shapes = []
+item/5/navigation_mesh_transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+item/5/navigation_layers = 1
+item/6/name = "Inner corner start"
+item/6/mesh = ExtResource("7_cid7r")
+item/6/mesh_transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+item/6/mesh_cast_shadow = 1
+item/6/shapes = []
+item/6/navigation_mesh_transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+item/6/navigation_layers = 1
+item/7/name = "Wall center"
+item/7/mesh = ExtResource("8_gxfp6")
+item/7/mesh_transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+item/7/mesh_cast_shadow = 1
+item/7/shapes = []
+item/7/navigation_mesh_transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+item/7/navigation_layers = 1
